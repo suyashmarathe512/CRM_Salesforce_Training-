@@ -62,15 +62,19 @@ public with sharing class OpportunityTriggerHandler {
                 if (!result.isSuccess()) {
                     Logs__c log = new Logs__c();
                     Database.Error e = result.getErrors()[0];
-                    log.Opportunity_Product__c = results.get(i).getId();
-                    log.Source_Object__c = 'Opportunity';
+                    if(i!= null){
+                        log.Opportunity_Product__c = results.get(i).getId();
+                    }
+                    log.Source_Object__c = 'Opportunity Product';
                     log.Import_Date__c = Date.today();
                     log.Severity__c = 'Mid';
                     log.Error__c= e.getMessage();
                     log.Message_Long__c = e.getFields() + ' ' + e.getStatusCode()+ ' ' + e.getMessage();
                     errorlogs.add(log);
-                    insert errorlogs;
                 }
+            }
+            if(!errorlogs.isEmpty()){
+                insert errorlogs;
             }
         }
     }

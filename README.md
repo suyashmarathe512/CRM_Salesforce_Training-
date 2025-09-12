@@ -1,8 +1,8 @@
-# Goat Salesforce DX Project
+# CRM_Salesforce_Training Project
 
 ## Project Overview
 
-The **Goat** Salesforce DX project is a comprehensive training and development repository designed to demonstrate advanced Salesforce org configurations, customizations, and best practices. This project serves as a complete Salesforce organization setup, encompassing a wide range of metadata types and components that represent a fully-featured CRM implementation.
+The **CRM_Salesforce_Training** Salesforce DX project is a comprehensive training and development repository designed to demonstrate advanced Salesforce org configurations, customizations, and best practices. This project serves as a complete Salesforce organization setup, encompassing a wide range of metadata types and components that represent a fully-featured CRM implementation.
 
 ### Purpose and Scope
 

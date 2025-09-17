@@ -61,7 +61,7 @@ global with sharing class LeadRecordUpdateServices {
                         IdLeadUpdated.add(l.Id);
                         l.Email = input.NewEmail;
                         l.Phone = input.NewPhone;
-                    }                  
+                    }
                     update leadsToUpdate;
                     res.responseBody = Blob.valueOf(
                         '{"isSuccess":true,' +

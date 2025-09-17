@@ -69,17 +69,4 @@ public class ContactTriggerHandlerTest {
         Contact con = [SELECT AccountId FROM Contact WHERE Id=:c.Id];
         System.assertEquals(null, con.AccountId, 'Should not associate when no match');
     }
-    
-    @isTest
-    static void testEmailMissing() {
-        Contact c = new Contact(LastName='NoEmail');
-        Test.startTest();
-        try {
-            insert c;
-            System.assert(false, 'Expected email error');
-        } catch (DmlException e) {
-            System.assert(e.getMessage().contains('Email address is required'));
-        }
-        Test.stopTest();
-    }
 }

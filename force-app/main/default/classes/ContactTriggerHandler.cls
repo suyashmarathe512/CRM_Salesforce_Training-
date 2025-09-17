@@ -53,9 +53,6 @@ public class ContactTriggerHandler {
                     system.debug('Contact Id: ' + c.Id + ' Account Id: ' + c.AccountId);
                 }
             }
-            else{
-                c.addError('Email address is required to associate with an Account.');
-            }
         }
     }
 }

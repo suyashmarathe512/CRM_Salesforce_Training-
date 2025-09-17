@@ -60,15 +60,6 @@ global with sharing class InsertLeadServices {
                     newLeads.add(l);
                 }
                 insert newLeads;
-                for (Wrapper w : inputWrappers) {
-                    if(w.LastName == 'CallOut'){
-                        Http http = new Http();
-                        HttpRequest request = new HttpRequest();
-                        request.setEndpoint('https://dummy-endpoint.com');
-                        request.setMethod('GET');
-                        HttpResponse response = http.send(request);
-                    }
-                }
                 List<String> leadIds = new List<String>();
                 for (Lead l : newLeads) {
                     leadIds.add(l.Id);

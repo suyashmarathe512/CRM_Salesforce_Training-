@@ -5,6 +5,12 @@
 ***************************************************************************************************/
 @isTest
 public with sharing class InsertLeadServicesTest {
+    private static void setupRestContext() {
+        RestRequest req = new RestRequest();
+        RestResponse res = new RestResponse();
+        RestContext.request = req;
+        RestContext.response = res;
+    }
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @MethdodName:     testSuccessfulLeadCreation
@@ -12,18 +18,12 @@ public with sharing class InsertLeadServicesTest {
 ***************************************************************************************************/
     @isTest
     static void testSuccessfulLeadCreation() {
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-        String json = '[{"FirstName":"LeadServices","LastName":"Test","Email":"john.doe@example.com","Phone":"1234567890"}]';
-        req.requestBody = Blob.valueOf(json);
-
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(InsertLeadServicesTestMock.getRequestBody('success'));
         Test.startTest();
         InsertLeadServices.createLead();
         Test.stopTest();
-
-        System.assertEquals(201, res.statusCode);
+        System.assertEquals(201, RestContext.response.statusCode);
     }
 
 /***************************************************************************************************
@@ -33,19 +33,12 @@ public with sharing class InsertLeadServicesTest {
 ***************************************************************************************************/
     @isTest
     static void testSuccessfulMultipleLeadCreation() {
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-
-        String json = '[{"FirstName":"LeadServices","LastName":"Test2","Email":"john.doe@example.com","Phone":"1234567890"},' +
-                      '{"FirstName":"LeadServices","LastName":"Test3","Email":"jane.smith@example.com","Phone":"0987654321"}]';
-        req.requestBody = Blob.valueOf(json);
-
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(InsertLeadServicesTestMock.getRequestBody('multiple'));
         Test.startTest();
         InsertLeadServices.createLead();
         Test.stopTest();
-        System.assertEquals(201, res.statusCode);
+        System.assertEquals(201, RestContext.response.statusCode);
     }
 
 /***************************************************************************************************
@@ -55,15 +48,12 @@ public with sharing class InsertLeadServicesTest {
 ***************************************************************************************************/
     @isTest
     static void testEmptyRequestBody() {
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-        req.requestBody = Blob.valueOf('');
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(InsertLeadServicesTestMock.getRequestBody('empty'));
         Test.startTest();
         InsertLeadServices.createLead();
         Test.stopTest();
-        System.assertEquals(400, res.statusCode);
+        System.assertEquals(400, RestContext.response.statusCode);
     }
 
 /***************************************************************************************************
@@ -73,16 +63,12 @@ public with sharing class InsertLeadServicesTest {
 ***************************************************************************************************/
     @isTest
     static void testInvalidJSON() {
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-
-        req.requestBody = Blob.valueOf('invalid json');
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(InsertLeadServicesTestMock.getRequestBody('invalidJson'));
         Test.startTest();
         InsertLeadServices.createLead();
         Test.stopTest();
-        System.assertEquals(400, res.statusCode);
+        System.assertEquals(400, RestContext.response.statusCode);
     }
 /***************************************************************************************************
 * @Author:        CRM Developer
@@ -91,19 +77,12 @@ public with sharing class InsertLeadServicesTest {
 ***************************************************************************************************/
     @isTest
     static void testMissingFirstName() {
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-
-        String json = '[{"LastName":"Doe","Email":"john.doe@example.com","Phone":"1234567890"}]';
-        req.requestBody = Blob.valueOf(json);
-
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(InsertLeadServicesTestMock.getRequestBody('missingFirstName'));
         Test.startTest();
         InsertLeadServices.createLead();
         Test.stopTest();
-
-        System.assertEquals(400, res.statusCode);
+        System.assertEquals(400, RestContext.response.statusCode);
     }
 /***************************************************************************************************
 * @Author:        CRM Developer
@@ -112,17 +91,12 @@ public with sharing class InsertLeadServicesTest {
 ***************************************************************************************************/
     @isTest
     static void testException() {
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-
-        String json = '[{"FirstName":"John","LastName":"Doe","Email":"john.doeexample.com","Phone":"1234567890"}]';
-        req.requestBody = Blob.valueOf(json);
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(InsertLeadServicesTestMock.getRequestBody('invalidEmail'));
         Test.startTest();
         InsertLeadServices.createLead();
         Test.stopTest();
-        System.assertEquals(400, res.statusCode);
+        System.assertEquals(400, RestContext.response.statusCode);
     }
 
 /***************************************************************************************************
@@ -131,27 +105,12 @@ public with sharing class InsertLeadServicesTest {
 * @Description:   Test method to test CalloutException catch block.
 ***************************************************************************************************/
     @isTest
-    static void testCalloutException() {    
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-
-        String json = '[{"FirstName":"LeadServices","LastName":"CallOut","Email":"john.doe@example.com","Phone":"1234567890"}]';
-        req.requestBody = Blob.valueOf(json);
-
-        Test.setMock(HttpCalloutMock.class, new UnauthorizedEndpointResponse());
-
+    static void testCalloutException() {
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(InsertLeadServicesTestMock.getRequestBody('calloutException'));
         Test.startTest();
         InsertLeadServices.createLead();
         Test.stopTest();
-
-        System.assertEquals(500, res.statusCode);
-    }
-
-    public class UnauthorizedEndpointResponse implements HttpCalloutMock {
-        public HttpResponse respond(HttpRequest request) {
-            throw new CalloutException('Unauthorized endpoint, please check Setup->Security->Remote site settings.');
-        }
+        System.assertEquals(500, RestContext.response.statusCode);
     }
 }

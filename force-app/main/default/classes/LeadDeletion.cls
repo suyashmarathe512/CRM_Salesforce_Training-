@@ -83,15 +83,6 @@ global with sharing class LeadDeletion {
                     if(input.FirstName == 'dml'){
                         update leadsToDelete;
                     }
-                    for (Wrapper w : inputWrappers) {
-                        if(w.LastName == 'CallOut'){
-                            Http http = new Http();
-                            HttpRequest request = new HttpRequest();
-                            request.setEndpoint('https://dummy-endpoint.com');
-                            request.setMethod('GET');
-                            HttpResponse response = http.send(request);
-                        }
-                    }
                     ResponseWrapper output = new ResponseWrapper();
                     output.isSuccess = true;
                     output.Lead = String.join(deletedNames, ', '); 

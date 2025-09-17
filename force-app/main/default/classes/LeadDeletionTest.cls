@@ -5,6 +5,12 @@
 ***************************************************************************************************/
 @isTest
 public with sharing class LeadDeletionTest {
+    private static void setupRestContext() {
+        RestRequest req = new RestRequest();
+        RestResponse res = new RestResponse();
+        RestContext.request = req;
+        RestContext.response = res;
+    }
 
 /***************************************************************************************************
 * @Author:        CRM Developer
@@ -13,7 +19,6 @@ public with sharing class LeadDeletionTest {
 ***************************************************************************************************/
     @isTest
     static void testSuccessfulLeadDeletion() {
-        // Create test lead
         Lead testLead = new Lead(
             FirstName = 'Test',
             LastName = 'Lead',
@@ -22,20 +27,12 @@ public with sharing class LeadDeletionTest {
             Company = 'Test Company'
         );
         insert testLead;
-
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-
-        String json = '{"FirstName":"Test","LastName":"Lead","Email":"test.lead@example.com","Phone":"1234567890"}';
-        req.requestBody = Blob.valueOf(json);
-
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(LeadDeletionMock.getRequestBody('success'));
         Test.startTest();
         LeadDeletion.deleteLead();
         Test.stopTest();
-
-        System.assertEquals(200, res.statusCode);
+        System.assertEquals(200, RestContext.response.statusCode);
         List<Lead> deletedLeads = [SELECT Id FROM Lead WHERE Id = :testLead.Id];
         System.assertEquals(0, deletedLeads.size());
     }
@@ -47,7 +44,6 @@ public with sharing class LeadDeletionTest {
 ***************************************************************************************************/
     @isTest
     static void testSuccessfulMultipleLeadDeletion() {
-        // Create test leads with same details
         List<Lead> testLeads = new List<Lead>();
         for (Integer i = 0; i < 2; i++) {
             testLeads.add(new Lead(
@@ -59,18 +55,12 @@ public with sharing class LeadDeletionTest {
             ));
         }
         insert testLeads;
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-
-        String json = '{"FirstName":"Test","LastName":"Lead","Email":"test.lead@example.com","Phone":"1234567890"}';
-        req.requestBody = Blob.valueOf(json);
-
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(LeadDeletionMock.getRequestBody('multiple'));
         Test.startTest();
         LeadDeletion.deleteLead();
         Test.stopTest();
-        System.assertEquals(200, res.statusCode);
+        System.assertEquals(200, RestContext.response.statusCode);
         List<Lead> deletedLeads = [SELECT Id FROM Lead WHERE Id IN :testLeads];
         System.assertEquals(0, deletedLeads.size());
     }
@@ -82,21 +72,13 @@ public with sharing class LeadDeletionTest {
 ***************************************************************************************************/
     @isTest
     static void testNoLeadFound() {
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-
-        String json = '{"FirstName":"Unknown","LastName":"Test","Email":"Unlnown@Test.com","Phone":"1234567890"}';
-        req.requestBody = Blob.valueOf(json);
-
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(LeadDeletionMock.getRequestBody('noLead'));
         Test.startTest();
         LeadDeletion.deleteLead();
         Test.stopTest();
-
-        System.assertEquals(404, res.statusCode);
+        System.assertEquals(404, RestContext.response.statusCode);
     }
-
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @MethodName:     testEmptyRequestBody
@@ -104,17 +86,12 @@ public with sharing class LeadDeletionTest {
 ***************************************************************************************************/
     @isTest
     static void testEmptyRequestBody() {
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-        req.requestBody = Blob.valueOf('');
-
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(LeadDeletionMock.getRequestBody('empty'));
         Test.startTest();
         LeadDeletion.deleteLead();
         Test.stopTest();
-
-        System.assertEquals(400, res.statusCode);
+        System.assertEquals(400, RestContext.response.statusCode);
     }
 
 /***************************************************************************************************
@@ -124,18 +101,12 @@ public with sharing class LeadDeletionTest {
 ***************************************************************************************************/
     @isTest
     static void testInvalidJSON() {
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-
-        req.requestBody = Blob.valueOf('invalid json');
-
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(LeadDeletionMock.getRequestBody('invalidJson'));
         Test.startTest();
         LeadDeletion.deleteLead();
         Test.stopTest();
-
-        System.assertEquals(400, res.statusCode);
+        System.assertEquals(400, RestContext.response.statusCode);
     }
 
 /***************************************************************************************************
@@ -145,17 +116,12 @@ public with sharing class LeadDeletionTest {
 ***************************************************************************************************/
     @isTest
     static void testMissingFirstName() {
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-
-        String json = '{"LastName":"Test","Email":"abc.test@example.com","Phone":"1234567890"}';
-        req.requestBody = Blob.valueOf(json);
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(LeadDeletionMock.getRequestBody('missingFirstName'));
         Test.startTest();
         LeadDeletion.deleteLead();
         Test.stopTest();
-        System.assertEquals(400, res.statusCode);
+        System.assertEquals(400, RestContext.response.statusCode);
     }
 /***************************************************************************************************
 * @Author:        CRM Developer
@@ -164,22 +130,12 @@ public with sharing class LeadDeletionTest {
 ***************************************************************************************************/
     @isTest
     static void testCalloutException() {    
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-        String json = '[{"FirstName":"LeadServices","LastName":"CallOut","Email":"LeadServices.CallOut@example.com","Phone":"1234567890"}]';
-        req.requestBody = Blob.valueOf(json);
-        Test.setMock(HttpCalloutMock.class, new UnauthorizedEndpointResponse());
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(LeadDeletionMock.getRequestBody('calloutException'));
         Test.startTest();
         LeadDeletion.deleteLead();
         Test.stopTest();
-        System.assertEquals(400, res.statusCode);
-    }
-    public class UnauthorizedEndpointResponse implements HttpCalloutMock {
-        public HttpResponse respond(HttpRequest request) {
-            throw new CalloutException('Unauthorized endpoint, please check Setup->Security->Remote site settings.');
-        }
+        System.assertEquals(400, RestContext.response.statusCode);
     }
 /***************************************************************************************************
 * @Author:        CRM Developer
@@ -188,18 +144,11 @@ public with sharing class LeadDeletionTest {
 ***************************************************************************************************/
     @isTest
     static void testDMLException() {
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        RestContext.request = req;
-        RestContext.response = res;
-
-        String json = '{"FirstName": "dml","LastName":"test","Email":"dml.test@example.com","Phone":"1234567890"}';
-        req.requestBody = Blob.valueOf(json);
-
+        setupRestContext();
+        RestContext.request.requestBody = Blob.valueOf(LeadDeletionMock.getRequestBody('dmlException'));
         Test.startTest();
         LeadDeletion.deleteLead();
         Test.stopTest();
-
-        System.assertEquals(404, res.statusCode);
+        System.assertEquals(404, RestContext.response.statusCode);
     }
 }

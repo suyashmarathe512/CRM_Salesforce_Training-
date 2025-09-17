@@ -38,8 +38,8 @@ public class ContactTriggerHandler {
                 websiteToAccountIdMap.put(website, acc.Id);
                 system.debug('Website: ' + website + ' Account Id: ' + acc.Id + '');
             }
-            if(acc.Website.contains('/')){
-                String httpsWeb = acc.Website.substringAfter('/');
+            if(acc.Website.contains('//')){
+                String httpsWeb = acc.Website.substringAfterLast('//');
                 websiteToAccountIdMap.put(httpsWeb, acc.Id);
                 system.debug('Website: ' + httpsWeb + ' Account Id: ' + acc.Id + '');
             }

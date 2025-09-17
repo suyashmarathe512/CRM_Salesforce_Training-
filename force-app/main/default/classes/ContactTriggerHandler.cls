@@ -1,5 +1,15 @@
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @className:     ContactTriggerHandler
+* @Description:   This class checks for duplicated contacts 
+                    associates contacts with accounts based on email domain.
+***************************************************************************************************/
 public class ContactTriggerHandler {
-    //Update for the review.
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:    checkDuplicates
+* @Description:   This method checks for duplicated new contacts.
+***************************************************************************************************/
     public static void checkDuplicates(List<Contact> newContacts) {
         List<String> emails = new List<String>();
         List<String> phones = new List<String>();
@@ -29,6 +39,11 @@ public class ContactTriggerHandler {
             }
         }
     }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:    associateAccountWithContact
+* @Description:   This method associates contacts with accounts based on email domain.
+***************************************************************************************************/
     public static void associateAccountWithContact(List<Contact> newContacts) {
         List<Account> accounts = [SELECT Id, Name, Website FROM Account WHERE Website != null];
         Map<String, Id> websiteToAccountIdMap = new Map<String, Id>(); 

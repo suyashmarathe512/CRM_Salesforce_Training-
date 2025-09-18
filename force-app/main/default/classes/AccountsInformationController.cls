@@ -11,7 +11,6 @@ public class AccountsInformationController {
             }
     set;
     }
-
     public AccountsInformationController() {
         searchTerm = '';
         searchMessage = '';
@@ -32,12 +31,12 @@ public class AccountsInformationController {
         accounts = [SELECT Id, Name, Email_Address__c, Phone, Website FROM Account];
         accountCount = accounts.size();
     }
-    public PageReference alphabetSearch(String selectedAlphabet) {
+    public PageReference alphabetSearch() {
         if (selectedAlphabet=='All'){
         accounts = [SELECT Id, Name, Email_Address__c, Phone, Website FROM Account];
         }
         else{
-            accounts = [SELECT Id, Name, Email_Address__c, Phone, Website FROM Account WHERE lastName Like:selectedAlphabet+'%'];
+            accounts = [SELECT Id, Name, Email_Address__c, Phone, Website FROM Account WHERE Name LIKE :selectedAlphabet+'%'];
         }
         return null;
     }

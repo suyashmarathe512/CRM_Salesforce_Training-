@@ -11,16 +11,19 @@ public class AccountsInformationController {
             }
     set;
     }
-    public AccountsInformationController() {
-        searchTerm = '';
-        searchMessage = '';
-        accounts = [SELECT Id, Name, Email_Address__c, Phone, Website FROM Account];
-        accountCount = accounts.size();
+    public AccountsInformationController(){
+        searchTerm='';
+        searchMessage='';
+        accounts=[SELECT 
+                        Id, Name, Email_Address__c, Phone, Website 
+                FROM 
+                    Account];
+        accountCount=accounts.size();
     }
     public void searchAccounts() {
-        if (String.isBlank(searchTerm) || searchTerm.length() < 3) {
+        if(String.isBlank(searchTerm)||searchTerm.length()<3) {
             accounts = [SELECT Id, Name, Email_Address__c, Phone, Website FROM Account];
-        } else {
+        }else{
             accounts = [SELECT Id, Name, Email_Address__c, Phone, Website FROM Account WHERE Name LIKE :('%' + searchTerm + '%')];
         }
         accountCount = accounts.size();
@@ -39,5 +42,16 @@ public class AccountsInformationController {
             accounts = [SELECT Id, Name, Email_Address__c, Phone, Website FROM Account WHERE Name LIKE :selectedAlphabet+'%'];
         }
         return null;
+    }
+    
+    @RemoteAction
+    public static String deleteAccountRemote(String accountId) {
+        try {
+            Account acc = [SELECT Id FROM Account WHERE Id = :accountId];
+            delete acc;
+            return 'success';
+        } catch (Exception e) {
+            return 'error: ' + e.getMessage();
+        }
     }
 }

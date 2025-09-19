@@ -1,6 +1,9 @@
 <apex:page controller="AccountsInformationController">
-    <apex:image url="{!$Resource.AccountsInformationPage_Header_Logo}" />
-    <br />
+    <apex:includeScript value="{!URLFOR($Resource.DeleteAccountScript, 'DeleteAccountScript.js')}"/>
+    <div>
+        <apex:image url="{!URLFOR($Resource.AccountsInformationPage_Header_Logo, 'Account_Salesforce_Logo.png')}" width="70" height="70"/>
+        <h1 style="font-size: 3em;">Accounts</h1>
+    </div>
     <apex:form id="searchForm">
         <apex:inputText value="{!searchTerm}" style="width: 300px" html-placeholder="Input at least 3 characters to perform search" />
         <apex:commandButton value="Search" action="{!searchAccounts}" rerender="resultsPanel" />
@@ -27,10 +30,13 @@
                 <apex:column headerValue="Phone Number" style="width: 10%;">
                     <apex:outputText value="{!acc.Phone}" />
                 </apex:column>
-            <apex:column headerValue="Website" style="width: 15%;">
-                <apex:outputLink value="{!acc.Website}" target="_blank">{!acc.Website}</apex:outputLink>
-            </apex:column>
-        </apex:pageBlockTable>
+                <apex:column headerValue="Website" style="width: 15%;">
+                    <apex:outputLink value="{!acc.Website}" target="_blank">{!acc.Website}</apex:outputLink>
+                </apex:column>
+                <apex:column headerValue="Delete" style="width: 10%;">
+                    <apex:outputLink value="#" onclick="deleteAccount('{!acc.Id}'); return false;">Delete</apex:outputLink>
+                </apex:column>
+            </apex:pageBlockTable>
         </apex:pageBlock>
     </apex:outputPanel>
 </apex:page>

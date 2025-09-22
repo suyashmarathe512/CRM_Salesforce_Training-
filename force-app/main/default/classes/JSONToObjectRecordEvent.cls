@@ -53,7 +53,7 @@ public class JSONToObjectRecordEvent{
                 if (!results[i].isSuccess()) {
                     ev.Description = 'ERROR on insert: ' + results[i].getErrors()[0].getMessage();
                 } else {
-                    ev.Description = 'Inserted successfully';
+                    ev.Description = 'Inserted successfully ' +'Record Id: ' + results[i].getId();
                 }
             }
         }

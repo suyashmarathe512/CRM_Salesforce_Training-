@@ -36,17 +36,21 @@ public class DuplicateConAndOppoInAcc implements Database.Batchable<SObject>, Da
             List<SObject> groupRec = byName.get(nm);
             System.debug(groupRec);
             if (groupRec.size() > 1) {
+                Integer recordIndex = 0;
                 for (SObject rec : groupRec) {
-                    rec.put('Duplicate__c', true);
-                    toUpdate.add(rec);
-                    System.debug('toUpdate: ' + toUpdate);
-                    Id ownerId = (Id) rec.get('OwnerId');
-                    System.debug('OwnerId: ' + ownerId);
-                    if (ownerDuplicateCount.containsKey(ownerId)) {
-                        ownerDuplicateCount.put(ownerId, ownerDuplicateCount.get(ownerId) + 1);
-                    } else {
-                        ownerDuplicateCount.put(ownerId, 1);
+                    if (recordIndex > 0) {
+                        rec.put('Duplicate__c', true);
+                        toUpdate.add(rec);
+                        System.debug('toUpdate: ' + toUpdate);
+                        Id ownerId = (Id) rec.get('OwnerId');
+                        System.debug('OwnerId: ' + ownerId);
+                        if (ownerDuplicateCount.containsKey(ownerId)) {
+                            ownerDuplicateCount.put(ownerId, ownerDuplicateCount.get(ownerId) + 1);
+                        } else {
+                            ownerDuplicateCount.put(ownerId, 1);
+                        }
                     }
+                    recordIndex++;
                 }
             }
         }

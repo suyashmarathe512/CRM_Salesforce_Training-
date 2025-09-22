@@ -137,26 +137,22 @@ global with sharing class LeadDeletion {
 * @Description:   This class logs the error in the Log__c object.
 ***************************************************************************************************/
     private static void logError(String classMethod, Id recordId, Id relatedLead, String requestBody, Exception e) {
-        try {
-            Logs__c log = new Logs__c();
-            log.Error_Causing_Class_Method__c = classMethod;
-            log.Error_Causing_Record_Id__c = (recordId != null) ? String.valueOf(recordId) : '';
-            log.Message_Long__c = e.getMessage();
-            log.Operation__c = 'LeadDeletion';
-            log.Severity__c = 'High';
-            log.Stack_Trace__c = e.getStackTraceString();
-            log.Status__c = 'Failed';
-            log.Error__c = e.getMessage();
-            log.Type__c = e.getTypeName();
-            log.User_Context__c = UserInfo.getUserName();
-            log.Request_Body__c = requestBody;
-            if (relatedLead != null) {
-                log.Lead__c = relatedLead;
-            }
-            insert log;
-        } catch (Exception logEx) {
-            System.debug('Failed to insert Error_Log__c record: ' + logEx.getMessage());
+        Logs__c log = new Logs__c();
+        log.Error_Causing_Class_Method__c = classMethod;
+        log.Error_Causing_Record_Id__c = (recordId != null) ? String.valueOf(recordId) : '';
+        log.Message_Long__c = e.getMessage();
+        log.Operation__c = 'LeadDeletion';
+        log.Severity__c = 'High';
+        log.Stack_Trace__c = e.getStackTraceString();
+        log.Status__c = 'Failed';
+        log.Error__c = e.getMessage();
+        log.Type__c = e.getTypeName();
+        log.User_Context__c = UserInfo.getUserName();
+        log.Request_Body__c = requestBody;
+        if (relatedLead != null) {
+            log.Lead__c = relatedLead;
         }
+        insert log;
     }
 }
  

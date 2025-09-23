@@ -10,34 +10,25 @@ public class JSONToObjectRecordEvent{
 * @Description:   This method dynamically creates a insert a record in respective SObject
                      based on the JSON input.
 ***************************************************************************************************/
-    public void processEvents() {
+    public void JSONEvents() {
         List<Event> pendingEvents = [
             SELECT 
-                Id, Location, Description
+                Id,Description
             FROM 
                 Event
-            WHERE 
-                Location != null
             ];
         Map<Id, SObject> eventToSObject = new Map<Id, SObject>();
         for (Event ev : pendingEvents) {
             if(ev.Description != null && ev.Description.startsWith('{')){
                 try {
-                    String objectName = ev.Location;
-                    Schema.SObjectType sObjType = Schema.getGlobalDescribe().get(objectName);
-                    if (sObjType == null) {
-                        ev.Description = 'ERROR: Object ' + objectName + ' does not exist';
-                        continue;
+                    Map<String,Object> mapStrvsObject = (Map<String,Object>) JSON.deserializeUntyped(ev.Description);
+                    String strObj = (String) mapStrvsObject.get('ObjectName');
+                    SObject obj = Schema.getGlobalDescribe().get(strObj).newSObject();
+                    Map<String,Object> map2 = (Map<String,Object>)mapStrvsObject.get('JSON');
+                    for(String field : map2.keySet()){
+                        obj.put(field,map2.get(field));
                     }
-                    Type t = Type.forName(objectName);
-                    if (t == null) {
-                        ev.Description = 'ERROR: Type ' + objectName + ' does not exist';
-                        continue;
-                    }
-                    Map<String, Object> jsonMap = (Map<String, Object>) JSON.deserializeUntyped(ev.Description);
-                    String dataJson = JSON.serialize(jsonMap);
-                    SObject sobj = (SObject) JSON.deserialize(dataJson, t);
-                    eventToSObject.put(ev.Id, sobj);
+                    eventToSObject.put(ev.Id, obj);
                 } catch (Exception e) {
                     ev.Description = 'ERROR while preparing: ' + e.getMessage();
                 }

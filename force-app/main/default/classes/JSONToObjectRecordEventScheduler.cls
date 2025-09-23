@@ -11,7 +11,7 @@ public with sharing class JSONToObjectRecordEventScheduler implements Schedulabl
 ***************************************************************************************************/   
     public void execute(SchedulableContext sc) {
         JSONToObjectRecordEvent event = new JSONToObjectRecordEvent();
-        event.processEvents();
+        event.JSONEvents();
     }
 }
 

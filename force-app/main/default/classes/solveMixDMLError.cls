@@ -1,4 +1,14 @@
-public with sharing class SolveMixDMLError {
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @className:     SolveMixDMLError
+* @Description:   This class helps to solve the mix DML error. 
+***************************************************************************************************/
+public with sharing class SolveMixDMLError{
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:     insertUserAsync
+* @Description:   This method insert the user asynchronously.
+***************************************************************************************************/
     @future
     public static void insertUserAsync(String username, String email, String lastName, String firstName, String alias, String profileId , Id UserRoleId) {
         User newUser = new User(
@@ -17,6 +27,11 @@ public with sharing class SolveMixDMLError {
         insert newUser;
         System.debug('New User Created: ' + newUser);
     } 
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:     insertUsersolveMixDMLErrorAsync
+* @Description:   This method inserts the account and call future method to insert the user.
+***************************************************************************************************/
     public static void solveMixDMLError() {
         Id profileId = [SELECT 
                             Id 

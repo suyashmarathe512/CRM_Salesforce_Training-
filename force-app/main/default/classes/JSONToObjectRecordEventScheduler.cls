@@ -9,8 +9,8 @@ public with sharing class JSONToObjectRecordEventScheduler implements Schedulabl
 * @className:     execute
 * @Description:   This method is called by the scheduler to process the events every hour.
 ***************************************************************************************************/   
-    public void execute(SchedulableContext sc) {
-        JSONToObjectRecordEvent event = new JSONToObjectRecordEvent();
+    public void execute(SchedulableContext sc){
+        JSONToObjectRecordEvent event=new JSONToObjectRecordEvent();
         event.JSONEvents();
     }
 }

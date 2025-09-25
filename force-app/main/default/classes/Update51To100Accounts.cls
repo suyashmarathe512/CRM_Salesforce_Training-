@@ -12,6 +12,8 @@ public with sharing class Update51To100Accounts implements Queueable {
                                             Account 
                                         WHERE 
                                             IsPersonAccount = false 
+                                        AND 
+                                            Name LIKE 'JOB%'
                                         LIMIT 
                                             50 
                                         OFFSET 

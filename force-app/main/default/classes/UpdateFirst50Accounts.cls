@@ -10,7 +10,9 @@ public with sharing class UpdateFirst50Accounts implements Queueable {
                                             FROM 
                                                 Account 
                                             WHERE 
-                                                IsPersonAccount = false 
+                                                IsPersonAccount = false
+                                            AND 
+                                                Name LIKE 'JOB%'
                                             LIMIT  
                                                 50];
         if (!accountsToUpdate.isEmpty()) {

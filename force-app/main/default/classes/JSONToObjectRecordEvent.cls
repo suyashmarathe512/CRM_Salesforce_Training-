@@ -3,7 +3,7 @@
 * @className:     JSONToObjectRecordEvent
 * @Description:   This class creates a record based on the JSON input.
 ***************************************************************************************************/
-public class JSONToObjectRecordEvent{
+public with sharing class JSONToObjectRecordEvent{
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @className:     JSONEvents
@@ -20,10 +20,10 @@ public class JSONToObjectRecordEvent{
         for(Event ev:pendingEvents){
             if(ev.Description!=null && ev.Description.startsWith('{')){
                 try{
-                    Map<String,Object> mapStrvsObject=(Map<String,Object>)JSON.deserializeUntyped(ev.Description);
-                    String strObj=(String)mapStrvsObject.get('ObjectName');
+                    Map<String,Object> jsonMap=(Map<String,Object>)JSON.deserializeUntyped(ev.Description);
+                    String strObj=(String)jsonMap.get('ObjectName');
                     SObject obj=Schema.getGlobalDescribe().get(strObj).newSObject();
-                    Map<String,Object> map2=(Map<String,Object>)mapStrvsObject.get('JSON');
+                    Map<String,Object> map2=(Map<String,Object>)jsonMap.get('JSON');
                     for(String field:map2.keySet()){
                         obj.put(field,map2.get(field));
                     }

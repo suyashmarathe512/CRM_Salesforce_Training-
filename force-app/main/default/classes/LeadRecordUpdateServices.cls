@@ -12,13 +12,13 @@ global with sharing class LeadRecordUpdateServices {
 * @className:     LeadWrapper
 * @Description:   This class wraps the input parameters for the updateLead method.  
 ***************************************************************************************************/
-    global class LeadWrapper {
+    global class LeadWrapper{
         public String FirstName;
         public String LastName;
         public String NewEmail;
         public String NewPhone;
     }
-    global class CustomValidationException extends Exception {}
+    global class CustomValidationException extends Exception{}
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @MethodName:     updateLead
@@ -26,20 +26,20 @@ global with sharing class LeadRecordUpdateServices {
                     New Phone values.
 ***************************************************************************************************/
 @HttpPatch
-    global static void updateLead() {
+    global static void updateLead(){
         RestRequest req = RestContext.request;
         RestResponse res = RestContext.response;
-        if (String.isNotBlank(req.requestBody.toString())) {
+        if(String.isNotBlank(req.requestBody.toString())){
             LeadWrapper input;
-                try {
-                    input = (LeadWrapper) System.JSON.deserialize(req.requestBody.toString(), LeadWrapper.class);
-                    if (String.isBlank(input.FirstName) || String.isBlank(input.LastName)) {
+                try{
+                    input=(LeadWrapper)System.JSON.deserialize(req.requestBody.toString(),LeadWrapper.class);
+                    if(String.isBlank(input.FirstName)||String.isBlank(input.LastName)){
                         throw new CustomValidationException('Missing required data');
                     }
-                } catch (System.JSONException jsonEx) {
-                    logError('LeadRecordUpdateServices.updateLead', null, null, req.requestBody.toString(), jsonEx);
-                    res.responseBody = Blob.valueOf('{"status":"error","message":"Invalid JSON format"}');
-                    res.statusCode = 400;
+                }catch(System.JSONException jsonEx){
+                    logError('LeadRecordUpdateServices.updateLead',null,null,req.requestBody.toString(),jsonEx);
+                    res.responseBody=Blob.valueOf('{"status":"error","message":"Invalid JSON format"}');
+                    res.statusCode=400;
                     return;
                 } catch (CustomValidationException cvEx) {
                     logError('LeadRecordUpdateServices.updateLead', null, null, req.requestBody.toString(), cvEx);

@@ -4,6 +4,11 @@
 * @Description:   This class enqueues all the queueable jobs for updating account names.
 ***************************************************************************************************/
 public with sharing class AccountPrefixEnqueuer {
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:     enqueueAllJobs
+* @Description:   This method enqueues all the queueable jobs for updating account names.
+***************************************************************************************************/
     public static void enqueueAllJobs() {
         System.enqueueJob(new UpdateFirst50Accounts());
         System.debug('First 50 accounts updated');

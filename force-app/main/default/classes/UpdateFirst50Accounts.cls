@@ -4,6 +4,11 @@
 * @Description:   This class implements queueable job that updates the first 50 accounts' name.
 ***************************************************************************************************/
 public with sharing class UpdateFirst50Accounts implements Queueable {
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @methodName:     execute
+* @Description:   This class implements queueable job that updates the first 50 accounts' name.
+***************************************************************************************************/
     public void execute(QueueableContext context) {
         List<Account> accountsToUpdate = [SELECT 
                                                 Id, Name 

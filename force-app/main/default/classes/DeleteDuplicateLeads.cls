@@ -1,6 +1,16 @@
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @className:     DeleteDuplicateLeads
+* @Description:   This class deletes the duplicate leads based on the email and name.
+***************************************************************************************************/
 public with sharing class DeleteDuplicateLeads {
     Set<String> emailSet = new Set<String>();
     Set<String> nameSet = new Set<String>();
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:     getDuplicateLeads
+* @Description:   This method gets the duplicate leads based on the email and name.
+***************************************************************************************************/
     public void getDuplicateLeads(){
         List<Lead> leads = [SELECT 
                                 Id, Name, Email 
@@ -16,5 +26,10 @@ public with sharing class DeleteDuplicateLeads {
             }
         }
         Database.DeleteResult[] results = Database.delete(duplicateLeads, false);
+        for(Database.DeleteResult dr : results){
+            if(!dr.isSuccess()){
+                System.debug(dr.getErrors());
+            }
+        }
     }
 }

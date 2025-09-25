@@ -1,13 +1,15 @@
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @className:     DeleteDuplicateLeads
-* @Description:   This class deletes the duplicate leads based on the email and name within the same campaign.
+* @Description:   This class deletes the duplicate leads 
+                    based on the email and name within the same campaign.
 ***************************************************************************************************/
 public with sharing class DeleteDuplicateLeads {
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @MethodName:     getDuplicateLeads
-* @Description:   This method gets the duplicate leads based on the email and name within the same campaign.
+* @Description:   This method gets the duplicate leads 
+                    based on the email and name within the same campaign.
 ***************************************************************************************************/
     public void getDuplicateLeads(){
         List<CampaignMember> campaignMembers = [SELECT 

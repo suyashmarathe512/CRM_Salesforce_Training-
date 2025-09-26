@@ -20,82 +20,105 @@ global with sharing class InsertLeadServices{
     }
 /***************************************************************************************************
 * @Author:        CRM Developer
+* @ClassName:     ResponseWrapper
+* @Description:   This class wraps the response parameters for consistent JSON output.
+***************************************************************************************************/
+     global class ResponseWrapper{
+        public String status;
+        public String message;
+        public List<String> LeadIds;
+    }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:    sendErrorResponse
+* @Param 1 :        res: stores the RestResponse object
+* @Param 2 :        message: stores the error message
+* @Param 3 :        statusCode: stores the status code
+* @Description:   Helper method to send error responses.
+***************************************************************************************************/
+    private static void sendErrorResponse(RestResponse res, String message, Integer statusCode) {
+        ResponseWrapper errorResp = new ResponseWrapper();
+        errorResp.status = 'error';
+        errorResp.message = message;
+        res.responseBody = Blob.valueOf(JSON.serialize(errorResp));
+        res.statusCode = statusCode;
+    }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:    validateWrappers
+* @Param 1 :        wrappers: stores the list of wrappers
+* @Description:   Validates the list of wrappers for required fields.
+***************************************************************************************************/
+    private static void validateWrappers(List<Wrapper> wrappers) {
+        for(Wrapper w : wrappers){
+            if(String.isBlank(w.FirstName) || String.isBlank(w.LastName)){
+                throw new CustomValidationException('Missing required data: FirstName and LastName are required.');
+            }
+        }
+    }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:    createLeadsFromWrappers
+* @param 1 :        wrappers: stores the list of wrappers
+* @Description:   Creates and inserts Leads from wrappers, returns list of IDs.
+***************************************************************************************************/
+    private static List<String> createLeadsFromWrappers(List<Wrapper> wrappers) {
+        List<Lead> newLeads = new List<Lead>();
+        for (Wrapper w : wrappers){
+            Lead l = new Lead();
+            l.FirstName = w.FirstName;
+            l.LastName = w.LastName;
+            l.Email = w.Email;
+            l.Phone = w.Phone;
+            newLeads.add(l);
+        }
+        insert newLeads;
+        List<String> leadIds = new List<String>();
+        for(Lead l : newLeads){
+            leadIds.add(l.Id);
+        }
+        return leadIds;
+    }
+/***************************************************************************************************
+* @Author:        CRM Developer
 * @MethodName:    createLead
-* @Description:   This class create a new Lead in Salesforce basis the First Name, Last Name, Email and 
+* @Description:   This class create a new Lead in Salesforce basis the First Name, Last Name, Email and
                    Phone values.
 ***************************************************************************************************/
     @HttpPost
     global static void createLead(){
         RestRequest req = RestContext.request;
-        RestResponse res = RestContext.response;    
+        RestResponse res = RestContext.response;
         System.debug('Request is ' + req);
         if (String.isNotBlank(req.requestBody.toString())){
             try{
-                List<Wrapper> inputWrappers;
-                try{
-                    inputWrappers=(List<Wrapper>)System.JSON.deserialize(req.requestBody.toString(), List<Wrapper>.class);
-                    for(Wrapper w : inputWrappers){
-                        if(String.isBlank(w.FirstName)||String.isBlank(w.LastName)){
-                            throw new CustomValidationException('Missing required data: FirstName and LastName are required.');
-                        }
-                    }
-                }catch(System.JSONException jsonEx){
-                    logError('InsertLeadServices.createLead',null,null,req.requestBody.toString(),jsonEx);
-                    res.responseBody=Blob.valueOf('{"status":"error","message":"Invalid JSON format"}');
-                    res.statusCode=400;
-                    return;
-                }catch(CustomValidationException cvEx){
-                    logError('InsertLeadServices.createLead',null,null,req.requestBody.toString(),cvEx);
-                    res.responseBody=Blob.valueOf('{"status":"error","message":"'+cvEx.getMessage() + '"}');
-                    res.statusCode=400;
-                    return;
-                }
-                List<Lead> newLeads = new List<Lead>();
-                for (Wrapper w : inputWrappers){
-                    Lead l = new Lead();
-                    l.FirstName= w.FirstName;
-                    l.LastName= w.LastName;
-                    l.Email= w.Email;
-                    l.Phone= w.Phone;
-                    newLeads.add(l);
-                }
-                insert newLeads;
-                List<String> leadIds=new List<String>();
-                for(Lead l:newLeads){
-                    leadIds.add(l.Id);
-                }
-                res.responseBody=Blob.valueOf(
-                    '{"status":"success","message":"Leads created successfully","LeadIds":'
-                    + JSON.serialize(leadIds)+'}'
-                );
-                res.statusCode=201;
-            }
-            catch(DmlException dmlEx){
-                logError('InsertLeadServices.createLead',null,null,req.requestBody.toString(),dmlEx);
-                res.responseBody = Blob.valueOf(
-                    '{"status":"error","message":"'+dmlEx.getMessage()+'"}'
-                );
-                res.statusCode=400;
-            }
-            catch(CalloutException callEx){
-                logError('InsertLeadServices.createLead',null,null,req.requestBody.toString(),callEx);
-                res.responseBody=Blob.valueOf(
-                    '{"status":"error","message":"Callout error: '+callEx.getMessage()+'"}'
-                );
-                res.statusCode=500;
-            }
-            catch(Exception e){
-                logError('InsertLeadServices.createLead',null,null,req.requestBody.toString(),e);
-                res.responseBody=Blob.valueOf(
-                    '{"status":"error","message":"'+e.getMessage()+'"}'
-                );
-                res.statusCode=500;
+                List<Wrapper> inputWrappers = (List<Wrapper>)System.JSON.deserialize(req.requestBody.toString(), List<Wrapper>.class);
+                validateWrappers(inputWrappers);
+                List<String> leadIds = createLeadsFromWrappers(inputWrappers);
+                ResponseWrapper successResp = new ResponseWrapper();
+                successResp.status = 'success';
+                successResp.message = 'Leads created successfully';
+                successResp.LeadIds = leadIds;
+                res.responseBody = Blob.valueOf(JSON.serialize(successResp));
+                res.statusCode = 201;
+            }catch(System.JSONException jsonEx){
+                logError('InsertLeadServices.createLead', null, null, req.requestBody.toString(), jsonEx);
+                sendErrorResponse(res, 'Invalid JSON format', 400);
+            }catch(CustomValidationException cvEx){
+                logError('InsertLeadServices.createLead', null, null, req.requestBody.toString(), cvEx);
+                sendErrorResponse(res, cvEx.getMessage(), 400);
+            }catch(DmlException dmlEx){
+                logError('InsertLeadServices.createLead', null, null, req.requestBody.toString(), dmlEx);
+                sendErrorResponse(res, dmlEx.getMessage(), 400);
+            }catch(CalloutException callEx){
+                logError('InsertLeadServices.createLead', null, null, req.requestBody.toString(), callEx);
+                sendErrorResponse(res, 'Callout error: ' + callEx.getMessage(), 500);
+            }catch(Exception e){
+                logError('InsertLeadServices.createLead', null, null, req.requestBody.toString(), e);
+                sendErrorResponse(res, e.getMessage(), 500);
             }
         }else{
-            res.responseBody=Blob.valueOf(
-                '{"status":"error","message":"Request body is empty"}'
-            );
-            res.statusCode=400;
+            sendErrorResponse(res, 'Request body is empty', 400);
         }
     }
 /***************************************************************************************************
@@ -117,7 +140,6 @@ global with sharing class InsertLeadServices{
         log.Severity__c='High';
         log.Stack_Trace__c=e.getStackTraceString();
         log.Status__c='Failed';
-        log.Error__c=e.getMessage();
         log.Type__c=e.getTypeName();
         log.User_Context__c=UserInfo.getUserName();
         log.Request_Body__c=requestBody;

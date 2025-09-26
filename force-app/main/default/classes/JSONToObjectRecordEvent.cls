@@ -1,24 +1,33 @@
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @className:     JSONToObjectRecordEvent
-* @Description:   This class creates a record based on the JSON input.
+* @Description:   This class creates a record based on the JSON input. Implements Batchable for processing and scheduling.
 ***************************************************************************************************/
-public with sharing class JSONToObjectRecordEvent{
+public with sharing class JSONToObjectRecordEvent implements Database.Batchable<SObject>{
 /***************************************************************************************************
 * @Author:        CRM Developer
-* @className:     JSONEvents
-* @Description:   This method dynamically creates a insert a record in respective SObject
-                     based on the JSON input.
+* @MethodName:     start
+* @param1:          Database.BatchableContext
+* @Description:   This method is called by the 
+                        batch process to retrieve the events to be processed.
 ***************************************************************************************************/
-    public void JSONEvents(){
-        List<Event> pendingEvents=[SELECT 
-                                        Id,Description
-                                    FROM 
-                                        Event
-                                    ];
+    public Database.QueryLocator start(Database.BatchableContext bc){
+        return Database.getQueryLocator([SELECT
+                                            Id, Description 
+                                        FROM 
+                                            Event]);
+    }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:     execute
+* @param1:          Database.BatchableContext
+* @param2:          List<Event>
+* @Description:   This method is called by the batch process to process the events.
+***************************************************************************************************/
+    public void execute(Database.BatchableContext bc, List<Event> events){
         Map<Id,SObject> eventToSObject=new Map<Id,SObject>();
-        for(Event ev:pendingEvents){
-            if(ev.Description!=null && ev.Description.startsWith('{')){
+        for(Event ev:events){
+            if(ev.Description!=null && ev.Description.startsWith('{') && ev.Description.endsWith('}')){
                 try{
                     Map<String,Object> jsonMap=(Map<String,Object>)JSON.deserializeUntyped(ev.Description);
                     String strObj=(String)jsonMap.get('ObjectName');
@@ -29,26 +38,33 @@ public with sharing class JSONToObjectRecordEvent{
                     }
                     eventToSObject.put(ev.Id,obj);
                 }catch(Exception e){
-                    ev.Description='ERROR while preparing: '+e.getMessage();
+                    ev.Description += ' - ERROR while preparing: '+e.getMessage();
                 }
             }
         }
         if(!eventToSObject.values().isEmpty()){
-            Map<Id, Event> eventMap=new Map<Id, Event>(pendingEvents);
+            Map<Id, Event> eventMap=new Map<Id, Event>(events);
             List<Id> eventIds=new List<Id>(eventToSObject.keySet());
             Database.SaveResult[] results=Database.insert(eventToSObject.values(), false);
             for(Integer i=0;i<results.size();i++){
                 Id evId=eventIds[i];
                 Event ev=eventMap.get(evId);
                 if(!results[i].isSuccess()){
-                    ev.Description='ERROR on insert: '+results[i].getErrors()[0].getMessage();
+                    ev.Description += ' - ERROR on insert: '+results[i].getErrors()[0].getMessage();
                 }else{
-                    ev.Description='Inserted successfully '+'Record Id: '+results[i].getId();
+                    ev.Description += ' - Inserted successfully Record Id: '+results[i].getId();
                 }
             }
         }
-        if(!pendingEvents.isEmpty()){
-            update pendingEvents;
-        }
+        update events;
+    }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:     finish
+* @param1:          Database.BatchableContext
+* @Description:   This method is called by the batch process to finish the batch process.
+***************************************************************************************************/
+    public void finish(Database.BatchableContext bc){
+        System.debug('Batch processing completed.');
     }
 }

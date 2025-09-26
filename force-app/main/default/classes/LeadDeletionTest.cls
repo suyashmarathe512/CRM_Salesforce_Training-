@@ -11,7 +11,6 @@ public with sharing class LeadDeletionTest {
         RestContext.request = req;
         RestContext.response = res;
     }
-
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @MethodName:     testSuccessfulLeadDeletion
@@ -64,7 +63,6 @@ public with sharing class LeadDeletionTest {
         List<Lead> deletedLeads = [SELECT Id FROM Lead WHERE Id IN :testLeads];
         System.assertEquals(0, deletedLeads.size());
     }
-
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @MethodName:     testNoLeadFound
@@ -93,7 +91,6 @@ public with sharing class LeadDeletionTest {
         Test.stopTest();
         System.assertEquals(400, RestContext.response.statusCode);
     }
-
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @MethodName:     testInvalidJSON
@@ -108,7 +105,6 @@ public with sharing class LeadDeletionTest {
         Test.stopTest();
         System.assertEquals(400, RestContext.response.statusCode);
     }
-
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @MethodName:     testMissingFirstName

@@ -1,18 +1,18 @@
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @className:     LeadDeletion
-* @Description:   This class delete the Lead in Salesforce basis the First Name, Last Name, Email and 
-                   Phone values.  
+* @Description:   This class delete the Lead in Salesforce basis the First Name, Last Name, Email and
+                   Phone values.
 ***************************************************************************************************/
 @RestResource(urlMapping='/LeadDeletion/*')
-global with sharing class LeadDeletion {
-   public static List<Id> DeletedleadId = new List<Id>();
+global with sharing class LeadDeletion{
+    global class CustomValidationException extends Exception{}
 /***************************************************************************************************
 * @Author:        CRM Developer
-* @className:     Wrapper
-* @Description:   This class wraps the input parameters for the deleteLead method.  
+* @ClassName:     Wrapper
+* @Description:   This class wraps the input parameters for the deleteLead method.
 ***************************************************************************************************/
-    global class Wrapper {
+     global class Wrapper{
         public String FirstName;
         public String LastName;
         public String Email;
@@ -20,110 +20,112 @@ global with sharing class LeadDeletion {
     }
 /***************************************************************************************************
 * @Author:        CRM Developer
-* @className:     ResponseWrapper
-* @Description:   This class wraps the output parameters for the deleteLead method.  
+* @ClassName:     ResponseWrapper
+* @Description:   This class wraps the response parameters for consistent JSON output.
 ***************************************************************************************************/
-    global class ResponseWrapper {
-        public Boolean isSuccess;
-        public String Lead;
-        public String Status;
+     global class ResponseWrapper{
+        public String status;
+        public String message;
+        public List<String> LeadIds;
     }
-    global class CustomValidationException extends Exception {}
 /***************************************************************************************************
 * @Author:        CRM Developer
-* @MethodName:     deleteLead
-* @Description:   This class delete the Lead in Salesforce basis the First Name, Last Name, Email and 
-                   Phone values.  
-***************************************************************************************************/ 
+* @MethodName:    sendErrorResponse
+* @Param 1 :        res: stores the RestResponse object
+* @Param 2 :        message: stores the error message
+* @Param 3 :        statusCode: stores the status code
+* @Description:   Helper method to send error responses.
+***************************************************************************************************/
+    private static void sendErrorResponse(RestResponse res, String message, Integer statusCode) {
+        ResponseWrapper errorResp = new ResponseWrapper();
+        errorResp.status = 'error';
+        errorResp.message = message;
+        res.responseBody = Blob.valueOf(JSON.serialize(errorResp));
+        res.statusCode = statusCode;
+    }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:    validateWrappers
+* @Param 1 :        wrappers: stores the list of wrappers
+* @Description:   Validates the list of wrappers for required fields.
+***************************************************************************************************/
+    private static void validateWrappers(List<Wrapper> wrappers) {
+        for(Wrapper w : wrappers){
+            if(String.isBlank(w.FirstName) || String.isBlank(w.LastName)){
+                throw new CustomValidationException('Missing required data: FirstName and LastName are required.');
+            }
+        }
+    }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:    deleteLeadsFromWrappers
+* @param 1 :        wrappers: stores the list of wrappers
+* @Description:   Deletes Leads matching wrappers, returns list of deleted IDs.
+***************************************************************************************************/
+    private static List<String> deleteLeadsFromWrappers(List<Wrapper> wrappers) {
+        List<Lead> leadsToDelete = new List<Lead>();
+        for (Wrapper w : wrappers){
+            List<Lead> matchingLeads = [
+                SELECT Id
+                FROM Lead
+                WHERE FirstName = :w.FirstName
+                AND LastName = :w.LastName
+                AND Email = :w.Email
+                AND Phone = :w.Phone
+            ];
+            leadsToDelete.addAll(matchingLeads);
+        }
+        delete leadsToDelete;
+        List<String> leadIds = new List<String>();
+        for(Lead l : leadsToDelete){
+            leadIds.add(l.Id);
+        }
+        return leadIds;
+    }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:    deleteLead
+* @Description:   This class delete the Lead in Salesforce basis the First Name, Last Name, Email and
+                   Phone values.
+***************************************************************************************************/
     @HttpDelete
-    global static void deleteLead() {
-    RestRequest req = RestContext.request;
-    RestResponse res = RestContext.response;
-        try {
-            Wrapper input;
-                try {
-                    input = (Wrapper) System.JSON.deserialize(req.requestBody.toString(), Wrapper.class);
-                    if (String.isBlank(input.FirstName) || String.isBlank(input.LastName) || String.isBlank(input.Email) || String.isBlank(input.Phone)) {
-                        throw new CustomValidationException('Missing required data');
-                    }
-                } catch (System.JSONException jsonEx) {
-                    logError('LeadDeletion.deleteLead', null, null, req.requestBody.toString(), jsonEx);
-                    res.responseBody = Blob.valueOf('{"status":"error","message":"Invalid JSON format"}');
-                    res.statusCode = 400;
-                    return;
-                } catch (CustomValidationException cvEx) {
-                    logError('LeadDeletion.deleteLead', null, null, req.requestBody.toString(), cvEx);
-                    res.responseBody = Blob.valueOf('{"status":"error","message":"' + cvEx.getMessage() + '"}');
-                    res.statusCode = 400;
+    global static void deleteLead(){
+        RestRequest req = RestContext.request;
+        RestResponse res = RestContext.response;
+        System.debug('Request is ' + req);
+        if (String.isNotBlank(req.requestBody.toString())){
+            try{
+                List<Wrapper> inputWrappers = (List<Wrapper>)System.JSON.deserialize(req.requestBody.toString(), List<Wrapper>.class);
+                validateWrappers(inputWrappers);
+                List<String> leadIds = deleteLeadsFromWrappers(inputWrappers);
+                if (leadIds.isEmpty()) {
+                    sendErrorResponse(res, 'No leads found matching the provided criteria.', 404);
                     return;
                 }
-                List<Lead> leadsToDelete = [
-                    SELECT 
-                        Id, FirstName, LastName
-                    FROM 
-                        Lead
-                    WHERE 
-                        FirstName = :input.FirstName
-                    AND 
-                        LastName = :input.LastName
-                    AND 
-                        Email = :input.Email
-                    AND 
-                        Phone = :input.Phone
-                ];   
-                if (!leadsToDelete.isEmpty()) {
-                    List<String> deletedNames = new List<String>();
-                    for (Lead l : leadsToDelete) {
-                        deletedNames.add(l.FirstName + ' ' + l.LastName);
-                    }
-                    for(Lead eachLead : leadsToDelete){
-                        DeletedleadId.add(eachLead.Id);
-                    }
-                    delete leadsToDelete;
-                    if(input.FirstName == 'dml'){
-                        update leadsToDelete;
-                    }
-                    ResponseWrapper output = new ResponseWrapper();
-                    output.isSuccess = true;
-                    output.Lead = String.join(deletedNames, ', '); 
-                    output.Status = 'Success - ' + leadsToDelete.size() + ' lead(s) deleted' + ' Ids Are ' + String.join(DeletedleadId, ', ');
-
-                    res.responseBody = Blob.valueOf(JSON.serialize(output));
-                    res.statusCode = 200;
-                } else {
-                    ResponseWrapper output = new ResponseWrapper();
-                    output.isSuccess = false;
-                    output.Lead = '';
-                    output.Status = 'No Lead found with given details';
-                    res.responseBody = Blob.valueOf(JSON.serialize(output));
-                    res.statusCode = 404;
-                }
-        }
-        catch (DmlException dmlEx) {
-            Id recordID = DeletedLeadId[0];
-            logError('LeadDeletion.deleteLead', recordID, recordID, req.requestBody.toString(), dmlEx);
-            res.responseBody = Blob.valueOf(
-                '{"status":"error","message":"' + dmlEx.getMessage() + '"}'
-            );
-            res.statusCode = 400;
-        }
-        catch (CalloutException callEx) {
-            Id recordID = DeletedLeadId[0];
-            logError('LeadDeletion.deleteLead', recordID, recordID, req.requestBody.toString(), callEx);
-            res.responseBody = Blob.valueOf(
-                '{"status":"error","message":"Callout error: ' + callEx.getMessage() + '"}'
-            );
-            res.statusCode = 500;
-        }
-        catch (Exception e) {
-            Id recordID = DeletedLeadId[0];
-            logError('LeadDeletion.deleteLead', recordID, recordID, req.requestBody.toString(), e);
-            ResponseWrapper output = new ResponseWrapper();
-            output.isSuccess = false;
-            output.Lead = '';
-            output.Status = e.getMessage();
-            res.responseBody = Blob.valueOf(JSON.serialize(output));
-            res.statusCode = 500;
+                ResponseWrapper successResp = new ResponseWrapper();
+                successResp.status = 'success';
+                successResp.message = 'Leads deleted successfully';
+                successResp.LeadIds = leadIds;
+                res.responseBody = Blob.valueOf(JSON.serialize(successResp));
+                res.statusCode = 200;
+            }catch(System.JSONException jsonEx){
+                logError('LeadDeletion.deleteLead', null, null, req.requestBody.toString(), jsonEx);
+                sendErrorResponse(res, 'Invalid JSON format', 400);
+            }catch(CustomValidationException cvEx){
+                logError('LeadDeletion.deleteLead', null, null, req.requestBody.toString(), cvEx);
+                sendErrorResponse(res, cvEx.getMessage(), 400);
+            }catch(DmlException dmlEx){
+                logError('LeadDeletion.deleteLead', null, null, req.requestBody.toString(), dmlEx);
+                sendErrorResponse(res, dmlEx.getMessage(), 400);
+            }catch(CalloutException callEx){
+                logError('LeadDeletion.deleteLead', null, null, req.requestBody.toString(), callEx);
+                sendErrorResponse(res, 'Callout error: ' + callEx.getMessage(), 500);
+            }catch(Exception e){
+                logError('LeadDeletion.deleteLead', null, null, req.requestBody.toString(), e);
+                sendErrorResponse(res, e.getMessage(), 500);
+            }
+        }else{
+            sendErrorResponse(res, 'Request body is empty', 400);
         }
     }
 /***************************************************************************************************
@@ -136,22 +138,19 @@ global with sharing class LeadDeletion {
 * @Param5:     e: stores the exception
 * @Description:   This class logs the error in the Log__c object.
 ***************************************************************************************************/
-    private static void logError(String classMethod, Id recordId, Id relatedLead, String requestBody, Exception e) {
-        Logs__c log = new Logs__c();
-        log.Error_Causing_Class_Method__c = classMethod;
-        log.Error_Causing_Record_Id__c = (recordId != null) ? String.valueOf(recordId) : '';
-        log.Message_Long__c = e.getMessage();
-        log.Operation__c = 'LeadDeletion';
-        log.Severity__c = 'High';
-        log.Stack_Trace__c = e.getStackTraceString();
-        log.Status__c = 'Failed';
-        log.Error__c = e.getMessage();
-        log.Type__c = e.getTypeName();
-        log.User_Context__c = UserInfo.getUserName();
-        log.Request_Body__c = requestBody;
-        if (relatedLead != null) {
-            log.Lead__c = relatedLead;
-        }
+    private static void logError(String classMethod,Id recordId,Id relatedLead,String requestBody,Exception e) {
+        Logs__c log=new Logs__c();
+        log.Error_Causing_Class_Method__c=classMethod;
+        log.Error_Causing_Record_Id__c=(recordId != null)?String.valueOf(recordId):'';
+        log.Message_Long__c=e.getMessage();
+        log.Operation__c='Delete Lead via REST';
+        log.Severity__c='High';
+        log.Stack_Trace__c=e.getStackTraceString();
+        log.Status__c='Failed';
+        log.Type__c=e.getTypeName();
+        log.User_Context__c=UserInfo.getUserName();
+        log.Request_Body__c=requestBody;
+        log.Lead__c=relatedLead;
         insert log;
     }
 }

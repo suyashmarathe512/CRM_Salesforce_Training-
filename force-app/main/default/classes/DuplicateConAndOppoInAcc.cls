@@ -21,8 +21,6 @@ public class DuplicateConAndOppoInAcc implements Database.Batchable<SObject>, Da
                                             Id 
                                         FROM 
                                             Account
-                                        WHERE
-                                            IsPersonAccount = false
                                         LIMIT 
                                             50000]);
     }
@@ -67,17 +65,19 @@ public class DuplicateConAndOppoInAcc implements Database.Batchable<SObject>, Da
                     LIMIT 
                         50000];
         }
-        Map<String, List<SObject>> byName = new Map<String,List<SObject>>();
+        Map<String, List<SObject>> byAccountAndName = new Map<String,List<SObject>>();
         for(SObject rec : records){
+            Id acctId = (Id) rec.get('AccountId');
             String nm = (String) rec.get('Name');
-            if (!byName.containsKey(nm)){
-                byName.put(nm, new List<SObject>());
+            String key = acctId + nm;
+            if (!byAccountAndName.containsKey(key)){
+                byAccountAndName.put(key, new List<SObject>());
             }
-            byName.get(nm).add(rec);
+            byAccountAndName.get(key).add(rec);
         }
         List<SObject> toUpdate = new List<SObject>();
-        for(String nm : byName.keySet()){
-            List<SObject> groupRec = byName.get(nm);
+        for(String key : byAccountAndName.keySet()){
+            List<SObject> groupRec = byAccountAndName.get(key);
             if(groupRec.size()>1){
                 Integer recordIndex = 0;
                 for(SObject rec : groupRec){
@@ -121,7 +121,7 @@ public class DuplicateConAndOppoInAcc implements Database.Batchable<SObject>, Da
                 User u = owners.get(ownerId);
                 Messaging.SingleEmailMessage m = new Messaging.SingleEmailMessage();
                 m.setToAddresses(new String[] {u.Email});
-                m.setSubject('Duplicate ' + objectType + 'found: ' + ownerDuplicateCount.get(ownerId));
+                m.setSubject('Duplicate ' + objectType + ' found: ' + ownerDuplicateCount.get(ownerId));
                 m.setPlainTextBody('Hello ' + u.Name + ',\n\n' +
                     'We found ' + ownerDuplicateCount.get(ownerId) +
                     ' duplicate ' + objectType + '(same Name within an Account). ' +

@@ -66,12 +66,18 @@ global with sharing class LeadDeletion{
         List<Lead> leadsToDelete = new List<Lead>();
         for (Wrapper w : wrappers){
             List<Lead> matchingLeads = [
-                SELECT Id
-                FROM Lead
-                WHERE FirstName = :w.FirstName
-                AND LastName = :w.LastName
-                AND Email = :w.Email
-                AND Phone = :w.Phone
+                SELECT 
+                    Id
+                FROM 
+                    Lead
+                WHERE 
+                    FirstName = :w.FirstName
+                AND 
+                    LastName = :w.LastName
+                AND 
+                    Email = :w.Email
+                AND 
+                    Phone = :w.Phone
             ];
             leadsToDelete.addAll(matchingLeads);
         }

@@ -10,11 +10,11 @@ public with sharing class AccountPrefixEnqueuer {
 * @Description:   This method enqueues all the queueable jobs for updating account names.
 ***************************************************************************************************/
     public static void enqueueAllJobs() {
-        System.enqueueJob(new UpdateFirst50Accounts());
-        System.debug('First 50 accounts updated');
-        System.enqueueJob(new Update51To100Accounts());
-        System.debug('51-100 accounts updated');
-        System.enqueueJob(new Update101To150Accounts());
-        System.debug('101-150 accounts updated');
+        System.enqueueJob(new AccountPrefixUpdater(0));
+        System.debug('First 50 accounts job enqueued');
+        System.enqueueJob(new AccountPrefixUpdater(50));
+        System.debug('51-100 accounts job enqueued');
+        System.enqueueJob(new AccountPrefixUpdater(100));
+        System.debug('101-150 accounts job enqueued');
     }
 }

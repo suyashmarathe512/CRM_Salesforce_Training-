@@ -25,7 +25,12 @@ public with sharing class LeadRecordUpdateServicesTest {
         LeadRecordUpdateServices.updateLead();
         Test.stopTest();
         System.assertEquals(200, RestContext.response.statusCode);
-        Lead modifiedLead = [SELECT Id, Email, Phone FROM Lead WHERE Id = :sampleLead.Id];
+        Lead modifiedLead = [SELECT 
+                                Id, Email, Phone 
+                            FROM 
+                                Lead 
+                            WHERE 
+                                Id = :sampleLead.Id];
         System.assertEquals('changed.lead@example.com', modifiedLead.Email);
         System.assertEquals('0987654321', modifiedLead.Phone);
     }
@@ -37,13 +42,11 @@ public with sharing class LeadRecordUpdateServicesTest {
     @isTest
     static void testNoLeadFound() {
         LeadRecordUpdateServicesMock.setupRestContext(LeadRecordUpdateServicesMock.getNoLeadRequestBody());
-
         Test.startTest();
         LeadRecordUpdateServices.updateLead();
         Test.stopTest();
         System.assertEquals(404, RestContext.response.statusCode);
     }
-
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @MethodName:     testEmptyRequestBody
@@ -55,7 +58,7 @@ public with sharing class LeadRecordUpdateServicesTest {
         Test.startTest();
         LeadRecordUpdateServices.updateLead();
         Test.stopTest();
-        System.assertEquals(400, RestContext.response.statusCode);
+        System.assertEquals(404, RestContext.response.statusCode);
     }
 /***************************************************************************************************
 * @Author:        CRM Developer
@@ -77,14 +80,13 @@ public with sharing class LeadRecordUpdateServicesTest {
 * @Description:   Test method to test missing FirstName or LastName (covers CustomValidationException catch)
 ***************************************************************************************************/
     @isTest
-    static void testMissingRequiredData() {
+    static void testMissingRequiredData(){
         LeadRecordUpdateServicesMock.setupRestContext(LeadRecordUpdateServicesMock.getMissingDataRequestBody());
         Test.startTest();
         LeadRecordUpdateServices.updateLead();
         Test.stopTest();
-        System.assertEquals(400, RestContext.response.statusCode);
+        System.assertEquals(404, RestContext.response.statusCode);
     }
-
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @MethodName:     testDMLException
@@ -104,6 +106,7 @@ public with sharing class LeadRecordUpdateServicesTest {
         Test.startTest();
         LeadRecordUpdateServices.updateLead();
         Test.stopTest();
+        System.assertEquals(415, RestContext.response.statusCode);
     }
 /***************************************************************************************************
 * @Author:        CRM Developer

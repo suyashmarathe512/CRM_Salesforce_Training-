@@ -119,10 +119,10 @@ global with sharing class LeadDeletion{
                 sendErrorResponse(res, 'Invalid JSON format', 400);
             }catch(CustomValidationException cvEx){
                 logError('LeadDeletion.deleteLead', null, null, req.requestBody.toString(), cvEx);
-                sendErrorResponse(res, cvEx.getMessage(), 400);
+                sendErrorResponse(res, cvEx.getMessage(), 404);
             }catch(DmlException dmlEx){
                 logError('LeadDeletion.deleteLead', null, null, req.requestBody.toString(), dmlEx);
-                sendErrorResponse(res, dmlEx.getMessage(), 400);
+                sendErrorResponse(res, dmlEx.getMessage(), 415);
             }catch(CalloutException callEx){
                 logError('LeadDeletion.deleteLead', null, null, req.requestBody.toString(), callEx);
                 sendErrorResponse(res, 'Callout error: ' + callEx.getMessage(), 500);
@@ -131,7 +131,7 @@ global with sharing class LeadDeletion{
                 sendErrorResponse(res, e.getMessage(), 500);
             }
         }else{
-            sendErrorResponse(res, 'Request body is empty', 400);
+            sendErrorResponse(res, 'Request body is empty', 404);
         }
     }
 /***************************************************************************************************

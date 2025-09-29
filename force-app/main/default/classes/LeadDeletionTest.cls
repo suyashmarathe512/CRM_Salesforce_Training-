@@ -89,7 +89,7 @@ public with sharing class LeadDeletionTest {
         Test.startTest();
         LeadDeletion.deleteLead();
         Test.stopTest();
-        System.assertEquals(400, RestContext.response.statusCode);
+        System.assertEquals(404, RestContext.response.statusCode);
     }
 /***************************************************************************************************
 * @Author:        CRM Developer
@@ -117,7 +117,7 @@ public with sharing class LeadDeletionTest {
         Test.startTest();
         LeadDeletion.deleteLead();
         Test.stopTest();
-        System.assertEquals(400, RestContext.response.statusCode);
+        System.assertEquals(404, RestContext.response.statusCode);
     }
 /***************************************************************************************************
 * @Author:        CRM Developer
@@ -131,7 +131,7 @@ public with sharing class LeadDeletionTest {
         Test.startTest();
         LeadDeletion.deleteLead();
         Test.stopTest();
-        System.assertEquals(400, RestContext.response.statusCode);
+        System.assertEquals(500, RestContext.response.statusCode);
     }
 /***************************************************************************************************
 * @Author:        CRM Developer

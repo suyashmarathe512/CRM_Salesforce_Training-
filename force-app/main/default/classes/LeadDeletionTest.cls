@@ -60,7 +60,14 @@ public with sharing class LeadDeletionTest {
         LeadDeletion.deleteLead();
         Test.stopTest();
         System.assertEquals(200, RestContext.response.statusCode);
-        List<Lead> deletedLeads = [SELECT Id FROM Lead WHERE Id IN :testLeads];
+        List<Lead> deletedLeads = [SELECT 
+                                        Id 
+                                    FROM 
+                                        Lead 
+                                    WHERE 
+                                        Id 
+                                    IN 
+                                        :testLeads];
         System.assertEquals(0, deletedLeads.size());
     }
 /***************************************************************************************************
@@ -132,6 +139,13 @@ public with sharing class LeadDeletionTest {
         LeadDeletion.deleteLead();
         Test.stopTest();
         System.assertEquals(500, RestContext.response.statusCode);
+        List<Lead> deletedLeads = [SELECT 
+                                        Id 
+                                    FROM 
+                                        Lead 
+                                    WHERE 
+                                        Id = :testLead.Id];
+        System.assertEquals(0, deletedLeads.size());
     }
 /***************************************************************************************************
 * @Author:        CRM Developer
@@ -145,6 +159,6 @@ public with sharing class LeadDeletionTest {
         Test.startTest();
         LeadDeletion.deleteLead();
         Test.stopTest();
-        System.assertEquals(404, RestContext.response.statusCode);
+        System.assertEquals(415, RestContext.response.statusCode);
     }
 }

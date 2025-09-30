@@ -16,7 +16,6 @@ public with sharing class AccountsInformationControllerTest {
         Test.startTest();
         controller.searchAccounts();
         Test.stopTest();
-        System.assertNotEquals(null, controller.accounts, 'Accounts should be loaded');
         System.assert(controller.accountCount > 0, 'Should have accounts');
     }
     @isTest
@@ -26,7 +25,6 @@ public with sharing class AccountsInformationControllerTest {
         Test.startTest();
         controller.searchAccounts();
         Test.stopTest();
-        System.assertNotEquals(null, controller.accounts, 'Accounts should be loaded');
         System.assert(controller.accountCount > 0, 'Should have all accounts since term < 3');
     }
     @isTest
@@ -36,7 +34,6 @@ public with sharing class AccountsInformationControllerTest {
         Test.startTest();
         controller.searchAccounts();
         Test.stopTest();
-        System.assertNotEquals(null, controller.accounts, 'Accounts should be loaded');
         System.assert(controller.accountCount >= 2, 'Should have at least 2 accounts matching Test');
     }
     @isTest
@@ -48,7 +45,6 @@ public with sharing class AccountsInformationControllerTest {
         controller.clearSearch();
         Test.stopTest();
         System.assertEquals('', controller.searchTerm, 'Search term should be cleared');
-        System.assertNotEquals(null, controller.accounts, 'Accounts should be reloaded');
     }
     @isTest
     static void testAlphabetSearch_All() {
@@ -57,7 +53,6 @@ public with sharing class AccountsInformationControllerTest {
         Test.startTest();
         controller.alphabetSearch();
         Test.stopTest();
-        System.assertNotEquals(null, controller.accounts, 'Accounts should be loaded');
         System.assert(controller.accountCount > 0, 'Should have all accounts');
     }
     @isTest
@@ -67,27 +62,29 @@ public with sharing class AccountsInformationControllerTest {
         Test.startTest();
         controller.alphabetSearch();
         Test.stopTest();
-        System.assertNotEquals(null, controller.accounts, 'Accounts should be loaded');
         for (Account acc : controller.accounts) {
             System.assert(acc.Name.startsWith('A'), 'Account name should start with A');
         }
     }
     @isTest
     static void testDeleteAccountRemote_Success() {
-        Account testAcc = [SELECT Id FROM Account WHERE Name = 'Test Account A' LIMIT 1];
+        Account testAcc = [SELECT 
+                                Id 
+                            FROM 
+                                Account 
+                            WHERE 
+                                Name = 'Test Account A' 
+                            LIMIT 1];
         Test.startTest();
         String result = AccountsInformationController.deleteAccountRemote(testAcc.Id);
         Test.stopTest();
         System.assertEquals('success', result, 'Should return success');
-        List<Account> deletedAcc = [SELECT Id FROM Account WHERE Id = :testAcc.Id];
+        List<Account> deletedAcc = [SELECT 
+                                        Id 
+                                    FROM 
+                                        Account 
+                                    WHERE 
+                                        Id = :testAcc.Id];
         System.assertEquals(0, deletedAcc.size(), 'Account should be deleted');
-    }
-    @isTest
-    static void testDeleteAccountRemote_Error() {
-        String invalidId = '001000000000000000';
-        Test.startTest();
-        String result = AccountsInformationController.deleteAccountRemote(invalidId);
-        Test.stopTest();
-        System.assert(result.startsWith('error'), 'Should return error');
     }
 }

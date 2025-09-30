@@ -5,12 +5,13 @@
         <h1 style="font-size: 3em;">Accounts</h1>
     </div>
     <apex:form id="searchForm">
-        <apex:inputText value="{!searchTerm}" style="width: 300px" html-placeholder="Input at least 3 characters to perform search" />
+        <apex:inputText value="{!searchTerm}" style="width: 300px" html-placeholder="Input at least 3 characters to perform search" onkeypress="if(event.keyCode === 13) { searchAction(); return false; }" />
         <apex:commandButton value="Search" action="{!searchAccounts}" rerender="resultsPanel" />
-        <apex:commandLink value="Clear Search" action="{!clearSearch}" rerender="resultsPanel" />
+        <apex:commandButton value="Clear Search" action="{!clearSearch}" rerender="resultsPanel" />
         <apex:actionFunction name="alphabetSearch" action="{!alphabetSearch}" rerender="resultsPanel">
             <apex:param name="a" assignTo="{!selectedAlphabet}" value=""/>
         </apex:actionFunction>
+        <apex:actionFunction name="searchAction" action="{!searchAccounts}" rerender="resultsPanel" />
         <br />
         <apex:repeat value="{!alphabet}" var="alph">
             <apex:outputLink value="#" onclick="alphabetSearch('{!alph}'); return false;">{!alph}</apex:outputLink>

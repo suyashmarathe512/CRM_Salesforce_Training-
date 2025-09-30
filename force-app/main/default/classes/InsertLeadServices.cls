@@ -59,7 +59,7 @@ global with sharing class InsertLeadServices{
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @MethodName:    createLeadsFromWrappers
-* @param 1 :        wrappers: stores the list of wrappers
+* @Param 1 :        wrappers: stores the list of wrappers
 * @Description:   Creates and inserts Leads from wrappers, returns list of IDs.
 ***************************************************************************************************/
     private static List<String> createLeadsFromWrappers(List<Wrapper> wrappers) {
@@ -102,19 +102,19 @@ global with sharing class InsertLeadServices{
                 res.responseBody = Blob.valueOf(JSON.serialize(successResp));
                 res.statusCode = 201;
             }catch(System.JSONException jsonEx){
-                logError('InsertLeadServices.createLead', null, null, req.requestBody.toString(), jsonEx);
+                logError('InsertLeadServices.createLead',null, req.requestBody.toString(), jsonEx);
                 sendErrorResponse(res, 'Invalid JSON format', 400);
             }catch(CustomValidationException cvEx){
-                logError('InsertLeadServices.createLead', null, null, req.requestBody.toString(), cvEx);
+                logError('InsertLeadServices.createLead',null, req.requestBody.toString(), cvEx);
                 sendErrorResponse(res, cvEx.getMessage(), 400);
             }catch(DmlException dmlEx){
-                logError('InsertLeadServices.createLead', null, null, req.requestBody.toString(), dmlEx);
+                logError('InsertLeadServices.createLead',null, req.requestBody.toString(), dmlEx);
                 sendErrorResponse(res, dmlEx.getMessage(), 400);
             }catch(CalloutException callEx){
-                logError('InsertLeadServices.createLead', null, null, req.requestBody.toString(), callEx);
+                logError('InsertLeadServices.createLead',null, req.requestBody.toString(), callEx);
                 sendErrorResponse(res, 'Callout error: ' + callEx.getMessage(), 500);
             }catch(Exception e){
-                logError('InsertLeadServices.createLead', null, null, req.requestBody.toString(), e);
+                logError('InsertLeadServices.createLead',null, req.requestBody.toString(), e);
                 sendErrorResponse(res, e.getMessage(), 500);
             }
         }else{
@@ -131,10 +131,10 @@ global with sharing class InsertLeadServices{
 * @Param5:     e: stores the exception
 * @Description:   This class logs the error in the Log__c object.
 ***************************************************************************************************/
-    private static void logError(String classMethod,Id recordId,Id relatedLead,String requestBody,Exception e) {
+    private static void logError(String classMethod,Id relatedLead,String requestBody,Exception e) {
         Logs__c log=new Logs__c();
         log.Error_Causing_Class_Method__c=classMethod;
-        log.Error_Causing_Record_Id__c=(recordId != null)?String.valueOf(recordId):'';
+        log.Error_Causing_Record_Id__c=(relatedLead != null)?String.valueOf(relatedLead):'';
         log.Message_Long__c=e.getMessage();
         log.Operation__c='Insert Lead via REST';
         log.Severity__c='High';
@@ -143,7 +143,7 @@ global with sharing class InsertLeadServices{
         log.Type__c=e.getTypeName();
         log.User_Context__c=UserInfo.getUserName();
         log.Request_Body__c=requestBody;
-        log.Lead__c=relatedLead;
+        log.Lead__c=(relatedLead != null)?String.valueOf(relatedLead):'';
         insert log;
     }
 }	

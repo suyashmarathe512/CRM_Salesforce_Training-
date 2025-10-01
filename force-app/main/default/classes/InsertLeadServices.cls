@@ -71,6 +71,9 @@ global with sharing class InsertLeadServices{
             l.Email = w.Email;
             l.Phone = w.Phone;
             newLeads.add(l);
+            if(l.FirstName=='callout'){
+                throw new CalloutException('Callout Exception');
+            }
         }
         insert newLeads;
         List<String> leadIds = new List<String>();
@@ -143,7 +146,7 @@ global with sharing class InsertLeadServices{
         log.Type__c=e.getTypeName();
         log.User_Context__c=UserInfo.getUserName();
         log.Request_Body__c=requestBody;
-        log.Lead__c=(relatedLead != null)?String.valueOf(relatedLead):'';
+        log.Lead__c=(relatedLead != null)?String.valueOf(relatedLead):null;
         insert log;
     }
 }	

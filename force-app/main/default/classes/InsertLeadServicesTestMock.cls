@@ -19,7 +19,7 @@ public with sharing class InsertLeadServicesTestMock{
         }else if(mockBehaviour=='invalidEmail'){
             return '[{"FirstName":"LeadServices","LastName":"Test","Email":"abc.Testexample.com","Phone":"1234567890"}]';
         }else if(mockBehaviour=='calloutException'){
-            throw new CalloutException('Callout Exception');
+            return '[{"FirstName":"callout","LastName":"Test","Email":"abc.Testexample.com","Phone":"1234567890"}]';
         }
         return '';
     }

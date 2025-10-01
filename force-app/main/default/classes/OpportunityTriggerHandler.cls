@@ -18,19 +18,24 @@ public with sharing class OpportunityTriggerHandler {
             for(Opportunity opp : newOpportunities) {
                 oppIds.add(opp.Id);
             }
-            Map<Id, Set<Integer>> existingPaymentMonths = new Map<Id, Set<Integer>>();
-            for(Payment__c pay : [SELECT 
-                                        Opportunity__c, Name, Payment_Date__c 
-                                FROM 
-                                    Payment__c 
-                                WHERE 
-                                    Opportunity__c 
-                                IN 
+            Map<Id, Map<Integer, Set<Integer>>> existingPaymentMonths = new Map<Id, Map<Integer, Set<Integer>>>();
+            for(Payment__c pay : [SELECT
+                                        Opportunity__c, Name, Payment_Date__c
+                                FROM
+                                    Payment__c
+                                WHERE
+                                    Opportunity__c
+                                IN
                                     :oppIds]){
                 if(!existingPaymentMonths.containsKey(pay.Opportunity__c)){
-                    existingPaymentMonths.put(pay.Opportunity__c, new Set<Integer>());
+                    existingPaymentMonths.put(pay.Opportunity__c, new Map<Integer, Set<Integer>>());
                 }
-                existingPaymentMonths.get(pay.Opportunity__c).add(pay.Payment_Date__c.month());
+            Map<Integer, Set<Integer>> yearMonths = existingPaymentMonths.get(pay.Opportunity__c);
+            Integer year = pay.Payment_Date__c.year();
+            if(!yearMonths.containsKey(year)){
+                yearMonths.put(year, new Set<Integer>());
+            }
+            yearMonths.get(year).add(pay.Payment_Date__c.month());
             }
             List<OpportunityLineItem> oppLineItemsToUpdate = [SELECT 
                                                                     Id, Is_Closed__c 
@@ -45,8 +50,8 @@ public with sharing class OpportunityTriggerHandler {
             }
             List<Payment__c> paymentsToInsert = new List<Payment__c>();
             for(Opportunity opp : newOpportunities){
-                Set<Integer> existingMonths = existingPaymentMonths.get(opp.Id);
-                if(existingMonths == null) existingMonths = new Set<Integer>();
+                Map<Integer, Set<Integer>> yearMonths = existingPaymentMonths.get(opp.Id);
+                Set<Integer> existingMonths = (yearMonths != null && yearMonths.containsKey(opp.CloseDate.year())) ? yearMonths.get(opp.CloseDate.year()) : new Set<Integer>();
                 Integer dateOfClosing = opp.CloseDate.day();
                 Integer endMonth = opp.CloseDate.month();
                 Date janWithSameDate = Date.newInstance(opp.CloseDate.year(), 1, dateOfClosing);
@@ -57,13 +62,9 @@ public with sharing class OpportunityTriggerHandler {
                             Name = monthName,
                             Opportunity__c = opp.Id,
                             Account__c = opp.AccountId,
-                            Amount__c = 100
+                            Amount__c = 100,
+                            Payment_Date__c = janWithSameDate.addMonths(i-1)
                         );
-                        if(i == 1){
-                            payment.Payment_Date__c = janWithSameDate;
-                        } else {
-                            payment.Payment_Date__c = janWithSameDate.addMonths(i-1);
-                        }
                         paymentsToInsert.add(payment);
                     }
                 }
@@ -76,26 +77,17 @@ public with sharing class OpportunityTriggerHandler {
                 results = Database.insert(paymentsToInsert, false);
             }
             if(!results.isEmpty()){
-                Set<Id> successfulOppIds = new Set<Id>();
+                Map<Id, Opportunity> oppsToUpdateMap = new Map<Id, Opportunity>();
                 Integer paymentIndex = 0;
                 for(Database.SaveResult result : results){
                     if(result.isSuccess() && paymentIndex < paymentsToInsert.size()){
                         Id oppId = paymentsToInsert[paymentIndex].Opportunity__c;
-                        successfulOppIds.add(oppId);
+                        oppsToUpdateMap.put(oppId, new Opportunity(Id = oppId, Paid__c = true));
                     }
                     paymentIndex++;
                 }
-                if(!successfulOppIds.isEmpty()){
-                    List<Opportunity> oppsToUpdate = new List<Opportunity>();
-                    for(Opportunity opp : newOpportunities){
-                        if(successfulOppIds.contains(opp.Id)){
-                            Opportunity oppToUpdate = new Opportunity(Id = opp.Id, Paid__c = true);
-                            oppsToUpdate.add(oppToUpdate);
-                        }
-                    }
-                    if(!oppsToUpdate.isEmpty()){
-                        update oppsToUpdate;
-                    }
+                if(!oppsToUpdateMap.isEmpty()){
+                    update oppsToUpdateMap.values();
                 }
             }
     }

@@ -160,4 +160,12 @@ global with sharing class LeadDeletion{
         insert log;
     }
 }
- 
+
+/*
+[{
+    "FirstName": "Test",
+    "LastName": "Service",
+    "Email": "test.service@ts.com",
+    "Phone": "1234567890"
+}
+]*/

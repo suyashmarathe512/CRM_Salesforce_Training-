@@ -49,6 +49,8 @@ public class DuplicateConAndOppoInAcc implements Database.Batchable<SObject>, Da
                         :acctIds 
                     AND 
                         Name != null
+                    AND 
+                        Duplicate__c = false
                     LIMIT 
                         50000];
         }else if(objectType=='Opportunity'){
@@ -62,6 +64,8 @@ public class DuplicateConAndOppoInAcc implements Database.Batchable<SObject>, Da
                         :acctIds 
                     AND     
                         Name != null
+                    AND 
+                        Duplicate__c = false
                     LIMIT 
                         50000];
         }

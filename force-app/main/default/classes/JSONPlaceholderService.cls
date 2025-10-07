@@ -14,12 +14,20 @@ public class JSONPlaceholderService {
     public Integer albumIdParam {get; set;}
     public Integer userIdParam {get; set;}
 
-    public void fetchPosts() {
+    private void clearList(){
+        posts = new List<PostWrapper>();
         comments = new List<CommentWrapper>();
         albums = new List<AlbumWrapper>();
-        photos = new List<PhotoWrapper>();
         todos = new List<TodoWrapper>();
         users = new List<UserWrapper>();
+        postComments = new List<CommentWrapper>();
+        albumPhotos = new List<PhotoWrapper>();
+        userAlbums = new List<AlbumWrapper>();
+        userTodos = new List<TodoWrapper>();
+        userPosts = new List<PostWrapper>();
+    }
+    public void fetchPosts() {
+        clearList();
         String json = makeHttpCall('https://jsonplaceholder.typicode.com/posts');
         if (json != null) {
             posts = (List<PostWrapper>) System.JSON.deserialize(json, List<PostWrapper>.class);
@@ -27,11 +35,7 @@ public class JSONPlaceholderService {
     }
 
     public void fetchComments() {
-        posts = new List<PostWrapper>();
-        albums = new List<AlbumWrapper>();
-        photos = new List<PhotoWrapper>();
-        todos = new List<TodoWrapper>();
-        users = new List<UserWrapper>();
+        clearList();
         String json = makeHttpCall('https://jsonplaceholder.typicode.com/comments');
         if (json != null) {
             comments = (List<CommentWrapper>) System.JSON.deserialize(json, List<CommentWrapper>.class);
@@ -39,11 +43,7 @@ public class JSONPlaceholderService {
     }
 
     public void fetchAlbums() {
-        posts = new List<PostWrapper>();
-        comments = new List<CommentWrapper>();
-        photos = new List<PhotoWrapper>();
-        todos = new List<TodoWrapper>();
-        users = new List<UserWrapper>();
+        clearList();
         String json = makeHttpCall('https://jsonplaceholder.typicode.com/albums');
         if (json != null) {
             albums = (List<AlbumWrapper>) System.JSON.deserialize(json, List<AlbumWrapper>.class);
@@ -51,11 +51,7 @@ public class JSONPlaceholderService {
     }
 
     public void fetchPhotos() {
-        posts = new List<PostWrapper>();
-        comments = new List<CommentWrapper>();
-        albums = new List<AlbumWrapper>();
-        todos = new List<TodoWrapper>();
-        users = new List<UserWrapper>();
+        clearList();
         String json = makeHttpCall('https://jsonplaceholder.typicode.com/photos?_limit=1000');
         if (json != null) {
             photos = (List<PhotoWrapper>) System.JSON.deserialize(json, List<PhotoWrapper>.class);
@@ -63,11 +59,7 @@ public class JSONPlaceholderService {
     }
 
     public void fetchTodos() {
-        posts = new List<PostWrapper>();
-        comments = new List<CommentWrapper>();
-        albums = new List<AlbumWrapper>();
-        photos = new List<PhotoWrapper>();
-        users = new List<UserWrapper>();
+        clearList();
         String json = makeHttpCall('https://jsonplaceholder.typicode.com/todos');
         if (json != null) {
             todos = (List<TodoWrapper>) System.JSON.deserialize(json, List<TodoWrapper>.class);
@@ -75,11 +67,7 @@ public class JSONPlaceholderService {
     }
 
     public void fetchUsers() {
-        posts = new List<PostWrapper>();
-        comments = new List<CommentWrapper>();
-        albums = new List<AlbumWrapper>();
-        photos = new List<PhotoWrapper>();
-        todos = new List<TodoWrapper>();
+        clearList();
         String json = makeHttpCall('https://jsonplaceholder.typicode.com/users');
         if (json != null) {
             users = (List<UserWrapper>) System.JSON.deserialize(json, List<UserWrapper>.class);
@@ -87,6 +75,7 @@ public class JSONPlaceholderService {
     }
 
     public void fetchCommentsForPost() {
+        clearList();
         if (postIdParam != null) {
             String json = makeHttpCall('https://jsonplaceholder.typicode.com/posts/' + postIdParam + '/comments');
             if (json != null) {
@@ -96,6 +85,7 @@ public class JSONPlaceholderService {
     }
 
     public void fetchPhotosForAlbum() {
+        clearList();
         if (albumIdParam != null) {
             String json = makeHttpCall('https://jsonplaceholder.typicode.com/albums/' + albumIdParam + '/photos');
             if (json != null) {
@@ -105,6 +95,7 @@ public class JSONPlaceholderService {
     }
 
     public void fetchAlbumsForUser() {
+        clearList();
         if (userIdParam != null) {
             String json = makeHttpCall('https://jsonplaceholder.typicode.com/users/' + userIdParam + '/albums');
             if (json != null) {
@@ -114,6 +105,7 @@ public class JSONPlaceholderService {
     }
 
     public void fetchTodosForUser() {
+        clearList();
         if (userIdParam != null) {
             String json = makeHttpCall('https://jsonplaceholder.typicode.com/users/' + userIdParam + '/todos');
             if (json != null) {
@@ -123,6 +115,7 @@ public class JSONPlaceholderService {
     }
 
     public void fetchPostsForUser() {
+        clearList();
         if (userIdParam != null) {
             String json = makeHttpCall('https://jsonplaceholder.typicode.com/users/' + userIdParam + '/posts');
             if (json != null) {

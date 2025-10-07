@@ -61,21 +61,7 @@ public class AccountsInformationController {
                             Name 
                         LIKE :selectedAlphabet+'%'];
         }
+        accountCount = accounts.size();
         return null;
-    }
-    @RemoteAction
-    public static String deleteAccountRemote(String accountId) {
-        try {
-            Account acc = [SELECT 
-                                Id 
-                            FROM 
-                                Account 
-                            WHERE 
-                                Id = :accountId];
-            delete acc;
-            return 'success';
-        } catch (Exception e) {
-            return 'error: ' + e.getMessage();
-        }
     }
 }

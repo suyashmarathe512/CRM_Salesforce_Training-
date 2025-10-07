@@ -124,6 +124,26 @@ public class JSONPlaceholderService {
         }
     }
 
+    public void clearPostComments() {
+        postComments = new List<CommentWrapper>();
+    }
+
+    public void clearAlbumPhotos() {
+        albumPhotos = new List<PhotoWrapper>();
+    }
+
+    public void clearUserAlbums() {
+        userAlbums = new List<AlbumWrapper>();
+    }
+
+    public void clearUserTodos() {
+        userTodos = new List<TodoWrapper>();
+    }
+
+    public void clearUserPosts() {
+        userPosts = new List<PostWrapper>();
+    }
+
     private String makeHttpCall(String endpoint) {
         Http http = new Http();
         HttpRequest request = new HttpRequest();

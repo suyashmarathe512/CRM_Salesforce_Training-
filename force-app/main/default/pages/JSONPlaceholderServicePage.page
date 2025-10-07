@@ -27,36 +27,42 @@
             <apex:param name="userId" assignTo="{!userIdParam}" value="" />
         </apex:actionFunction>
     </apex:form>
-    <apex:pageBlock title="Posts List" id="postsBlock">
-        <apex:pageBlockTable value="{!posts}" var="post">
-            <apex:column headerValue="ID" value="{!post.id}" />
-            <apex:column headerValue="User ID" value="{!post.userId}" />
-            <apex:column headerValue="Title" >
-                <apex:outputText value="{!post.title}" />
-            </apex:column>
-            <apex:column headerValue="Body" >
-                <apex:outputText value="{!post.body}" />
-            </apex:column>
-            <apex:column headerValue="Actions">
-                <apex:outputLink value="View Comments" onclick="fetchCommentsForPost('{!post.id}'); return false;">Comments</apex:outputLink>
-            </apex:column>
-        </apex:pageBlockTable>
-    </apex:pageBlock>
-    <apex:pageBlock title="Post Comments" id="postCommentsBlock">
-        <apex:pageBlockTable value="{!postComments}" var="comment">
-            <apex:column headerValue="ID" value="{!comment.id}" />
-            <apex:column headerValue="Post ID" value="{!comment.postId}" />
-            <apex:column headerValue="Name" >
-                <apex:outputText value="{!comment.name}" />
-            </apex:column>
-            <apex:column headerValue="Email" >
-                <apex:outputText value="{!comment.email}" />
-            </apex:column>
-            <apex:column headerValue="Body" >
-                <apex:outputText value="{!comment.body}" />
-            </apex:column>
-        </apex:pageBlockTable>
-    </apex:pageBlock>
+    <apex:outputPanel layout="block" style="overflow:hidden;">
+        <apex:outputPanel layout="block" style="float:left; width:40%;">
+            <apex:pageBlock title="Posts List" id="postsBlock">
+                <apex:pageBlockTable value="{!posts}" var="post">
+                    <apex:column headerValue="ID" value="{!post.id}" />
+                    <apex:column headerValue="User ID" value="{!post.userId}" />
+                    <apex:column headerValue="Title" >
+                        <apex:outputText value="{!post.title}" />
+                    </apex:column>
+                    <apex:column headerValue="Body" >
+                        <apex:outputText value="{!post.body}" />
+                    </apex:column>
+                    <apex:column headerValue="Actions">
+                        <apex:outputLink value="View Comments" onclick="fetchCommentsForPost('{!post.id}'); return false;">Comments</apex:outputLink>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" style="float:left; width:60%;">
+            <apex:pageBlock title="Post Comments" id="postCommentsBlock">
+                <apex:pageBlockTable value="{!postComments}" var="comment">
+                    <apex:column headerValue="ID" value="{!comment.id}" />
+                    <apex:column headerValue="Post ID" value="{!comment.postId}" />
+                    <apex:column headerValue="Name" >
+                        <apex:outputText value="{!comment.name}" />
+                    </apex:column>
+                    <apex:column headerValue="Email" >
+                        <apex:outputText value="{!comment.email}" />
+                    </apex:column>
+                    <apex:column headerValue="Body" >
+                        <apex:outputText value="{!comment.body}" />
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:outputPanel>
     <apex:pageBlock title="Comments List" id="commentsBlock">
         <apex:pageBlockTable value="{!comments}" var="comment">
             <apex:column headerValue="ID" value="{!comment.id}" />
@@ -73,33 +79,39 @@
         </apex:pageBlockTable>
     </apex:pageBlock>
 
-    <apex:pageBlock title="Albums List" id="albumsBlock">
-        <apex:pageBlockTable value="{!albums}" var="album">
-            <apex:column headerValue="ID" value="{!album.id}" />
-            <apex:column headerValue="User ID" value="{!album.userId}" />
-            <apex:column headerValue="Title" >
-                <apex:outputText value="{!album.title}" />
-            </apex:column>
-            <apex:column headerValue="Actions">
-                <apex:outputLink value="View Photos" onclick="fetchPhotosForAlbum('{!album.id}'); return false;">Photos</apex:outputLink>
-            </apex:column>
-        </apex:pageBlockTable>
-    </apex:pageBlock>
-    <apex:pageBlock title="Album Photos" id="albumPhotosBlock">
-        <apex:pageBlockTable value="{!albumPhotos}" var="photo">
-            <apex:column headerValue="ID" value="{!photo.id}" />
-            <apex:column headerValue="Album ID" value="{!photo.albumId}" />
-            <apex:column headerValue="Title" >
-                <apex:outputText value="{!photo.title}" />
-            </apex:column>
-            <apex:column headerValue="URL" >
-                <apex:outputLink value="{!photo.url}" target="_blank">{!photo.url}</apex:outputLink>
-            </apex:column>
-            <apex:column headerValue="Thumbnail" >
-                <apex:outputLink value="{!photo.thumbnailUrl}" target="_blank">{!photo.thumbnailUrl}</apex:outputLink>
-            </apex:column>
-        </apex:pageBlockTable>
-    </apex:pageBlock>
+    <apex:outputPanel layout="block" style="overflow:hidden;">
+        <apex:outputPanel layout="block" style="float:left; width:40%;">
+            <apex:pageBlock title="Albums List" id="albumsBlock">
+                <apex:pageBlockTable value="{!albums}" var="album">
+                    <apex:column headerValue="ID" value="{!album.id}" />
+                    <apex:column headerValue="User ID" value="{!album.userId}" />
+                    <apex:column headerValue="Title" >
+                        <apex:outputText value="{!album.title}" />
+                    </apex:column>
+                    <apex:column headerValue="Actions">
+                        <apex:outputLink value="View Photos" onclick="fetchPhotosForAlbum('{!album.id}'); return false;">Photos</apex:outputLink>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" style="float:left; width:60%;">
+            <apex:pageBlock title="Album Photos" id="albumPhotosBlock">
+                <apex:pageBlockTable value="{!albumPhotos}" var="photo">
+                    <apex:column headerValue="ID" value="{!photo.id}" />
+                    <apex:column headerValue="Album ID" value="{!photo.albumId}" />
+                    <apex:column headerValue="Title" >
+                        <apex:outputText value="{!photo.title}" />
+                    </apex:column>
+                    <apex:column headerValue="URL" >
+                        <apex:outputLink value="{!photo.url}" target="_blank">{!photo.url}</apex:outputLink>
+                    </apex:column>
+                    <apex:column headerValue="Thumbnail" >
+                        <apex:outputLink value="{!photo.thumbnailUrl}" target="_blank">{!photo.thumbnailUrl}</apex:outputLink>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:outputPanel>
 
     <apex:pageBlock title="Photos List" id="photosBlock">
         <apex:pageBlockTable value="{!photos}" var="photo">
@@ -130,68 +142,71 @@
         </apex:pageBlockTable>
     </apex:pageBlock>
 
-    <apex:pageBlock title="Users List" id="usersBlock">
-        <apex:pageBlockTable value="{!users}" var="user">
-            <apex:column headerValue="ID" value="{!user.id}" />
-            <apex:column headerValue="Name" >
-                <apex:outputText value="{!user.name}" />
-            </apex:column>
-            <apex:column headerValue="Username" >
-                <apex:outputText value="{!user.username}" />
-            </apex:column>
-            <apex:column headerValue="Email" >
-                <apex:outputText value="{!user.email}" />
-            </apex:column>
-            <apex:column headerValue="Phone" >
-                <apex:outputText value="{!user.phone}" />
-            </apex:column>
-            <apex:column headerValue="Website" >
-                <apex:outputLink value="http://{!user.website}" target="_blank">{!user.website}</apex:outputLink>
-            </apex:column>
-            <apex:column headerValue="Actions">
-                <apex:outputLink value="View Albums" onclick="fetchAlbumsForUser('{!user.id}'); return false;">Albums</apex:outputLink>
-                &#160;
-                <apex:outputLink value="View Todos" onclick="fetchTodosForUser('{!user.id}'); return false;">Todos</apex:outputLink>
-                &#160;
-                <apex:outputLink value="View Posts" onclick="fetchPostsForUser('{!user.id}'); return false;">Posts</apex:outputLink>
-                &#160;
-            </apex:column>
-        </apex:pageBlockTable>
-    </apex:pageBlock>
-
-    <apex:pageBlock title="User Albums" id="userAlbumsBlock">
-        <apex:pageBlockTable value="{!userAlbums}" var="album">
-            <apex:column headerValue="ID" value="{!album.id}" />
-            <apex:column headerValue="User ID" value="{!album.userId}" />
-            <apex:column headerValue="Title" >
-                <apex:outputText value="{!album.title}" />
-            </apex:column>
-        </apex:pageBlockTable>
-    </apex:pageBlock>
-
-    <apex:pageBlock title="User Todos" id="userTodosBlock">
-        <apex:pageBlockTable value="{!userTodos}" var="todo">
-            <apex:column headerValue="ID" value="{!todo.id}" />
-            <apex:column headerValue="User ID" value="{!todo.userId}" />
-            <apex:column headerValue="Title" >
-                <apex:outputText value="{!todo.title}" />
-            </apex:column>
-            <apex:column headerValue="Completed" >
-                <apex:outputText value="{!IF(todo.completed, 'Yes', 'No')}" />
-            </apex:column>
-        </apex:pageBlockTable>
-    </apex:pageBlock>
-
-    <apex:pageBlock title="User Posts" id="userPostsBlock">
-        <apex:pageBlockTable value="{!userPosts}" var="post">
-            <apex:column headerValue="ID" value="{!post.id}" />
-            <apex:column headerValue="User ID" value="{!post.userId}" />
-            <apex:column headerValue="Title" >
-                <apex:outputText value="{!post.title}" />
-            </apex:column>
-            <apex:column headerValue="Body" >
-                <apex:outputText value="{!post.body}" />
-            </apex:column>
-        </apex:pageBlockTable>
-    </apex:pageBlock>
+    <apex:outputPanel layout="block" style="overflow:hidden;">
+        <apex:outputPanel layout="block" style="float:left; width:40%;">
+            <apex:pageBlock title="Users List" id="usersBlock">
+                <apex:pageBlockTable value="{!users}" var="user">
+                    <apex:column headerValue="ID" value="{!user.id}" />
+                    <apex:column headerValue="Name" >
+                        <apex:outputText value="{!user.name}" />
+                    </apex:column>
+                    <apex:column headerValue="Username" >
+                        <apex:outputText value="{!user.username}" />
+                    </apex:column>
+                    <apex:column headerValue="Email" >
+                        <apex:outputText value="{!user.email}" />
+                    </apex:column>
+                    <apex:column headerValue="Phone" >
+                        <apex:outputText value="{!user.phone}" />
+                    </apex:column>
+                    <apex:column headerValue="Website" >
+                        <apex:outputLink value="http://{!user.website}" target="_blank">{!user.website}</apex:outputLink>
+                    </apex:column>
+                    <apex:column headerValue="Actions">
+                        <apex:outputLink value="View Albums" onclick="fetchAlbumsForUser('{!user.id}'); return false;">Albums</apex:outputLink>
+                        &#160;
+                        <apex:outputLink value="View Todos" onclick="fetchTodosForUser('{!user.id}'); return false;">Todos</apex:outputLink>
+                        &#160;
+                        <apex:outputLink value="View Posts" onclick="fetchPostsForUser('{!user.id}'); return false;">Posts</apex:outputLink>
+                        &#160;
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" style="float:left; width:60%;">
+            <apex:pageBlock title="User Albums" id="userAlbumsBlock">
+                <apex:pageBlockTable value="{!userAlbums}" var="album">
+                    <apex:column headerValue="ID" value="{!album.id}" />
+                    <apex:column headerValue="User ID" value="{!album.userId}" />
+                    <apex:column headerValue="Title" >
+                        <apex:outputText value="{!album.title}" />
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+            <apex:pageBlock title="User Todos" id="userTodosBlock">
+                <apex:pageBlockTable value="{!userTodos}" var="todo">
+                    <apex:column headerValue="ID" value="{!todo.id}" />
+                    <apex:column headerValue="User ID" value="{!todo.userId}" />
+                    <apex:column headerValue="Title" >
+                        <apex:outputText value="{!todo.title}" />
+                    </apex:column>
+                    <apex:column headerValue="Completed" >
+                        <apex:outputText value="{!IF(todo.completed, 'Yes', 'No')}" />
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+            <apex:pageBlock title="User Posts" id="userPostsBlock">
+                <apex:pageBlockTable value="{!userPosts}" var="post">
+                    <apex:column headerValue="ID" value="{!post.id}" />
+                    <apex:column headerValue="User ID" value="{!post.userId}" />
+                    <apex:column headerValue="Title" >
+                        <apex:outputText value="{!post.title}" />
+                    </apex:column>
+                    <apex:column headerValue="Body" >
+                        <apex:outputText value="{!post.body}" />
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:outputPanel>
 </apex:page>

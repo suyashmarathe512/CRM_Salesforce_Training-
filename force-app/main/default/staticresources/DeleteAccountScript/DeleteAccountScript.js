@@ -1,5 +1,4 @@
 function deleteAccount(accountId) {
-    alert('deleteAccount called with accountId: ' + accountId);
     Visualforce.remoting.Manager.invokeAction(
         'AccountsInformationController.deleteAccountRemote',
         accountId,

@@ -11,57 +11,59 @@ public class AccountsInformationController {
             }
     set;
     }
+    private List<Account> getAccounts(String filter) {
+        String query = 'SELECT Id, Name, Email_Address__c, Phone, Website FROM Account';
+        if (filter != null && !String.isBlank(filter)) {
+            query += ' WHERE ' + filter;
+        }
+        return Database.query(query);
+    }
+    private void resetSearch() {
+        searchTerm = '';
+        searchMessage = '';
+        accounts = getAccounts(null);
+        accountCount = accounts.size();
+    }
+    public List<Account> queryAccounts(){
+        accounts = getAccounts(null);
+        return accounts;
+    }
     public AccountsInformationController(){
-        searchTerm='';
-        searchMessage='';
-        accounts=[SELECT 
-                        Id, Name, Email_Address__c, Phone, Website 
-                FROM 
-                    Account];
-        accountCount=accounts.size();
+        resetSearch();
     }
     public void searchAccounts() {
-        if(String.isBlank(searchTerm)||searchTerm.length()<3) {
-            accounts = [SELECT 
-                            Id, Name, Email_Address__c, Phone, Website 
-                        FROM Account];
-        }else{
-            accounts = [SELECT 
-                            Id, Name, Email_Address__c, Phone, Website 
-                        FROM 
-                            Account 
-                        WHERE 
-                            Name 
-                        LIKE :('%' + searchTerm + '%')];
+        String filter = null;
+        if (!String.isBlank(searchTerm) && searchTerm.length() >= 3) {
+            filter = 'Name LIKE \'%' + String.escapeSingleQuotes(searchTerm) + '%\'';
         }
+        accounts = getAccounts(filter);
         accountCount = accounts.size();
     }
     public void clearSearch() {
-        searchTerm = '';
-        searchMessage = '';
-        accounts = [SELECT 
-                        Id, Name, Email_Address__c, Phone, Website 
-                    FROM 
-                        Account];
-        accountCount = accounts.size();
+        resetSearch();
     }
     public PageReference alphabetSearch() {
-        if (selectedAlphabet=='All'){
-        accounts = [SELECT 
-                        Id, Name, Email_Address__c, Phone, Website 
-                    FROM 
-                        Account];
+        String filter = null;
+        if (selectedAlphabet != 'All') {
+            filter = 'Name LIKE \'' + String.escapeSingleQuotes(selectedAlphabet) + '%\'';
         }
-        else{
-            accounts = [SELECT 
-                            Id, Name, Email_Address__c, Phone, Website 
-                        FROM   
-                            Account 
-                        WHERE 
-                            Name 
-                        LIKE :selectedAlphabet+'%'];
-        }
+        accounts = getAccounts(filter);
         accountCount = accounts.size();
         return null;
+    }
+    @RemoteAction
+    public static String deleteAccountRemote(String accountId) {
+        try {
+            Account acc = [SELECT 
+                                Id 
+                            FROM 
+                                Account 
+                            WHERE 
+                                Id = :accountId];
+            delete acc;
+            return 'success';
+        } catch (Exception e) {
+            return 'error: ' + e.getMessage();
+        }
     }
 }

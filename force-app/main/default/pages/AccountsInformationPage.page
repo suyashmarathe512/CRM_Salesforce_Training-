@@ -7,11 +7,12 @@
     <apex:form id="searchForm">
         <apex:inputText value="{!searchTerm}" style="width: 300px" html-placeholder="Input at least 3 characters to perform search" onkeypress="if(event.keyCode === 13) { searchAction(); return false; }" />
         <apex:commandButton value="Search" action="{!searchAccounts}" rerender="resultsPanel" />
-        <apex:commandButton value="Clear Search" action="{!clearSearch}" rerender="resultsPanel" />
+        <apex:outputLink value="#" onclick="clearSearchAction(); return false;">Clear Search</apex:outputLink>
         <apex:actionFunction name="alphabetSearch" action="{!alphabetSearch}" rerender="resultsPanel">
             <apex:param name="a" assignTo="{!selectedAlphabet}" value=""/>
         </apex:actionFunction>
         <apex:actionFunction name="searchAction" action="{!searchAccounts}" rerender="resultsPanel" />
+        <apex:actionFunction name="clearSearchAction" action="{!clearSearch}" rerender="resultsPanel,searchForm" />
         <br />
         <apex:repeat value="{!alphabet}" var="alph">
             <apex:outputLink value="#" onclick="alphabetSearch('{!alph}'); return false;">{!alph}</apex:outputLink>
@@ -23,7 +24,7 @@
         <apex:pageBlock >
             <apex:pageBlockTable value="{!accounts}" var="acc"  >
                 <apex:column headerValue="Account Name" style="width: 30%;">
-                    <apex:outputLink value="/{!acc.Id}">{!acc.Name}</apex:outputLink>
+                    <apex:outputLink value="/{!acc.Id}" target="_blank">{!acc.Name}</apex:outputLink>
                 </apex:column>
                 <apex:column headerValue="Email Address" style="width: 15%;">
                     <apex:outputText value="{!acc.Email_Address__c}" />

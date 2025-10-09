@@ -3,58 +3,83 @@
 <style>
 body {
     font-family: 'Salesforce Sans', Arial, sans-serif;
-    background-color: #f3f2f2;
+    background: linear-gradient(135deg, #f3f2f2 0%, #e9ecef 100%);
     margin: 0;
     padding: 20px;
 }
 .page-container {
     max-width: 1200px;
     margin: 0 auto;
-    background-color: rgb(52, 31, 104);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    padding: 20px;
+    background: linear-gradient(135deg, #011e44 0%, #012e5b 100%);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    padding: 30px;
+    border: 1px solid #e5e5e5;
 }
 .slds-card {
     margin-bottom: 20px;
+    border: 1px solid #4856ae;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
 }
 .slds-card__header {
-    background-color: #0070d2;
-    color: rgb(23, 95, 146);
-    border-radius: 4px 4px 0 0;
+    background: linear-gradient(135deg, #0070d2 0%, #005fb2 100%);
+    color: rgb(31, 23, 140);
+    border-radius: 8px 8px 0 0;
+    padding: 12px 16px;
 }
 .slds-card__header-title {
     font-weight: bold;
+    margin: 0;
 }
 .slds-table {
-    width: 50%;
+    width: 100%;
     border-collapse: collapse;
+    background-color: #ffffff;
 }
 .slds-table th, .slds-table td {
-    padding: 4px 6px;
+    padding: 12px 16px;
     text-align: left;
-    border-bottom: 1px solid #7fa5f6;
+    border-bottom: 1px solid #e5e5e5;
 }
 .slds-table th {
-    background-color: #f4f6f9;
+    background: linear-gradient(135deg, #f4f6f9 0%, #e8f4fd 100%);
     font-weight: bold;
+    color: #0070d2;
+}
+.slds-table tr:hover {
+    background-color: #f8f9fa;
 }
 .slds-button {
-    background-color: #064378;
-    color: rgb(135, 156, 249);
+    background: linear-gradient(135deg, #94b8d8 0%, #87bfef 100%);
+    color: rgb(195, 202, 251);
     border: none;
-    padding: 8px 16px;
-    border-radius: 2px;
+    padding: 10px 20px;
+    border-radius: 6px;
     cursor: pointer;
-    margin-right: 14px;
+    margin-right: 10px;
     margin-bottom: 10px;
+    transition: all 0.3s ease;
+    font-weight: bold;
 }
 .slds-button:hover {
-    background-color: #84b4df;
+    background: linear-gradient(135deg, #edf6fe 0%, #d5dde6 100%);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transform: translateY(-1px);
 }
 </style>
+<script>
+function showModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
+}
+function hideModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+</script>
 <div class="page-container">
-    <apex:form>
+    <apex:form id="mainForm">
         <apex:commandButton value="Fetch Posts" action="{!fetchPosts}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
         <apex:commandButton value="Fetch Comments" action="{!fetchComments}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
         <apex:commandButton value="Fetch Albums" action="{!fetchAlbums}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
@@ -84,33 +109,17 @@ body {
     </apex:form>
     <apex:actionStatus id="loadingStatus">
         <apex:facet name="start">
-            <div style="text-align:center; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:1000; background-color:rgba(255,255,255,0.8); padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.5);">
+            <div style="text-align:center; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:1000; background-color:rgba(0,0,0,0.8); padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.5);">
                 <apex:image value="/img/loading32.gif" alt="Loading..." style="display:block; margin:0 auto;" />
                 <br />
-                <apex:outputText value="Loading..." style="font-size:16px; color:#333;" />
+                <apex:outputText value="Loading..." style="font-size:16px; color:#fff;" />
             </div>
         </apex:facet>
         <apex:facet name="stop" />
     </apex:actionStatus>
-    <apex:outputPanel layout="block" style="overflow:hidden;">
-        <apex:outputPanel layout="block" style="float:left; width:40%;">
-            <apex:pageBlock title="Posts List" id="postsBlock">
-                <apex:pageBlockTable value="{!posts}" var="post" styleClass="slds-table">
-                    <apex:column headerValue="ID" value="{!post.id}" />
-                    <apex:column headerValue="User ID" value="{!post.userId}" />
-                    <apex:column headerValue="Title" >
-                        <apex:outputText value="{!post.title}" />
-                    </apex:column>
-                    <apex:column headerValue="Body" >
-                        <apex:outputText value="{!post.body}" />
-                    </apex:column>
-                    <apex:column headerValue="Actions">
-                        <apex:outputLink value="View Comments" onclick="fetchCommentsForPost('{!post.id}'); return false;">Comments</apex:outputLink>
-                    </apex:column>
-                </apex:pageBlockTable>
-            </apex:pageBlock>
-        </apex:outputPanel>
-        <apex:outputPanel layout="block" style="float:left; width:60%;">
+    <div id="commentsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; border-radius:8px; max-width:80%; max-height:80%; overflow:auto;">
+            <div class="slds-card">
             <apex:pageBlock title="Post Comments" id="postCommentsBlock">
                 <apex:pageBlockTable value="{!postComments}" var="comment" styleClass="slds-table">
                     <apex:column headerValue="ID" value="{!comment.id}" />
@@ -126,6 +135,29 @@ body {
                     </apex:column>
                 </apex:pageBlockTable>
             </apex:pageBlock>
+            </div>
+            <button onclick="hideModal('commentsModal')" style="margin-top:10px;">Close</button>
+        </div>
+    </div>
+    <apex:outputPanel layout="block" style="overflow:hidden;">
+        <apex:outputPanel layout="block" style="float:left; width:100%;">
+            <div class="slds-card">
+            <apex:pageBlock title="Posts List" id="postsBlock">
+                <apex:pageBlockTable value="{!posts}" var="post" styleClass="slds-table">
+                    <apex:column headerValue="ID" value="{!post.id}" />
+                    <apex:column headerValue="User ID" value="{!post.userId}" />
+                    <apex:column headerValue="Title" >
+                        <apex:outputText value="{!post.title}" />
+                    </apex:column>
+                    <apex:column headerValue="Body" >
+                        <apex:outputText value="{!post.body}" />
+                    </apex:column>
+                    <apex:column headerValue="Actions">
+                        <apex:outputLink value="View Comments" onclick="showModal('commentsModal'); fetchCommentsForPost('{!post.id}'); return false;">Comments</apex:outputLink>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+            </div>
         </apex:outputPanel>
     </apex:outputPanel>
     <apex:pageBlock title="Comments List" id="commentsBlock">

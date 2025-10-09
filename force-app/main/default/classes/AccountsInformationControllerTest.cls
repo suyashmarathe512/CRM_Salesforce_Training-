@@ -18,6 +18,14 @@ public with sharing class AccountsInformationControllerTest {
         Test.stopTest();
         System.assert(controller.accountCount > 0, 'Should have accounts');
     }
+
+    @isTest
+    static void testAlphabetPropertyGetter() {
+        AccountsInformationController controller = new AccountsInformationController();
+        List<String> alphabets = controller.alphabet;
+        System.assertNotEquals(null, alphabets, 'Alphabet list should not be null');
+        System.assert(alphabets.size() == 27, 'Alphabet list should contain 27 elements including All');
+    }
     @isTest
     static void testSearchAccounts_ShortTerm() {
         AccountsInformationController controller = new AccountsInformationController();

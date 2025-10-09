@@ -5,10 +5,8 @@ public class AccountsInformationController {
     public String searchMessage { get; set; }
     public String selectedAlphabet { get; set; }
     public list<String> alphabet{
-    get{                                                                                              
-        alphabet = new list<string>{'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','All'};
-            return alphabet;         
-            }
+    get{ alphabet = new list<string>{'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','All'};
+        return alphabet;}
     set;
     }
     private List<Account> getAccounts(String filter) {
@@ -23,10 +21,6 @@ public class AccountsInformationController {
         searchMessage = '';
         accounts = getAccounts(null);
         accountCount = accounts.size();
-    }
-    public List<Account> queryAccounts(){
-        accounts = getAccounts(null);
-        return accounts;
     }
     public AccountsInformationController(){
         resetSearch();
@@ -53,17 +47,13 @@ public class AccountsInformationController {
     }
     @RemoteAction
     public static String deleteAccountRemote(String accountId) {
-        try {
-            Account acc = [SELECT 
-                                Id 
-                            FROM 
-                                Account 
-                            WHERE 
-                                Id = :accountId];
-            delete acc;
-            return 'success';
-        } catch (Exception e) {
-            return 'error: ' + e.getMessage();
-        }
+        Account acc = [SELECT 
+                            Id 
+                        FROM 
+                            Account 
+                        WHERE 
+                            Id = :accountId];
+        delete acc;
+        return 'success';
     }
 }

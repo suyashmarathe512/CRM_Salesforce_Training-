@@ -34,7 +34,20 @@ public with sharing class JSONToObjectRecordEvent implements Database.Batchable<
                     SObject obj=Schema.getGlobalDescribe().get(strObj).newSObject();
                     Map<String,Object> map2=(Map<String,Object>)jsonMap.get('JSON');
                     for(String field:map2.keySet()){
-                        obj.put(field,map2.get(field));
+                        Schema.DescribeFieldResult fieldDescribe = obj.getSObjectType().getDescribe().fields.getMap().get(field).getDescribe();
+                        Schema.DisplayType fieldType = fieldDescribe.getType();
+                        Object value = map2.get(field);
+                        try{
+                            if(fieldType == Schema.DisplayType.DATE){
+                                obj.put(field, Date.valueOf((String)value));
+                            }else if(fieldType == Schema.DisplayType.DATETIME){
+                                obj.put(field, DateTime.valueOf((String)value));
+                            }else{
+                                obj.put(field, value);
+                            }
+                        }catch(Exception e){
+                            ev.Description += ' - ERROR parsing field ' + field + ': ' + e.getMessage();
+                        }
                     }
                     eventToSObject.put(ev.Id,obj);
                 }catch(Exception e){

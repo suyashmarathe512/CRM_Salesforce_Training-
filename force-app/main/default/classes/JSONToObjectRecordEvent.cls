@@ -31,9 +31,19 @@ public with sharing class JSONToObjectRecordEvent implements Database.Batchable<
                 try{
                     Map<String,Object> jsonMap=(Map<String,Object>)JSON.deserializeUntyped(ev.Description);
                     String strObj=(String)jsonMap.get('ObjectName');
+                    if(strObj == null || !Schema.getGlobalDescribe().containsKey(strObj)){
+                        ev.Description += ' - Wrong object name: ' + (strObj != null ? strObj : 'null');
+                        continue;
+                    }
                     SObject obj=Schema.getGlobalDescribe().get(strObj).newSObject();
                     Map<String,Object> map2=(Map<String,Object>)jsonMap.get('JSON');
+                    boolean hasValidFields = false;
                     for(String field:map2.keySet()){
+                        if(!obj.getSObjectType().getDescribe().fields.getMap().containsKey(field)){
+                            ev.Description += ' - Wrong API field name: ' + field;
+                            continue;
+                        }
+                        hasValidFields = true;
                         Schema.DescribeFieldResult fieldDescribe = obj.getSObjectType().getDescribe().fields.getMap().get(field).getDescribe();
                         Schema.DisplayType fieldType = fieldDescribe.getType();
                         Object value = map2.get(field);
@@ -49,7 +59,9 @@ public with sharing class JSONToObjectRecordEvent implements Database.Batchable<
                             ev.Description += ' - ERROR parsing field ' + field + ': ' + e.getMessage();
                         }
                     }
-                    eventToSObject.put(ev.Id,obj);
+                    if(hasValidFields){
+                        eventToSObject.put(ev.Id,obj);
+                    }
                 }catch(Exception e){
                     ev.Description += ' - ERROR while preparing: '+e.getMessage();
                 }

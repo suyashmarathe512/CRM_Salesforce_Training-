@@ -6,7 +6,7 @@ public class AccountsInformationController {
     public String selectedAlphabet { get; set; }
     public list<String> alphabet{
     get{                                                                                              
-        alphabet = new list<string>{'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','Others','All'};
+        alphabet = new list<string>{'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','All'};
             return alphabet;         
             }
     set;

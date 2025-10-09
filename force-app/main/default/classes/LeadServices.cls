@@ -3,7 +3,7 @@
 * @className:     LeadServices
 * @Description:   This class handles Lead operations in Salesforce: create, delete, and update based on First Name, Last Name, Email and Phone values.
 ***************************************************************************************************/
-@RestResource(urlMapping='/LeadServices/*')
+@RestResource(urlMapping='/LeadServices')
 global with sharing class LeadServices {
     global class CustomValidationException extends Exception {}
 /***************************************************************************************************

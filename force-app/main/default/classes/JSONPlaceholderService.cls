@@ -18,6 +18,7 @@ public class JSONPlaceholderService {
         posts = new List<PostWrapper>();
         comments = new List<CommentWrapper>();
         albums = new List<AlbumWrapper>();
+        photos =  new List<PhotoWrapper>();
         todos = new List<TodoWrapper>();
         users = new List<UserWrapper>();
         postComments = new List<CommentWrapper>();

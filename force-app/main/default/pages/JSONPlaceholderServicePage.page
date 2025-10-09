@@ -1,36 +1,101 @@
 <apex:page controller="JSONPlaceholderService" >
+<apex:slds />
+<style>
+body {
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+    background-color: #f3f2f2;
+    margin: 0;
+    padding: 20px;
+}
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: rgb(52, 31, 104);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+.slds-card {
+    margin-bottom: 20px;
+}
+.slds-card__header {
+    background-color: #0070d2;
+    color: rgb(23, 95, 146);
+    border-radius: 4px 4px 0 0;
+}
+.slds-card__header-title {
+    font-weight: bold;
+}
+.slds-table {
+    width: 50%;
+    border-collapse: collapse;
+}
+.slds-table th, .slds-table td {
+    padding: 4px 6px;
+    text-align: left;
+    border-bottom: 1px solid #7fa5f6;
+}
+.slds-table th {
+    background-color: #f4f6f9;
+    font-weight: bold;
+}
+.slds-button {
+    background-color: #064378;
+    color: rgb(135, 156, 249);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 2px;
+    cursor: pointer;
+    margin-right: 14px;
+    margin-bottom: 10px;
+}
+.slds-button:hover {
+    background-color: #84b4df;
+}
+</style>
+<div class="page-container">
     <apex:form>
-        <apex:commandButton value="Fetch Posts" action="{!fetchPosts}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" />
-        <apex:commandButton value="Fetch Comments" action="{!fetchComments}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" />
-        <apex:commandButton value="Fetch Albums" action="{!fetchAlbums}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" />
-        <apex:commandButton value="Fetch Photos" action="{!fetchPhotos}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" />
-        <apex:commandButton value="Fetch Todos" action="{!fetchTodos}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" />
-        <apex:commandButton value="Fetch Users" action="{!fetchUsers}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" />
+        <apex:commandButton value="Fetch Posts" action="{!fetchPosts}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
+        <apex:commandButton value="Fetch Comments" action="{!fetchComments}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
+        <apex:commandButton value="Fetch Albums" action="{!fetchAlbums}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
+        <apex:commandButton value="Fetch Photos" action="{!fetchPhotos}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
+        <apex:commandButton value="Fetch Todos" action="{!fetchTodos}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
+        <apex:commandButton value="Fetch Users" action="{!fetchUsers}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
 
-        <apex:actionFunction name="fetchCommentsForPost" action="{!fetchCommentsForPost}" reRender="postCommentsBlock">
+        <apex:actionFunction name="fetchCommentsForPost" action="{!fetchCommentsForPost}" reRender="postCommentsBlock" status="loadingStatus">
             <apex:param name="postId" assignTo="{!postIdParam}" value="" />
         </apex:actionFunction>
 
-        <apex:actionFunction name="fetchPhotosForAlbum" action="{!fetchPhotosForAlbum}" reRender="albumPhotosBlock">
+        <apex:actionFunction name="fetchPhotosForAlbum" action="{!fetchPhotosForAlbum}" reRender="albumPhotosBlock" status="loadingStatus">
             <apex:param name="albumId" assignTo="{!albumIdParam}" value="" />
         </apex:actionFunction>
 
-        <apex:actionFunction name="fetchAlbumsForUser" action="{!fetchAlbumsForUser}" reRender="userAlbumsBlock">
+        <apex:actionFunction name="fetchAlbumsForUser" action="{!fetchAlbumsForUser}" reRender="userAlbumsBlock" status="loadingStatus">
             <apex:param name="userId" assignTo="{!userIdParam}" value="" />
         </apex:actionFunction>
 
-        <apex:actionFunction name="fetchTodosForUser" action="{!fetchTodosForUser}" reRender="userTodosBlock">
+        <apex:actionFunction name="fetchTodosForUser" action="{!fetchTodosForUser}" reRender="userTodosBlock" status="loadingStatus">
             <apex:param name="userId" assignTo="{!userIdParam}" value="" />
         </apex:actionFunction>
 
-        <apex:actionFunction name="fetchPostsForUser" action="{!fetchPostsForUser}" reRender="userPostsBlock">
+        <apex:actionFunction name="fetchPostsForUser" action="{!fetchPostsForUser}" reRender="userPostsBlock" status="loadingStatus">
             <apex:param name="userId" assignTo="{!userIdParam}" value="" />
         </apex:actionFunction>
     </apex:form>
+    <apex:actionStatus id="loadingStatus">
+        <apex:facet name="start">
+            <div style="text-align:center; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:1000; background-color:rgba(255,255,255,0.8); padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.5);">
+                <apex:image value="/img/loading32.gif" alt="Loading..." style="display:block; margin:0 auto;" />
+                <br />
+                <apex:outputText value="Loading..." style="font-size:16px; color:#333;" />
+            </div>
+        </apex:facet>
+        <apex:facet name="stop" />
+    </apex:actionStatus>
     <apex:outputPanel layout="block" style="overflow:hidden;">
         <apex:outputPanel layout="block" style="float:left; width:40%;">
             <apex:pageBlock title="Posts List" id="postsBlock">
-                <apex:pageBlockTable value="{!posts}" var="post">
+                <apex:pageBlockTable value="{!posts}" var="post" styleClass="slds-table">
                     <apex:column headerValue="ID" value="{!post.id}" />
                     <apex:column headerValue="User ID" value="{!post.userId}" />
                     <apex:column headerValue="Title" >
@@ -47,7 +112,7 @@
         </apex:outputPanel>
         <apex:outputPanel layout="block" style="float:left; width:60%;">
             <apex:pageBlock title="Post Comments" id="postCommentsBlock">
-                <apex:pageBlockTable value="{!postComments}" var="comment">
+                <apex:pageBlockTable value="{!postComments}" var="comment" styleClass="slds-table">
                     <apex:column headerValue="ID" value="{!comment.id}" />
                     <apex:column headerValue="Post ID" value="{!comment.postId}" />
                     <apex:column headerValue="Name" >
@@ -64,7 +129,7 @@
         </apex:outputPanel>
     </apex:outputPanel>
     <apex:pageBlock title="Comments List" id="commentsBlock">
-        <apex:pageBlockTable value="{!comments}" var="comment">
+        <apex:pageBlockTable value="{!comments}" var="comment" styleClass="slds-table">
             <apex:column headerValue="ID" value="{!comment.id}" />
             <apex:column headerValue="Post ID" value="{!comment.postId}" />
             <apex:column headerValue="Name" >
@@ -82,7 +147,7 @@
     <apex:outputPanel layout="block" style="overflow:hidden;">
         <apex:outputPanel layout="block" style="float:left; width:40%;">
             <apex:pageBlock title="Albums List" id="albumsBlock">
-                <apex:pageBlockTable value="{!albums}" var="album">
+                <apex:pageBlockTable value="{!albums}" var="album" styleClass="slds-table">
                     <apex:column headerValue="ID" value="{!album.id}" />
                     <apex:column headerValue="User ID" value="{!album.userId}" />
                     <apex:column headerValue="Title" >
@@ -96,7 +161,7 @@
         </apex:outputPanel>
         <apex:outputPanel layout="block" style="float:left; width:60%;">
             <apex:pageBlock title="Album Photos" id="albumPhotosBlock">
-                <apex:pageBlockTable value="{!albumPhotos}" var="photo">
+                <apex:pageBlockTable value="{!albumPhotos}" var="photo" styleClass="slds-table">
                     <apex:column headerValue="ID" value="{!photo.id}" />
                     <apex:column headerValue="Album ID" value="{!photo.albumId}" />
                     <apex:column headerValue="Title" >
@@ -114,7 +179,7 @@
     </apex:outputPanel>
 
     <apex:pageBlock title="Photos List" id="photosBlock">
-        <apex:pageBlockTable value="{!photos}" var="photo">
+        <apex:pageBlockTable value="{!photos}" var="photo" styleClass="slds-table">
             <apex:column headerValue="ID" value="{!photo.id}" />
             <apex:column headerValue="Album ID" value="{!photo.albumId}" />
             <apex:column headerValue="Title" >
@@ -130,7 +195,7 @@
     </apex:pageBlock>
 
     <apex:pageBlock title="Todos List" id="todosBlock">
-        <apex:pageBlockTable value="{!todos}" var="todo">
+        <apex:pageBlockTable value="{!todos}" var="todo" styleClass="slds-table">
             <apex:column headerValue="ID" value="{!todo.id}" />
             <apex:column headerValue="User ID" value="{!todo.userId}" />
             <apex:column headerValue="Title" >
@@ -145,7 +210,7 @@
     <apex:outputPanel layout="block" style="overflow:hidden;">
         <apex:outputPanel layout="block" style="float:left; width:40%;">
             <apex:pageBlock title="Users List" id="usersBlock">
-                <apex:pageBlockTable value="{!users}" var="user">
+                <apex:pageBlockTable value="{!users}" var="user" styleClass="slds-table">
                     <apex:column headerValue="ID" value="{!user.id}" />
                     <apex:column headerValue="Name" >
                         <apex:outputText value="{!user.name}" />
@@ -175,7 +240,7 @@
         </apex:outputPanel>
         <apex:outputPanel layout="block" style="float:left; width:60%;">
             <apex:pageBlock title="User Albums" id="userAlbumsBlock">
-                <apex:pageBlockTable value="{!userAlbums}" var="album">
+                <apex:pageBlockTable value="{!userAlbums}" var="album" styleClass="slds-table">
                     <apex:column headerValue="ID" value="{!album.id}" />
                     <apex:column headerValue="User ID" value="{!album.userId}" />
                     <apex:column headerValue="Title" >
@@ -184,7 +249,7 @@
                 </apex:pageBlockTable>
             </apex:pageBlock>
             <apex:pageBlock title="User Todos" id="userTodosBlock">
-                <apex:pageBlockTable value="{!userTodos}" var="todo">
+                <apex:pageBlockTable value="{!userTodos}" var="todo" styleClass="slds-table">
                     <apex:column headerValue="ID" value="{!todo.id}" />
                     <apex:column headerValue="User ID" value="{!todo.userId}" />
                     <apex:column headerValue="Title" >
@@ -196,7 +261,7 @@
                 </apex:pageBlockTable>
             </apex:pageBlock>
             <apex:pageBlock title="User Posts" id="userPostsBlock">
-                <apex:pageBlockTable value="{!userPosts}" var="post">
+                <apex:pageBlockTable value="{!userPosts}" var="post" styleClass="slds-table">
                     <apex:column headerValue="ID" value="{!post.id}" />
                     <apex:column headerValue="User ID" value="{!post.userId}" />
                     <apex:column headerValue="Title" >
@@ -209,4 +274,5 @@
             </apex:pageBlock>
         </apex:outputPanel>
     </apex:outputPanel>
+</div>
 </apex:page>

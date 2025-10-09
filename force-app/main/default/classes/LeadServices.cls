@@ -230,7 +230,6 @@ global with sharing class LeadServices {
                         if (dr.isSuccess()) {
                             resp.status = 'success';
                             resp.message = 'Lead deleted successfully';
-                            resp.LeadId = dr.getId();
                         } else {
                             resp.status = 'error';
                             resp.message = dr.getErrors()[0].getMessage();
@@ -379,26 +378,48 @@ global with sharing class LeadServices {
     }
 }
 /*
-[{
-    "FirstName": "Test",
-    "LastName": "Service",
-    "Email": "test.service@ts.com",
-    "Phone": "1234567890"
-}]
+For Insert: 
+String jsonString = '[{"FirstName": "AnotherORg","LastName": "Service","Email": "test.service@ts.com","Phone": "1234567890"}]';
+HttpRequest req = new HttpRequest();
+req.setEndpoint('callout:LeadORG/services/apexrest/LeadServices');
+req.setMethod('POST');
+req.setHeader('Content-Type','application/json');
+req.setBody(jsonString);
+Http http = new Http();
+HttpResponse res = http.send(req);
+System.debug(res.getStatusCode() + ' ' + res.getBody());
 
 For Delete:
-[{
-    "FirstName": "Test",
-    "LastName": "Service",
-    "Email": "test.service@ts.com",
-    "Phone": "1234567890"
-}]
+String jsonString = '[{"FirstName": "AnotherORg","LastName": "Service","Email": "test.service@ts.com","Phone": "1234567890"}]';
+HttpRequest req = new HttpRequest();
+req.setEndpoint('callout:LeadORG/services/apexrest/LeadServices');
+req.setMethod('DELETE');
+req.setHeader('Content-Type','application/json');
+req.setBody(jsonString);
+Http http = new Http();
+HttpResponse res = http.send(req);
+System.debug(res.getStatusCode() + ' ' + res.getBody());
+
+
 
 For Update:
-[{
-    "FirstName": "Test",
-    "LastName": "Service",
-    "NewEmail": "test.service@ts.com",
-    "NewPhone": "1234567890"
-}]
+String jsonString = '[{"FirstName": "AnotherORg","LastName": "Service","NewEmail": "another.email@em.com","NewPhone": "00000"}]';
+HttpRequest req = new HttpRequest();
+req.setEndpoint('callout:LeadORG/services/apexrest/LeadServices');
+req.setMethod('PATCH');
+req.setHeader('Content-Type','application/json');
+req.setBody(jsonString);
+Http http = new Http();
+HttpResponse res = http.send(req);
+System.debug(res.getStatusCode() + ' ' + res.getBody());
+
+String jsonString = '[{"FirstName": "AnotherORg","LastName": "Service","NewEmail": "another.new@email.com","NewPhone": "1"},{"FirstName": "AnotherORg2","LastName": "Service","NewEmail": "another2.new@email.com","NewPhone": "2"},{"FirstName": "AnotherORg3","LastName": "Service","NewEmail": "another3.newemail.com","NewPhone": "1234567890"}]';
+HttpRequest req = new HttpRequest();
+req.setEndpoint('callout:LeadORG/services/apexrest/LeadServices');
+req.setMethod('PATCH');
+req.setHeader('Content-Type','application/json');
+req.setBody(jsonString);
+Http http = new Http();
+HttpResponse res = http.send(req);
+System.debug(res.getStatusCode() + ' ' + res.getBody());
 */

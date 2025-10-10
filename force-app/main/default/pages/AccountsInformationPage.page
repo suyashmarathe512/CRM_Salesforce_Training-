@@ -9,6 +9,7 @@
     <apex:form styleClass="slds-form" id="searchForm">
         <apex:inputText styleClass="slds-input" value="{!searchTerm}" html-placeholder="Input at least 3 characters to perform search" onkeypress="if(event.keyCode === 13) { searchAction(); return false; }" />
         <apex:commandButton styleClass="slds-button slds-button_brand" value="Search" action="{!searchAccounts}" rerender="resultsPanel" />
+        &nbsp;
         <apex:outputLink styleClass="slds-text-link" value="#" onclick="clearSearchAction(); return false;">Clear Search</apex:outputLink>
         <apex:actionFunction name="alphabetSearch" action="{!alphabetSearch}" rerender="resultsPanel">
             <apex:param name="a" assignTo="{!selectedAlphabet}" value=""/>

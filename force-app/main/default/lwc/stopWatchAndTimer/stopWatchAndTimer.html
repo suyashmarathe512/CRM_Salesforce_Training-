@@ -1,0 +1,22 @@
+<template>
+    <!-- Main container for the stopwatch and timer component -->
+    <lightning-card title="Stopwatch and Timer">
+        <div class="container">
+            <!-- Display the current time and mode -->
+            <div class="display">
+                <span class="time">{elapsedTime}</span>
+                <span class="mode" lwc:if={mode}> ({mode})</span>
+            </div>
+            <!-- Input for setting timer duration -->
+            <div class="timer-input">
+                <lightning-input label="Timer Duration (seconds)" type="number" value={timerInputValue} onchange={handleTimerInputChange}></lightning-input>
+            </div>
+            <!-- Buttons to control stopwatch, timer, and reset -->
+            <div class="buttons">
+                <lightning-button label={startStopwatchLabel} onclick={startStopwatch} disabled={isStopwatchDisabled}></lightning-button>
+                <lightning-button label={startTimerLabel} onclick={startTimer} disabled={isTimerDisabled}></lightning-button>
+                <lightning-button label="Reset" onclick={reset}></lightning-button>
+            </div>
+        </div>
+    </lightning-card>
+</template>

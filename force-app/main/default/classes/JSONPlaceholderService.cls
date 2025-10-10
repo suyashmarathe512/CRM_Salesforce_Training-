@@ -1,4 +1,6 @@
 public class JSONPlaceholderService {
+    private static final Integer PAGE_SIZE = 10;
+
     public List<PostWrapper> posts {get; set;}
     public List<CommentWrapper> comments {get; set;}
     public List<AlbumWrapper> albums {get; set;}
@@ -14,6 +16,23 @@ public class JSONPlaceholderService {
     public Integer albumIdParam {get; set;}
     public Integer userIdParam {get; set;}
 
+    // Pagination properties
+    public List<PhotoWrapper> photosPage {get; set;}
+    public Integer photosPageNumber {get; set;}
+    public Integer photosTotalPages {get; set;}
+
+    public List<TodoWrapper> todosPage {get; set;}
+    public Integer todosPageNumber {get; set;}
+    public Integer todosTotalPages {get; set;}
+
+    public List<UserWrapper> usersPage {get; set;}
+    public Integer usersPageNumber {get; set;}
+    public Integer usersTotalPages {get; set;}
+
+    public List<PhotoWrapper> albumPhotosPage {get; set;}
+    public Integer albumPhotosPageNumber {get; set;}
+    public Integer albumPhotosTotalPages {get; set;}
+
     private void clearList(){
         posts = new List<PostWrapper>();
         comments = new List<CommentWrapper>();
@@ -26,6 +45,23 @@ public class JSONPlaceholderService {
         userAlbums = new List<AlbumWrapper>();
         userTodos = new List<TodoWrapper>();
         userPosts = new List<PostWrapper>();
+
+        // Initialize pagination
+        photosPage = new List<PhotoWrapper>();
+        photosPageNumber = 1;
+        photosTotalPages = 1;
+
+        todosPage = new List<TodoWrapper>();
+        todosPageNumber = 1;
+        todosTotalPages = 1;
+
+        usersPage = new List<UserWrapper>();
+        usersPageNumber = 1;
+        usersTotalPages = 1;
+
+        albumPhotosPage = new List<PhotoWrapper>();
+        albumPhotosPageNumber = 1;
+        albumPhotosTotalPages = 1;
     }
     public void fetchPosts() {
         clearList();
@@ -57,6 +93,15 @@ public class JSONPlaceholderService {
         if (json != null) {
             photos = (List<PhotoWrapper>) System.JSON.deserialize(json, List<PhotoWrapper>.class);
         }
+        if (photos != null && !photos.isEmpty()) {
+            photosPageNumber = 1;
+            photosTotalPages = (Integer) Math.ceil((Double) photos.size() / PAGE_SIZE);
+            photosPage = getPhotosPage();
+        } else {
+            photosPage = new List<PhotoWrapper>();
+            photosPageNumber = 1;
+            photosTotalPages = 1;
+        }
     }
 
     public void fetchTodos() {
@@ -65,6 +110,15 @@ public class JSONPlaceholderService {
         if (json != null) {
             todos = (List<TodoWrapper>) System.JSON.deserialize(json, List<TodoWrapper>.class);
         }
+        if (todos != null && !todos.isEmpty()) {
+            todosPageNumber = 1;
+            todosTotalPages = (Integer) Math.ceil((Double) todos.size() / PAGE_SIZE);
+            todosPage = getTodosPage();
+        } else {
+            todosPage = new List<TodoWrapper>();
+            todosPageNumber = 1;
+            todosTotalPages = 1;
+        }
     }
 
     public void fetchUsers() {
@@ -72,6 +126,15 @@ public class JSONPlaceholderService {
         String json = makeHttpCall('https://jsonplaceholder.typicode.com/users');
         if (json != null) {
             users = (List<UserWrapper>) System.JSON.deserialize(json, List<UserWrapper>.class);
+        }
+        if (users != null && !users.isEmpty()) {
+            usersPageNumber = 1;
+            usersTotalPages = (Integer) Math.ceil((Double) users.size() / PAGE_SIZE);
+            usersPage = getUsersPage();
+        } else {
+            usersPage = new List<UserWrapper>();
+            usersPageNumber = 1;
+            usersTotalPages = 1;
         }
     }
 
@@ -92,6 +155,15 @@ public class JSONPlaceholderService {
             if (json != null) {
                 albumPhotos = (List<PhotoWrapper>) System.JSON.deserialize(json, List<PhotoWrapper>.class);
             }
+        }
+        if (albumPhotos != null && !albumPhotos.isEmpty()) {
+            albumPhotosPageNumber = 1;
+            albumPhotosTotalPages = (Integer) Math.ceil((Double) albumPhotos.size() / PAGE_SIZE);
+            albumPhotosPage = getAlbumPhotosPage();
+        } else {
+            albumPhotosPage = new List<PhotoWrapper>();
+            albumPhotosPageNumber = 1;
+            albumPhotosTotalPages = 1;
         }
     }
 
@@ -143,6 +215,108 @@ public class JSONPlaceholderService {
 
     public void clearUserPosts() {
         userPosts = new List<PostWrapper>();
+    }
+
+    // Pagination helper methods
+    private List<PhotoWrapper> getPhotosPage() {
+        if (photos == null || photos.isEmpty()) return new List<PhotoWrapper>();
+        Integer startIndex = (photosPageNumber - 1) * PAGE_SIZE;
+        Integer endIndex = Math.min(startIndex + PAGE_SIZE, photos.size());
+        List<PhotoWrapper> page = new List<PhotoWrapper>();
+        for (Integer i = startIndex; i < endIndex; i++) {
+            page.add(photos[i]);
+        }
+        return page;
+    }
+
+    private List<TodoWrapper> getTodosPage() {
+        if (todos == null || todos.isEmpty()) return new List<TodoWrapper>();
+        Integer startIndex = (todosPageNumber - 1) * PAGE_SIZE;
+        Integer endIndex = Math.min(startIndex + PAGE_SIZE, todos.size());
+        List<TodoWrapper> page = new List<TodoWrapper>();
+        for (Integer i = startIndex; i < endIndex; i++) {
+            page.add(todos[i]);
+        }
+        return page;
+    }
+
+    private List<UserWrapper> getUsersPage() {
+        if (users == null || users.isEmpty()) return new List<UserWrapper>();
+        Integer startIndex = (usersPageNumber - 1) * PAGE_SIZE;
+        Integer endIndex = Math.min(startIndex + PAGE_SIZE, users.size());
+        List<UserWrapper> page = new List<UserWrapper>();
+        for (Integer i = startIndex; i < endIndex; i++) {
+            page.add(users[i]);
+        }
+        return page;
+    }
+
+    private List<PhotoWrapper> getAlbumPhotosPage() {
+        if (albumPhotos == null || albumPhotos.isEmpty()) return new List<PhotoWrapper>();
+        Integer startIndex = (albumPhotosPageNumber - 1) * PAGE_SIZE;
+        Integer endIndex = Math.min(startIndex + PAGE_SIZE, albumPhotos.size());
+        List<PhotoWrapper> page = new List<PhotoWrapper>();
+        for (Integer i = startIndex; i < endIndex; i++) {
+            page.add(albumPhotos[i]);
+        }
+        return page;
+    }
+
+    // Pagination navigation methods
+    public void prevPhotos() {
+        if (photosPageNumber > 1) {
+            photosPageNumber--;
+            photosPage = getPhotosPage();
+        }
+    }
+
+    public void nextPhotos() {
+        if (photosPageNumber < photosTotalPages) {
+            photosPageNumber++;
+            photosPage = getPhotosPage();
+        }
+    }
+
+    public void prevTodos() {
+        if (todosPageNumber > 1) {
+            todosPageNumber--;
+            todosPage = getTodosPage();
+        }
+    }
+
+    public void nextTodos() {
+        if (todosPageNumber < todosTotalPages) {
+            todosPageNumber++;
+            todosPage = getTodosPage();
+        }
+    }
+
+    public void prevUsers() {
+        if (usersPageNumber > 1) {
+            usersPageNumber--;
+            usersPage = getUsersPage();
+        }
+    }
+
+    public void nextUsers() {
+        if (usersPageNumber < usersTotalPages) {
+            usersPageNumber++;
+            usersPage = getUsersPage();
+        }
+    }
+
+    public void prevAlbumPhotos() {
+        if (albumPhotosPageNumber > 1) {
+            albumPhotosPageNumber--;
+            albumPhotosPage = getAlbumPhotosPage();
+        }
+    }
+
+    public void nextAlbumPhotos() {
+        if (albumPhotosPageNumber < albumPhotosTotalPages) {
+            albumPhotosPageNumber++;
+            albumPhotosPage = getAlbumPhotosPage();
+        }
     }
 
     private String makeHttpCall(String endpoint) {

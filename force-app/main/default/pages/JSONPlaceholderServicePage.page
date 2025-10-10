@@ -1,73 +1,215 @@
-<apex:page controller="JSONPlaceholderService" >
+<apex:page controller="JSONPlaceholderService">
 <apex:slds />
 <style>
 body {
     font-family: 'Salesforce Sans', Arial, sans-serif;
-    background: linear-gradient(135deg, #f3f2f2 0%, #e9ecef 100%);
+    background: linear-gradient(135deg, #e3e9f7 0%, #f7faff 100%);
     margin: 0;
-    padding: 20px;
+    padding: 0;
+}
+.header-bar {
+    background: linear-gradient(90deg, #005fb2 0%, #00c6ff 100%);
+    color: #fff;
+    padding: 32px 0 24px 0;
+    text-align: center;
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    margin-bottom: 32px;
+}
+.header-bar h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 2px;
+}
+.header-bar p {
+    font-size: 1.2rem;
+    margin: 8px 0 0 0;
+    color: #e0eaff;
 }
 .page-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    background: linear-gradient(135deg, #011e44 0%, #012e5b 100%);
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-    padding: 30px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    padding: 36px 32px 32px 32px;
     border: 1px solid #e5e5e5;
 }
-.slds-card {
-    margin-bottom: 20px;
-    border: 1px solid #4856ae;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+.section-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    margin-bottom: 32px;
+}
+.section-col {
+    flex: 1 1 0;
+    min-width: 340px;
+}
+.slds-card, .apex-card {
+    margin-bottom: 24px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #fafdff 0%, #e8f0fa 100%);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
     overflow: hidden;
+    border: 1px solid #dbeafe;
+    transition: box-shadow 0.2s;
 }
-.slds-card__header {
-    background: linear-gradient(135deg, #0070d2 0%, #005fb2 100%);
-    color: rgb(31, 23, 140);
-    border-radius: 8px 8px 0 0;
-    padding: 12px 16px;
-}
-.slds-card__header-title {
-    font-weight: bold;
-    margin: 0;
+.slds-card__header, .apex-card__header {
+    background: linear-gradient(90deg, #0070d2 0%, #00c6ff 100%);
+    color: #fff;
+    border-radius: 14px 14px 0 0;
+    padding: 16px 20px;
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 .slds-table {
     width: 100%;
-    border-collapse: collapse;
-    background-color: #ffffff;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #fff;
+    font-size: 1rem;
 }
 .slds-table th, .slds-table td {
-    padding: 12px 16px;
+    padding: 14px 18px;
     text-align: left;
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e3e8ee;
 }
 .slds-table th {
-    background: linear-gradient(135deg, #f4f6f9 0%, #e8f4fd 100%);
-    font-weight: bold;
+    background: linear-gradient(90deg, #f4f8fb 0%, #e8f4fd 100%);
+    font-weight: 700;
     color: #0070d2;
+    border-top: 1px solid #e3e8ee;
 }
 .slds-table tr:hover {
-    background-color: #f8f9fa;
+    background-color: #f0f7ff;
+    transition: background 0.2s;
 }
 .slds-button {
-    background: linear-gradient(135deg, #94b8d8 0%, #87bfef 100%);
-    color: rgb(195, 202, 251);
+    background: linear-gradient(90deg, #0070d2 0%, #00c6ff 100%);
+    color: #fff;
     border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
+    padding: 12px 28px;
+    border-radius: 8px;
     cursor: pointer;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    transition: all 0.3s ease;
-    font-weight: bold;
+    margin-right: 12px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s, box-shadow 0.2s;
 }
 .slds-button:hover {
-    background: linear-gradient(135deg, #edf6fe 0%, #d5dde6 100%);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transform: translateY(-1px);
+    background: linear-gradient(90deg, #005fb2 0%, #00aaff 100%);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+}
+.apex-card__actions a, .slds-table a {
+    color: #0070d2;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.apex-card__actions a:hover, .slds-table a:hover {
+    color: #005fb2;
+    text-decoration: none;
+}
+::-webkit-scrollbar {
+    width: 8px;
+    background: #e8f0fa;
+}
+::-webkit-scrollbar-thumb {
+    background: #b6d0f7;
+    border-radius: 8px;
+}
+@media (max-width: 1100px) {
+    .section-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    .section-col {
+        min-width: 0;
+    }
+    .page-container {
+        padding: 18px 6px 18px 6px;
+    }
+}
+.modal-bg {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+.modal-content {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 32px 24px;
+    border-radius: 16px;
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow: auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.close-btn {
+    background: #0070d2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 18px;
+    cursor: pointer;
+    float: right;
+}
+.close-btn:hover {
+    background: #005fb2;
+}
+/* Scrollable table containers */
+.scrollable-table {
+    max-height: 350px;
+    overflow-y: auto;
+    border-radius: 0 0 12px 12px;
+    border-top: 1px solid #e3e8ee;
+    background: #fff;
+}
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 0 0;
+}
+.pagination button {
+    background: #0070d2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 14px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.pagination button:disabled {
+    background: #b6d0f7;
+    color: #fff;
+    cursor: not-allowed;
+}
+.pagination span {
+    font-weight: 600;
+    color: #0070d2;
+}
+.loading-text {
+    color: #0070d2;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 10px 0;
+    text-align: center;
 }
 </style>
 <script>
@@ -77,234 +219,315 @@ function showModal(modalId) {
 function hideModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
+function showLoadingText(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = 'block';
+}
+function hideLoadingText(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+}
 </script>
+
+<div class="header-bar">
+    <h1>JSONPlaceholder Data Explorer</h1>
+    <p>Interactively browse Posts, Comments, Albums, Photos, Todos, and Users from JSONPlaceholder API</p>
+</div>
+
 <div class="page-container">
     <apex:form id="mainForm">
-        <apex:commandButton value="Fetch Posts" action="{!fetchPosts}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
-        <apex:commandButton value="Fetch Comments" action="{!fetchComments}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
-        <apex:commandButton value="Fetch Albums" action="{!fetchAlbums}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
-        <apex:commandButton value="Fetch Photos" action="{!fetchPhotos}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
-        <apex:commandButton value="Fetch Todos" action="{!fetchTodos}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
-        <apex:commandButton value="Fetch Users" action="{!fetchUsers}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock" status="loadingStatus" styleClass="slds-button" />
-
-        <apex:actionFunction name="fetchCommentsForPost" action="{!fetchCommentsForPost}" reRender="postCommentsBlock" status="loadingStatus">
+        <div style="text-align:center; margin-bottom: 28px;">
+            <apex:commandButton value="Fetch Posts" action="{!fetchPosts}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock,loadingText" status="loadingStatus" styleClass="slds-button" onclick="showLoadingText('loadingText')" />
+            <apex:commandButton value="Fetch Comments" action="{!fetchComments}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock,loadingText" status="loadingStatus" styleClass="slds-button" onclick="showLoadingText('loadingText')" />
+            <apex:commandButton value="Fetch Albums" action="{!fetchAlbums}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock,loadingText" status="loadingStatus" styleClass="slds-button" onclick="showLoadingText('loadingText')" />
+            <apex:commandButton value="Fetch Photos" action="{!fetchPhotos}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock,loadingText" status="loadingStatus" styleClass="slds-button" onclick="showLoadingText('loadingText')" />
+            <apex:commandButton value="Fetch Todos" action="{!fetchTodos}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock,loadingText" status="loadingStatus" styleClass="slds-button" onclick="showLoadingText('loadingText')" />
+            <apex:commandButton value="Fetch Users" action="{!fetchUsers}" reRender="postsBlock,commentsBlock,albumsBlock,photosBlock,todosBlock,usersBlock,postCommentsBlock,albumPhotosBlock,userAlbumsBlock,userTodosBlock,userPostsBlock,loadingText" status="loadingStatus" styleClass="slds-button" onclick="showLoadingText('loadingText')" />
+        </div>
+        <div id="loadingText" class="loading-text" style="display:none;">Loading, please wait...</div>
+        <apex:actionFunction name="fetchCommentsForPost" action="{!fetchCommentsForPost}" reRender="postCommentsBlock,loadingText" status="loadingStatus">
             <apex:param name="postId" assignTo="{!postIdParam}" value="" />
         </apex:actionFunction>
-
-        <apex:actionFunction name="fetchPhotosForAlbum" action="{!fetchPhotosForAlbum}" reRender="albumPhotosBlock" status="loadingStatus">
+        <apex:actionFunction name="fetchPhotosForAlbum" action="{!fetchPhotosForAlbum}" reRender="albumPhotosBlock,loadingText" status="loadingStatus">
             <apex:param name="albumId" assignTo="{!albumIdParam}" value="" />
         </apex:actionFunction>
-
-        <apex:actionFunction name="fetchAlbumsForUser" action="{!fetchAlbumsForUser}" reRender="userAlbumsBlock" status="loadingStatus">
+        <apex:actionFunction name="fetchAlbumsForUser" action="{!fetchAlbumsForUser}" reRender="userAlbumsBlock,loadingText" status="loadingStatus">
             <apex:param name="userId" assignTo="{!userIdParam}" value="" />
         </apex:actionFunction>
-
-        <apex:actionFunction name="fetchTodosForUser" action="{!fetchTodosForUser}" reRender="userTodosBlock" status="loadingStatus">
+        <apex:actionFunction name="fetchTodosForUser" action="{!fetchTodosForUser}" reRender="userTodosBlock,loadingText" status="loadingStatus">
             <apex:param name="userId" assignTo="{!userIdParam}" value="" />
         </apex:actionFunction>
-
-        <apex:actionFunction name="fetchPostsForUser" action="{!fetchPostsForUser}" reRender="userPostsBlock" status="loadingStatus">
+        <apex:actionFunction name="fetchPostsForUser" action="{!fetchPostsForUser}" reRender="userPostsBlock,loadingText" status="loadingStatus">
             <apex:param name="userId" assignTo="{!userIdParam}" value="" />
         </apex:actionFunction>
-    </apex:form>
     <apex:actionStatus id="loadingStatus">
         <apex:facet name="start">
-            <div style="text-align:center; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:1000; background-color:rgba(0,0,0,0.8); padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.5);">
-                <apex:image value="/img/loading32.gif" alt="Loading..." style="display:block; margin:0 auto;" />
-                <br />
-                <apex:outputText value="Loading..." style="font-size:16px; color:#fff;" />
-            </div>
+            <script>showLoadingText('loadingText');</script>
         </apex:facet>
-        <apex:facet name="stop" />
+        <apex:facet name="stop">
+            <script>hideLoadingText('loadingText');</script>
+        </apex:facet>
     </apex:actionStatus>
-    <div id="commentsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
-        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; border-radius:8px; max-width:80%; max-height:80%; overflow:auto;">
-            <div class="slds-card">
-            <apex:pageBlock title="Post Comments" id="postCommentsBlock">
-                <apex:pageBlockTable value="{!postComments}" var="comment" styleClass="slds-table">
-                    <apex:column headerValue="ID" value="{!comment.id}" />
-                    <apex:column headerValue="Post ID" value="{!comment.postId}" />
-                    <apex:column headerValue="Name" >
-                        <apex:outputText value="{!comment.name}" />
-                    </apex:column>
-                    <apex:column headerValue="Email" >
-                        <apex:outputText value="{!comment.email}" />
-                    </apex:column>
-                    <apex:column headerValue="Body" >
-                        <apex:outputText value="{!comment.body}" />
-                    </apex:column>
-                </apex:pageBlockTable>
-            </apex:pageBlock>
+
+    <!-- Modal for Post Comments -->
+    <div id="commentsModal" class="modal-bg">
+        <div class="modal-content">
+            <div class="apex-card">
+                <div class="apex-card__header">Post Comments</div>
+                <div class="scrollable-table">
+                    <apex:pageBlock id="postCommentsBlock" >
+                        <apex:pageBlockTable value="{!postComments}" var="comment" styleClass="slds-table">
+                            <apex:column headerValue="ID" value="{!comment.id}" />
+                            <apex:column headerValue="Post ID" value="{!comment.postId}" />
+                            <apex:column headerValue="Name" >
+                                <apex:outputText value="{!comment.name}" />
+                            </apex:column>
+                            <apex:column headerValue="Email" >
+                                <apex:outputText value="{!comment.email}" />
+                            </apex:column>
+                            <apex:column headerValue="Body" >
+                                <apex:outputText value="{!comment.body}" />
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlock>
+                </div>
             </div>
-            <button onclick="hideModal('commentsModal')" style="margin-top:10px;">Close</button>
+            <button onclick="hideModal('commentsModal')" class="close-btn">Close</button>
         </div>
     </div>
-    <apex:outputPanel layout="block" style="overflow:hidden;">
-        <apex:outputPanel layout="block" style="float:left; width:100%;">
+
+    <!-- Posts and Comments Section -->
+    <div class="section-row">
+        <div class="section-col">
             <div class="slds-card">
-            <apex:pageBlock title="Posts List" id="postsBlock">
-                <apex:pageBlockTable value="{!posts}" var="post" styleClass="slds-table">
-                    <apex:column headerValue="ID" value="{!post.id}" />
-                    <apex:column headerValue="User ID" value="{!post.userId}" />
-                    <apex:column headerValue="Title" >
-                        <apex:outputText value="{!post.title}" />
-                    </apex:column>
-                    <apex:column headerValue="Body" >
-                        <apex:outputText value="{!post.body}" />
-                    </apex:column>
-                    <apex:column headerValue="Actions">
-                        <apex:outputLink value="View Comments" onclick="showModal('commentsModal'); fetchCommentsForPost('{!post.id}'); return false;">Comments</apex:outputLink>
-                    </apex:column>
-                </apex:pageBlockTable>
-            </apex:pageBlock>
+                <div class="slds-card__header">Posts List</div>
+                <div class="scrollable-table">
+                    <apex:pageBlock id="postsBlock">
+                        <apex:pageBlockTable value="{!posts}" var="post" styleClass="slds-table">
+                            <apex:column headerValue="ID" value="{!post.id}" />
+                            <apex:column headerValue="User ID" value="{!post.userId}" />
+                            <apex:column headerValue="Title" >
+                                <apex:outputText value="{!post.title}" />
+                            </apex:column>
+                            <apex:column headerValue="Body" >
+                                <apex:outputText value="{!post.body}" />
+                            </apex:column>
+                            <apex:column headerValue="Actions">
+                                <apex:outputLink value="View Comments" onclick="showLoadingText('loadingText');showModal('commentsModal'); fetchCommentsForPost('{!post.id}'); return false;">Comments</apex:outputLink>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlock>
+                </div>
             </div>
-        </apex:outputPanel>
-    </apex:outputPanel>
-    <apex:pageBlock title="Comments List" id="commentsBlock">
-        <apex:pageBlockTable value="{!comments}" var="comment" styleClass="slds-table">
-            <apex:column headerValue="ID" value="{!comment.id}" />
-            <apex:column headerValue="Post ID" value="{!comment.postId}" />
-            <apex:column headerValue="Name" >
-                <apex:outputText value="{!comment.name}" />
-            </apex:column>
-            <apex:column headerValue="Email" >
-                <apex:outputText value="{!comment.email}" />
-            </apex:column>
-            <apex:column headerValue="Body" >
-                <apex:outputText value="{!comment.body}" />
-            </apex:column>
-        </apex:pageBlockTable>
-    </apex:pageBlock>
+        </div>
+        <div class="section-col">
+            <div class="slds-card">
+                <div class="slds-card__header">Comments List</div>
+                <div class="scrollable-table">
+                    <apex:pageBlock id="commentsBlock">
+                        <apex:pageBlockTable value="{!comments}" var="comment" styleClass="slds-table">
+                            <apex:column headerValue="ID" value="{!comment.id}" />
+                            <apex:column headerValue="Post ID" value="{!comment.postId}" />
+                            <apex:column headerValue="Name" >
+                                <apex:outputText value="{!comment.name}" />
+                            </apex:column>
+                            <apex:column headerValue="Email" >
+                                <apex:outputText value="{!comment.email}" />
+                            </apex:column>
+                            <apex:column headerValue="Body" >
+                                <apex:outputText value="{!comment.body}" />
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlock>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <apex:outputPanel layout="block" style="overflow:hidden;">
-        <apex:outputPanel layout="block" style="float:left; width:40%;">
-            <apex:pageBlock title="Albums List" id="albumsBlock">
-                <apex:pageBlockTable value="{!albums}" var="album" styleClass="slds-table">
-                    <apex:column headerValue="ID" value="{!album.id}" />
-                    <apex:column headerValue="User ID" value="{!album.userId}" />
-                    <apex:column headerValue="Title" >
-                        <apex:outputText value="{!album.title}" />
-                    </apex:column>
-                    <apex:column headerValue="Actions">
-                        <apex:outputLink value="View Photos" onclick="fetchPhotosForAlbum('{!album.id}'); return false;">Photos</apex:outputLink>
-                    </apex:column>
-                </apex:pageBlockTable>
-            </apex:pageBlock>
-        </apex:outputPanel>
-        <apex:outputPanel layout="block" style="float:left; width:60%;">
-            <apex:pageBlock title="Album Photos" id="albumPhotosBlock">
-                <apex:pageBlockTable value="{!albumPhotos}" var="photo" styleClass="slds-table">
-                    <apex:column headerValue="ID" value="{!photo.id}" />
-                    <apex:column headerValue="Album ID" value="{!photo.albumId}" />
-                    <apex:column headerValue="Title" >
-                        <apex:outputText value="{!photo.title}" />
-                    </apex:column>
-                    <apex:column headerValue="URL" >
-                        <apex:outputLink value="{!photo.url}" target="_blank">{!photo.url}</apex:outputLink>
-                    </apex:column>
-                    <apex:column headerValue="Thumbnail" >
-                        <apex:outputLink value="{!photo.thumbnailUrl}" target="_blank">{!photo.thumbnailUrl}</apex:outputLink>
-                    </apex:column>
-                </apex:pageBlockTable>
-            </apex:pageBlock>
-        </apex:outputPanel>
-    </apex:outputPanel>
+    <!-- Albums and Photos Section -->
+    <div class="section-row">
+        <div class="section-col">
+            <div class="slds-card">
+                <div class="slds-card__header">Albums List</div>
+                <div class="scrollable-table">
+                    <apex:pageBlock id="albumsBlock">
+                        <apex:pageBlockTable value="{!albums}" var="album" styleClass="slds-table">
+                            <apex:column headerValue="ID" value="{!album.id}" />
+                            <apex:column headerValue="User ID" value="{!album.userId}" />
+                            <apex:column headerValue="Title" >
+                                <apex:outputText value="{!album.title}" />
+                            </apex:column>
+                            <apex:column headerValue="Actions">
+                                <apex:outputLink value="View Photos" onclick="showLoadingText('loadingText');fetchPhotosForAlbum('{!album.id}'); return false;">Photos</apex:outputLink>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlock>
+                </div>
+            </div>
+        </div>
+        <div class="section-col">
+            <div class="slds-card">
+                <div class="slds-card__header">Album Photos</div>
+                <apex:pageBlock id="albumPhotosBlock">
+                    <!-- Pagination for album photos -->
+                    <apex:pageBlockTable value="{!albumPhotosPage}" var="photo" styleClass="slds-table">
+                        <apex:column headerValue="ID" value="{!photo.id}" />
+                        <apex:column headerValue="Album ID" value="{!photo.albumId}" />
+                        <apex:column headerValue="Title" >
+                            <apex:outputText value="{!photo.title}" />
+                        </apex:column>
+                        <apex:column headerValue="URL" >
+                            <apex:outputLink value="{!photo.url}" target="_blank">{!photo.url}</apex:outputLink>
+                        </apex:column>
+                        <apex:column headerValue="Thumbnail" >
+                            <apex:outputLink value="{!photo.thumbnailUrl}" target="_blank">{!photo.thumbnailUrl}</apex:outputLink>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                    <div class="pagination">
+                        <apex:commandButton value="Prev" action="{!prevAlbumPhotos}" rerender="albumPhotosBlock,loadingText" disabled="{!albumPhotosPageNumber = 1}" onclick="showLoadingText('loadingText')" />
+                        <span>Page {!albumPhotosPageNumber} of {!albumPhotosTotalPages}</span>
+                        <apex:commandButton value="Next" action="{!nextAlbumPhotos}" rerender="albumPhotosBlock,loadingText" disabled="{!albumPhotosPageNumber = albumPhotosTotalPages}" onclick="showLoadingText('loadingText')" />
+                    </div>
+                </apex:pageBlock>
+            </div>
+        </div>
+    </div>
 
-    <apex:pageBlock title="Photos List" id="photosBlock">
-        <apex:pageBlockTable value="{!photos}" var="photo" styleClass="slds-table">
-            <apex:column headerValue="ID" value="{!photo.id}" />
-            <apex:column headerValue="Album ID" value="{!photo.albumId}" />
-            <apex:column headerValue="Title" >
-                <apex:outputText value="{!photo.title}" />
-            </apex:column>
-            <apex:column headerValue="URL" >
-                <apex:outputLink value="{!photo.url}" target="_blank">{!photo.url}</apex:outputLink>
-            </apex:column>
-            <apex:column headerValue="Thumbnail" >
-                <apex:outputLink value="{!photo.thumbnailUrl}" target="_blank">{!photo.thumbnailUrl}</apex:outputLink>
-            </apex:column>
-        </apex:pageBlockTable>
-    </apex:pageBlock>
+    <!-- Photos and Todos Section -->
+    <div class="section-row">
+        <div class="section-col">
+            <div class="slds-card">
+                <div class="slds-card__header">Photos List</div>
+                <apex:pageBlock id="photosBlock">
+                    <apex:pageBlockTable value="{!photosPage}" var="photo" styleClass="slds-table">
+                        <apex:column headerValue="ID" value="{!photo.id}" />
+                        <apex:column headerValue="Album ID" value="{!photo.albumId}" />
+                        <apex:column headerValue="Title" >
+                            <apex:outputText value="{!photo.title}" />
+                        </apex:column>
+                        <apex:column headerValue="URL" >
+                            <apex:outputLink value="{!photo.url}" target="_blank">{!photo.url}</apex:outputLink>
+                        </apex:column>
+                        <apex:column headerValue="Thumbnail" >
+                            <apex:outputLink value="{!photo.thumbnailUrl}" target="_blank">{!photo.thumbnailUrl}</apex:outputLink>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                    <div class="pagination">
+                        <apex:commandButton value="Prev" action="{!prevPhotos}" rerender="photosBlock,loadingText" disabled="{!photosPageNumber = 1}" onclick="showLoadingText('loadingText')" />
+                        <span>Page {!photosPageNumber} of {!photosTotalPages}</span>
+                        <apex:commandButton value="Next" action="{!nextPhotos}" rerender="photosBlock,loadingText" disabled="{!photosPageNumber = photosTotalPages}" onclick="showLoadingText('loadingText')" />
+                    </div>
+                </apex:pageBlock>
+            </div>
+        </div>
+        <div class="section-col">
+            <div class="slds-card">
+                <div class="slds-card__header">Todos List</div>
+                <apex:pageBlock id="todosBlock">
+                    <apex:pageBlockTable value="{!todosPage}" var="todo" styleClass="slds-table">
+                        <apex:column headerValue="ID" value="{!todo.id}" />
+                        <apex:column headerValue="User ID" value="{!todo.userId}" />
+                        <apex:column headerValue="Title" >
+                            <apex:outputText value="{!todo.title}" />
+                        </apex:column>
+                        <apex:column headerValue="Completed" >
+                            <apex:outputText value="{!IF(todo.completed, 'Yes', 'No')}" />
+                        </apex:column>
+                    </apex:pageBlockTable>
+                    <div class="pagination">
+                        <apex:commandButton value="Prev" action="{!prevTodos}" rerender="todosBlock,loadingText" disabled="{!todosPageNumber = 1}" onclick="showLoadingText('loadingText')" />
+                        <span>Page {!todosPageNumber} of {!todosTotalPages}</span>
+                        <apex:commandButton value="Next" action="{!nextTodos}" rerender="todosBlock,loadingText" disabled="{!todosPageNumber = todosTotalPages}" onclick="showLoadingText('loadingText')" />
+                    </div>
+                </apex:pageBlock>
+            </div>
+        </div>
+    </div>
 
-    <apex:pageBlock title="Todos List" id="todosBlock">
-        <apex:pageBlockTable value="{!todos}" var="todo" styleClass="slds-table">
-            <apex:column headerValue="ID" value="{!todo.id}" />
-            <apex:column headerValue="User ID" value="{!todo.userId}" />
-            <apex:column headerValue="Title" >
-                <apex:outputText value="{!todo.title}" />
-            </apex:column>
-            <apex:column headerValue="Completed" >
-                <apex:outputText value="{!IF(todo.completed, 'Yes', 'No')}" />
-            </apex:column>
-        </apex:pageBlockTable>
-    </apex:pageBlock>
-
-    <apex:outputPanel layout="block" style="overflow:hidden;">
-        <apex:outputPanel layout="block" style="float:left; width:40%;">
-            <apex:pageBlock title="Users List" id="usersBlock">
-                <apex:pageBlockTable value="{!users}" var="user" styleClass="slds-table">
-                    <apex:column headerValue="ID" value="{!user.id}" />
-                    <apex:column headerValue="Name" >
-                        <apex:outputText value="{!user.name}" />
-                    </apex:column>
-                    <apex:column headerValue="Username" >
-                        <apex:outputText value="{!user.username}" />
-                    </apex:column>
-                    <apex:column headerValue="Email" >
-                        <apex:outputText value="{!user.email}" />
-                    </apex:column>
-                    <apex:column headerValue="Phone" >
-                        <apex:outputText value="{!user.phone}" />
-                    </apex:column>
-                    <apex:column headerValue="Website" >
-                        <apex:outputLink value="http://{!user.website}" target="_blank">{!user.website}</apex:outputLink>
-                    </apex:column>
-                    <apex:column headerValue="Actions">
-                        <apex:outputLink value="View Albums" onclick="fetchAlbumsForUser('{!user.id}'); return false;">Albums</apex:outputLink>
-                        &#160;
-                        <apex:outputLink value="View Todos" onclick="fetchTodosForUser('{!user.id}'); return false;">Todos</apex:outputLink>
-                        &#160;
-                        <apex:outputLink value="View Posts" onclick="fetchPostsForUser('{!user.id}'); return false;">Posts</apex:outputLink>
-                        &#160;
-                    </apex:column>
-                </apex:pageBlockTable>
-            </apex:pageBlock>
-        </apex:outputPanel>
-        <apex:outputPanel layout="block" style="float:left; width:60%;">
-            <apex:pageBlock title="User Albums" id="userAlbumsBlock">
-                <apex:pageBlockTable value="{!userAlbums}" var="album" styleClass="slds-table">
-                    <apex:column headerValue="ID" value="{!album.id}" />
-                    <apex:column headerValue="User ID" value="{!album.userId}" />
-                    <apex:column headerValue="Title" >
-                        <apex:outputText value="{!album.title}" />
-                    </apex:column>
-                </apex:pageBlockTable>
-            </apex:pageBlock>
-            <apex:pageBlock title="User Todos" id="userTodosBlock">
-                <apex:pageBlockTable value="{!userTodos}" var="todo" styleClass="slds-table">
-                    <apex:column headerValue="ID" value="{!todo.id}" />
-                    <apex:column headerValue="User ID" value="{!todo.userId}" />
-                    <apex:column headerValue="Title" >
-                        <apex:outputText value="{!todo.title}" />
-                    </apex:column>
-                    <apex:column headerValue="Completed" >
-                        <apex:outputText value="{!IF(todo.completed, 'Yes', 'No')}" />
-                    </apex:column>
-                </apex:pageBlockTable>
-            </apex:pageBlock>
-            <apex:pageBlock title="User Posts" id="userPostsBlock">
-                <apex:pageBlockTable value="{!userPosts}" var="post" styleClass="slds-table">
-                    <apex:column headerValue="ID" value="{!post.id}" />
-                    <apex:column headerValue="User ID" value="{!post.userId}" />
-                    <apex:column headerValue="Title" >
-                        <apex:outputText value="{!post.title}" />
-                    </apex:column>
-                    <apex:column headerValue="Body" >
-                        <apex:outputText value="{!post.body}" />
-                    </apex:column>
-                </apex:pageBlockTable>
-            </apex:pageBlock>
-        </apex:outputPanel>
-    </apex:outputPanel>
+    <!-- Users Section -->
+    <div class="section-row">
+        <div class="section-col">
+            <div class="slds-card">
+                <div class="slds-card__header">Users List</div>
+                <apex:pageBlock id="usersBlock">
+                    <apex:pageBlockTable value="{!usersPage}" var="user" styleClass="slds-table">
+                        <apex:column headerValue="ID" value="{!user.id}" />
+                        <apex:column headerValue="Name" >
+                            <apex:outputText value="{!user.name}" />
+                        </apex:column>
+                        <apex:column headerValue="Username" >
+                            <apex:outputText value="{!user.username}" />
+                        </apex:column>
+                        <apex:column headerValue="Email" >
+                            <apex:outputText value="{!user.email}" />
+                        </apex:column>
+                        <apex:column headerValue="Phone" >
+                            <apex:outputText value="{!user.phone}" />
+                        </apex:column>
+                        <apex:column headerValue="Website" >
+                            <apex:outputLink value="http://{!user.website}" target="_blank">{!user.website}</apex:outputLink>
+                        </apex:column>
+                        <apex:column headerValue="Actions">
+                            <apex:outputLink value="View Albums" onclick="showLoadingText('loadingText');fetchAlbumsForUser('{!user.id}'); return false;">Albums</apex:outputLink>
+                            &#160;
+                            <apex:outputLink value="View Todos" onclick="showLoadingText('loadingText');fetchTodosForUser('{!user.id}'); return false;">Todos</apex:outputLink>
+                            &#160;
+                            <apex:outputLink value="View Posts" onclick="showLoadingText('loadingText');fetchPostsForUser('{!user.id}'); return false;">Posts</apex:outputLink>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                    <div class="pagination">
+                        <apex:commandButton value="Prev" action="{!prevUsers}" rerender="usersBlock,loadingText" disabled="{!usersPageNumber = 1}" onclick="showLoadingText('loadingText')" />
+                        <span>Page {!usersPageNumber} of {!usersTotalPages}</span>
+                        <apex:commandButton value="Next" action="{!nextUsers}" rerender="usersBlock,loadingText" disabled="{!usersPageNumber = usersTotalPages}" onclick="showLoadingText('loadingText')" />
+                    </div>
+                </apex:pageBlock>
+            </div>
+        </div>
+        <div class="section-col">
+            <div class="slds-card">
+                <div class="slds-card__header">User Albums</div>
+                <apex:pageBlock id="userAlbumsBlock">
+                    <apex:pageBlockTable value="{!userAlbums}" var="album" styleClass="slds-table">
+                        <apex:column headerValue="ID" value="{!album.id}" />
+                        <apex:column headerValue="User ID" value="{!album.userId}" />
+                        <apex:column headerValue="Title" >
+                            <apex:outputText value="{!album.title}" />
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+            </div>
+            <div class="slds-card">
+                <div class="slds-card__header">User Todos</div>
+                <apex:pageBlock id="userTodosBlock">
+                    <apex:pageBlockTable value="{!userTodos}" var="todo" styleClass="slds-table">
+                        <apex:column headerValue="ID" value="{!todo.id}" />
+                        <apex:column headerValue="User ID" value="{!todo.userId}" />
+                        <apex:column headerValue="Title" >
+                            <apex:outputText value="{!todo.title}" />
+                        </apex:column>
+                        <apex:column headerValue="Completed" >
+                            <apex:outputText value="{!IF(todo.completed, 'Yes', 'No')}" />
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+            </div>
+            <div class="slds-card">
+                <div class="slds-card__header">User Posts</div>
+                <apex:pageBlock id="userPostsBlock">
+                    <apex:pageBlockTable value="{!userPosts}" var="post" styleClass="slds-table">
+                        <apex:column headerValue="ID" value="{!post.id}" />
+                        <apex:column headerValue="User ID" value="{!post.userId}" />
+                        <apex:column headerValue="Title" >
+                            <apex:outputText value="{!post.title}" />
+                        </apex:column>
+                        <apex:column headerValue="Body" >
+                            <apex:outputText value="{!post.body}" />
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+            </div>
+        </div>
+    </div>
+    </apex:form>
 </div>
 </apex:page>

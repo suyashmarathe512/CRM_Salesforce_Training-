@@ -1,0 +1,18 @@
+<template>  
+    <div class="slds-box slds-theme_shade">
+     <lightning-input type="number" step="any" name="input2" label="Number 1" onchange={handleNumberOneChange} value={firstNumber} placeholder="Enter the Number..."></lightning-input>
+     <lightning-input type="number" step="any" name="input2" label="Number 2" onchange={handleNumberTwoChange} value={secondNumber} placeholder="Enter the Number..."></lightning-input>
+   </div>
+   <div class="slds-box slds-theme_shade">
+    <p>The first number is: <span class="slds-text-heading_small">{firstNumber}</span></p>
+    <p>The second number is: <span class="slds-text-heading_small">{secondNumber}</span></p>
+     <b>Output value is : </b>
+      <p>{resultValue}</p>
+   </div>
+    <div class="slds-box slds-theme_shade">
+     <lightning-button label="Addition" onclick={addition}></lightning-button>
+     <lightning-button label="Multiplication" onclick={multiplication}></lightning-button>
+     <lightning-button label="Subtraction" onclick={subtraction}></lightning-button>
+     <lightning-button label="Division" onclick={division}></lightning-button>
+    </div>
+ </template>  

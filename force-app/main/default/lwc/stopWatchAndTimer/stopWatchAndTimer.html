@@ -1,21 +1,27 @@
 <template>
     <!-- Main container for the stopwatch and timer component -->
     <lightning-card title="Stopwatch and Timer">
-        <div class="container">
+        <div class="slds-p-around_medium">
             <!-- Display the current time and mode -->
-            <div class="display">
-                <span class="time">{elapsedTime}</span>
-                <span class="mode" lwc:if={mode}> ({mode})</span>
+            <div class="slds-text-align_center slds-m-bottom_medium">
+                <span class="slds-text-heading_large slds-text-font_monospace">{elapsedTime}</span>
+                <span class="slds-text-body_small slds-text-color_weak" lwc:if={mode}> ({mode})</span>
             </div>
             <!-- Input for setting timer duration -->
-            <div class="timer-input">
+            <div class="slds-m-bottom_medium">
                 <lightning-input label="Timer Duration (seconds)" type="number" value={timerInputValue} onchange={handleTimerInputChange}></lightning-input>
             </div>
             <!-- Buttons to control stopwatch, timer, and reset -->
-            <div class="buttons">
-                <lightning-button label={startStopwatchLabel} onclick={startStopwatch} disabled={isStopwatchDisabled}></lightning-button>
-                <lightning-button label={startTimerLabel} onclick={startTimer} disabled={isTimerDisabled}></lightning-button>
-                <lightning-button label="Reset" onclick={reset}></lightning-button>
+            <div class="slds-grid slds-gutters_small">
+                <div class="slds-col">
+                    <lightning-button label={startStopwatchLabel} onclick={startStopwatch} disabled={isStopwatchDisabled}></lightning-button>
+                </div>
+                <div class="slds-col">
+                    <lightning-button label={startTimerLabel} onclick={startTimer} disabled={isTimerDisabled}></lightning-button>
+                </div>
+                <div class="slds-col">
+                    <lightning-button label="Reset" onclick={reset}></lightning-button>
+                </div>
             </div>
         </div>
     </lightning-card>

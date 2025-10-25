@@ -1,0 +1,47 @@
+<!--
+  This is the component's template file.
+  It defines the visual structure of the component.
+-->
+<template>
+  <!-- lightning-card provides a responsive container with a title -->
+  <lightning-card title="Create New Account (LDS)" icon-name="standard:account">
+    <div class="slds-p-around_medium">
+      <!--
+        lightning-record-edit-form is the LDS component for creating
+        or editing a record. We just need to tell it the object API name.
+        The 'onsuccess' event fires when the record is saved successfully.
+      -->
+      <lightning-record-edit-form
+        object-api-name="Account"
+        onsuccess={handleSuccess}
+      >
+        <!-- 
+          We provide a default message for the form.
+          The 'lightning-input-field' components automatically
+          display the correct field type (e.g., text, picklist).
+        -->
+        <lightning-messages></lightning-messages>
+
+        <lightning-input-field
+          field-name="Name"
+          required
+        ></lightning-input-field>
+        <lightning-input-field field-name="Phone"></lightning-input-field>
+        <lightning-input-field field-name="Industry"></lightning-input-field>
+
+        <!-- 
+          This button is type="submit", which tells the
+          lightning-record-edit-form to save the record when clicked.
+        -->
+        <div class="slds-m-top_medium slds-text-align_center">
+          <lightning-button
+            variant="brand"
+            type="submit"
+            label="Save Account"
+          >
+          </lightning-button>
+        </div>
+      </lightning-record-edit-form>
+    </div>
+  </lightning-card>
+</template>

@@ -1,0 +1,104 @@
+<template>
+    <lightning-card title="Account Contact & Opportunity Viewer" icon-name="standard:account">
+        <div class="slds-p-around_medium">
+            
+            <lightning-combobox
+                name="account"
+                label="Select Account"
+                value={selectedAccountId}
+                placeholder="-- Select Account --"
+                options={accountOptions}
+                onchange={handleAccountChange}
+                class="slds-m-bottom_medium"
+            ></lightning-combobox>
+
+            <template if:true={isLoading}>
+                <div class="slds-align_absolute-center slds-m-vertical_large">
+                    <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <lightning-layout multiple-rows="true">
+
+                    <lightning-layout-item size="12" large-device-size="6" padding="around-small">
+                        <lightning-card title={contactTitle} icon-name="standard:contact">
+                            <template if:true={pagedContacts.length}>
+                                <lightning-datatable
+                                    key-field="Id"
+                                    data={pagedContacts}
+                                    columns={contactColumns}
+                                    onrowaction={handleRowAction}
+                                    onsave={handleSave}
+                                    draft-values={contactDraftValues}
+                                    hide-checkbox-column
+                                ></lightning-datatable>
+                                
+                                <div class="slds-grid slds-grid_align-spread slds-p-top_small">
+                                    <lightning-button-group>
+                                        <lightning-button
+                                            label="Previous"
+                                            onclick={handleContactPrevious}
+                                            disabled={isContactFirstPage}
+                                        ></lightning-button>
+                                        <lightning-button
+                                            label="Next"
+                                            onclick={handleContactNext}
+                                            disabled={isContactLastPage}
+                                        ></lightning-button>
+                                    </lightning-button-group>
+                                    <span class="slds-align-middle slds-text-body_small">
+                                        Page {contactCurrentPage} of {totalContactPages}
+                                    </span>
+                                </div>
+
+                            </template>
+                            <template if:false={pagedContacts.length}>
+                                <p class="slds-p-horizontal_small">No contacts found.</p>
+                            </template>
+                        </lightning-card>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" large-device-size="6" padding="around-small">
+                        <lightning-card title={oppTitle} icon-name="standard:opportunity">
+                            <template if:true={pagedOpportunities.length}>
+                                <lightning-datatable
+                                    key-field="Id"
+                                    data={pagedOpportunities}
+                                    columns={oppColumns}
+                                    onrowaction={handleRowAction}
+                                    onsave={handleSave}
+                                    draft-values={oppDraftValues}
+                                    hide-checkbox-column
+                                ></lightning-datatable>
+                                
+                                <div class="slds-grid slds-grid_align-spread slds-p-top_small">
+                                    <lightning-button-group>
+                                        <lightning-button
+                                            label="Previous"
+                                            onclick={handleOppPrevious}
+                                            disabled={isOppFirstPage}
+                                        ></lightning-button>
+                                        <lightning-button
+                                            label="Next"
+                                            onclick={handleOppNext}
+                                            disabled={isOppLastPage}
+                                        ></lightning-button>
+                                    </lightning-button-group>
+                                    <span class="slds-align-middle slds-text-body_small">
+                                        Page {oppCurrentPage} of {totalOppPages}
+                                    </span>
+                                </div>
+
+                            </template>
+                            <template if:false={pagedOpportunities.length}>
+                                <p class="slds-p-horizontal_small">No opportunities found.</p>
+                            </template>
+                        </lightning-card>
+                    </lightning-layout-item>
+
+                </lightning-layout>
+            </template>
+        </div>
+    </lightning-card>
+</template>

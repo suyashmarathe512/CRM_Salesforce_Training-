@@ -1,0 +1,129 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+    </template>
+
+    <lightning-card title="Create Account, Contact, and File" icon-name="standard:account">
+        
+        <div class="slds-p-around_medium">
+            <lightning-layout multiple-rows="true">
+
+                <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
+                    <lightning-input 
+                        label="Account Name" 
+                        name="accName" 
+                        value={accName} 
+                        onchange={handleInputChange} 
+                        required>
+                    </lightning-input>
+                </lightning-layout-item>
+                
+                <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
+                    <lightning-input 
+                        label="Account WebSite" 
+                        name="accWebsite" 
+                        type="url" 
+                        value={accWebsite}
+                        onchange={handleInputChange}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
+                    <lightning-input 
+                        label="Contact First Name" 
+                        name="conFName" 
+                        value={conFName} 
+                        onchange={handleInputChange}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
+                    <lightning-input 
+                        label="Contact Last Name" 
+                        name="conLName" 
+                        value={conLName} 
+                        onchange={handleInputChange} 
+                        required>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
+                    <lightning-input 
+                        label="Contact Email" 
+                        name="conEmail" 
+                        type="email" 
+                        value={conEmail} 
+                        onchange={handleInputChange}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
+                    <lightning-input 
+                        label="Contact phone Number" 
+                        name="conPhone" 
+                        type="tel" 
+                        value={conPhone} 
+                        onchange={handleInputChange}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
+                    <lightning-combobox
+                        name="country"
+                        label="Country"
+                        value={selectedCountry}
+                        placeholder="Select Country"
+                        options={countryOptions}
+                        onchange={handleCountryChange}
+                        required>
+                    </lightning-combobox>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
+                    <lightning-combobox
+                        name="city"
+                        label="City"
+                        value={selectedCity}
+                        placeholder="Select City"
+                        options={cityOptions}
+                        onchange={handleCityChange}
+                        disabled={isCityDisabled}
+                        required>
+                    </lightning-combobox>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" class="slds-p-around_x-small">
+                    <lightning-input 
+                        type="file" 
+                        label="Upload File"
+                        onchange={handleFileChange}>
+                    </lightning-input>
+                </lightning-layout-item>
+
+            </lightning-layout>
+        </div>
+
+        <div class="slds-modal__footer">
+            <lightning-button 
+                label="Cancel" 
+                variant="neutral" 
+                onclick={handleCancel}>
+            </lightning-button>
+            
+            <lightning-button 
+                label="Save & New" 
+                variant="brand" 
+                onclick={handleSaveAndNew} 
+                class="slds-m-left_x-small">
+            </lightning-button>
+
+            <lightning-button 
+                label="Save" 
+                variant="brand" 
+                onclick={handleSave} 
+                class="slds-m-left_x-small">
+            </lightning-button>
+        </div>
+
+    </lightning-card>
+</template>

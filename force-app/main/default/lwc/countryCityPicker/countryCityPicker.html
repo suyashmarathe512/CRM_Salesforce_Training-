@@ -1,0 +1,27 @@
+<template>
+    <lightning-card title="Country-City Dependent Picklist" >
+        <div class="slds-m-around_medium">
+            
+            <lightning-combobox
+                name="country"
+                label="Country"
+                placeholder="Select a Country"
+                value={selectedCountry}
+                onchange={handleCountryChange}
+                options={countryOptions}>
+            </lightning-combobox>
+
+            <lightning-combobox
+                class="slds-m-top_medium"
+                name="city"
+                label="City"
+                placeholder="Select a City"
+                value={selectedCity}
+                onchange={handleCityChange}
+                options={cityOptions}
+                disabled={isCityDisabled}> 
+            </lightning-combobox>
+
+        </div>
+    </lightning-card>
+</template>

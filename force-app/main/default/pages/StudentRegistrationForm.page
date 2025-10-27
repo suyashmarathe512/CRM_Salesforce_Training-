@@ -1,0 +1,32 @@
+<apex:page controller="StudentRegistrationController" language="{!selectedLanguage}">
+    <apex:pageMessages id="messageArea"/>
+    <apex:form>
+        <apex:pageBlock title="{!$Label.StudentFormTitle}" id="formBox">
+            <apex:pageBlockSection title="Language" columns="1">  
+                <apex:selectList label="{!$Label.LanguageLabel}" 
+                                 value="{!selectedLanguage}" 
+                                 size="1">                 
+                    <apex:selectOptions value="{!languageOptions}"/>                
+                    <apex:actionSupport event="onchange" reRender="formBox"/>              
+                </apex:selectList>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Student Details" columns="2">    
+                <apex:inputField value="{!student.Name}"/>
+                <apex:inputField value="{!student.Roll_number__c}"/>
+                <apex:inputField value="{!student.Gender__c}"/>
+                <apex:inputField value="{!student.Courses__c}"/>
+                <apex:inputField value="{!student.H_S_C__c}"/>
+                <apex:inputField value="{!student.S_S_C__c}"/>
+                <apex:inputField value="{!student.Country__c}"/>
+                <apex:inputField value="{!student.State__c}"/>
+                <apex:inputField value="{!student.City__c}"/>
+                
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton action="{!saveStudent}" 
+                                    value="{!$Label.SubmitButtonLabel}" 
+                                    rerender="messageArea"/>                                    
+            </apex:pageBlockButtons>           
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

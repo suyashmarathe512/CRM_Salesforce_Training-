@@ -1,27 +1,20 @@
 <template>
     <lightning-card title="Opportunity Details" icon-name="standard:opportunity">
         <div class="slds-p-horizontal_small">
-            <template if:true={opportunity}>
-                <dl class="slds-dl_horizontal">
-                    <dt class="slds-dl_horizontal__label">Name:</dt>
-                    <dd class="slds-dl_horizontal__detail">{name}</dd>
-                    <dt class="slds-dl_horizontal__label">Stage:</dt>
-                    <dd class="slds-dl_horizontal__detail">{stageName}</dd>
-                    <dt class="slds-dl_horizontal__label">Amount:</dt>
-                    <dd class="slds-dl_horizontal__detail">
-                        <lightning-formatted-number value={amount} format-style="currency" currency-code="INR"></lightning-formatted-number>
-                    </dd>
-                    <dt class="slds-dl_horizontal__label">Close Date:</dt>
-                    <dd class="slds-dl_horizontal__detail">
-                        <lightning-formatted-date-time value={closeDate} year="numeric" month="short" day="numeric"></lightning-formatted-date-time>
-                    </dd>
-                </dl>
-            </template>
-            <template if:true={error}>
-                <lightning-card>
-                    <p class="slds-text-color_error">Error loading opportunity: {error.body.message}</p>
-                </lightning-card>
-            </template>
+            <dl class="slds-dl_horizontal">
+                <dt class="slds-dl_horizontal__label">Name:</dt>
+                <dd class="slds-dl_horizontal__detail">{name}</dd>
+                <dt class="slds-dl_horizontal__label">Stage:</dt>
+                <dd class="slds-dl_horizontal__detail">{stageName}</dd>
+                <dt class="slds-dl_horizontal__label">Amount:</dt>
+                <dd class="slds-dl_horizontal__detail">
+                    <lightning-formatted-number value={amount} format-style="currency" currency-code="INR"></lightning-formatted-number>
+                </dd>
+                <dt class="slds-dl_horizontal__label">Close Date:</dt>
+                <dd class="slds-dl_horizontal__detail">
+                    <lightning-formatted-date-time value={closeDate} year="numeric" month="short" day="numeric"></lightning-formatted-date-time>
+                </dd>
+            </dl>
         </div>
     </lightning-card>
 </template>

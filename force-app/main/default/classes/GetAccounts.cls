@@ -4,6 +4,11 @@
 * @Description:   This class fetches a list of Account records from Salesforce.
 ***************************************************************************************************/
 public with sharing class GetAccounts {
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @MethodName:     getAllAccounts
+* @Description:   This class fetches a list of Account records from Salesforce.
+***************************************************************************************************/
     @AuraEnabled(cacheable=true)
     public static List<Account> getAllAccounts() {
         return [SELECT 

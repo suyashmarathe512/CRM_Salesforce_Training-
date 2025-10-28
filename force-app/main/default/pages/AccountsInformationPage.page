@@ -1,48 +1,166 @@
-<apex:page controller="AccountsInformationController">
-<apex:slds />
-<div class="slds-m-around_medium">
-    <apex:includeScript value="{!URLFOR($Resource.DeleteAccountScript, 'DeleteAccountScript.js')}"/>
-    <div>
-        <apex:image url="{!URLFOR($Resource.AccountsInformationPage_Header_Logo, 'Account_Salesforce_Logo.png')}" width="100" height="100"/>
-        <h1 style="font-size: 3em;">Accounts</h1>
+<apex:page controller="AccountsInformationController" showHeader="false" sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false">
+  <apex:slds />
+  <html>
+  <head>
+    <style>
+      body { margin: 0; padding: 0; font-family: 'Salesforce Sans', Arial, sans-serif; }
+      .no-wrap { white-space: nowrap; overflow-x: auto; }
+      .header-row { background: #fff; border-bottom: 1px solid #dddbda; }
+      input[type="text"]::-webkit-input-placeholder { color: #706e6b; }
+      input[type="text"]::-moz-placeholder { color: #706e6b; }
+      input[type="text"]:-ms-input-placeholder { color: #706e6b; }
+      input[type="text"]::placeholder { color: #706e6b; }
+      input[type="text"]::-webkit-contacts-auto-fill-button,
+      input[type="text"]::-webkit-credentials-auto-fill-button {
+        visibility: hidden; pointer-events: none;
+      }
+    </style>
+  </head>
+  <body class="slds-scope">
+    <div class="slds-page-header header-row">
+      <div class="slds-grid slds-grid_vertical-align-center slds-p-around_small">
+        <div class="slds-col slds-size_1-of-2 slds-grid slds-grid_vertical-align-center slds-gutters_small">
+          <apex:image url="{!URLFOR($Resource.AccountsInformationPage_Header_Logo, 'Account_Salesforce_Logo.png')}" 
+                      width="50" height="50" styleClass="slds-m-right_small" />
+          <h1 class="slds-page-header__title slds-text-heading_large">Accounts</h1>
+        </div>
+        <div class="slds-col slds-size_1-of-2">
+          <apex:form id="searchForm">
+            <div class="slds-grid slds-grid_align-end slds-gutters_small">
+              <div class="slds-col slds-size_3-of-4">
+                <apex:inputText styleClass="slds-input" 
+                                value="{!searchTerm}" 
+                                html-placeholder="Input at least 3 characters to perform search"
+                                html-autocomplete="off"
+                                html-autocorrect="off"
+                                html-autocapitalize="off"
+                                html-spellcheck="false"
+                                onkeypress="if(event.keyCode===13){searchAction();return false;}" />
+              </div>
+              <div class="slds-col slds-shrink">
+                <apex:commandButton value="Search" 
+                                    action="{!searchAccounts}" 
+                                    styleClass="slds-button slds-button_brand"
+                                    rerender="resultsPanel,pagerInfo" />
+              </div>
+              <div class="slds-col slds-shrink">
+                <apex:outputLink value="#" 
+                                 onclick="clearSearchAction();return false;" 
+                                 styleClass="slds-button slds-button_brand">Clear</apex:outputLink>
+              </div>
+            </div> 
+            <apex:actionFunction name="searchAction" action="{!searchAccounts}" rerender="resultsPanel,pagerInfo" />
+            <apex:actionFunction name="clearSearchAction" action="{!resetSearch}" rerender="resultsPanel,pagerInfo,searchForm" />
+            <apex:actionFunction name="alphabetSearch" action="{!alphabetSearch}" rerender="resultsPanel,pagerInfo">
+              <apex:param name="a" assignTo="{!selectedAlphabet}" value=""/>
+            </apex:actionFunction>
+          </apex:form>
+        </div>
+      </div>
     </div>
-    <apex:form styleClass="slds-form" id="searchForm">
-        <apex:inputText styleClass="slds-input" value="{!searchTerm}" html-placeholder="Input at least 3 characters to perform search" onkeypress="if(event.keyCode === 13) { searchAction(); return false; }" />
-        <apex:commandButton styleClass="slds-button slds-button_brand" value="Search" action="{!searchAccounts}" rerender="resultsPanel" />
-        &nbsp;
-        <apex:outputLink styleClass="slds-text-link" value="#" onclick="clearSearchAction(); return false;">Clear Search</apex:outputLink>
-        <apex:actionFunction name="alphabetSearch" action="{!alphabetSearch}" rerender="resultsPanel">
-            <apex:param name="a" assignTo="{!selectedAlphabet}" value=""/>
-        </apex:actionFunction>
-        <apex:actionFunction name="searchAction" action="{!searchAccounts}" rerender="resultsPanel" />
-        <apex:actionFunction name="clearSearchAction" action="{!clearSearch}" rerender="resultsPanel,searchForm" />
-        <br />
-        <apex:repeat value="{!alphabet}" var="alph">
-            <apex:outputLink styleClass="slds-button" value="#" onclick="alphabetSearch('{!alph}'); return false;">{!alph}</apex:outputLink>
-            &nbsp;
-        </apex:repeat>
-    </apex:form>
-    <apex:outputPanel styleClass="slds-m-top_medium" id="resultsPanel">
-        <apex:outputText styleClass="slds-text-heading_small" value="Total Accounts: {!accountCount}" />
-        <apex:pageBlock >
-            <apex:pageBlockTable styleClass="slds-table slds-table_bordered" value="{!accounts}" var="acc"  >
-                <apex:column headerValue="Account Name">
-                    <apex:outputLink styleClass="slds-text-link" value="/{!acc.Id}" target="_blank">{!acc.Name}</apex:outputLink>
-                </apex:column>
-                <apex:column headerValue="Email Address">
-                    <apex:outputText value="{!acc.Email_Address__c}" />
-                </apex:column>
-                <apex:column headerValue="Phone Number">
-                    <apex:outputText value="{!acc.Phone}" />
-                </apex:column>
-                <apex:column headerValue="Website">
-                    <apex:outputLink styleClass="slds-text-link" value="{!acc.Website}" target="_blank">{!acc.Website}</apex:outputLink>
-                </apex:column>
-                <apex:column headerValue="Delete">
-                    <apex:outputLink styleClass="slds-text-link" value="#" onclick="deleteAccount('{!acc.Id}'); return false;">Delete</apex:outputLink>
-                </apex:column>
-            </apex:pageBlockTable>
-        </apex:pageBlock>
+    <div class="slds-p-around_small no-wrap" style="background:#fefed8;border-bottom:0.5px solid #dddbda;">
+      <apex:repeat value="{!alphabet}" var="alph">
+        <apex:outputLink value="#" 
+                         onclick="alphabetSearch('{!alph}');return false;" 
+                         styleClass="slds-button slds-button_neutral slds-m-right_xx-small">{!alph}</apex:outputLink>
+      </apex:repeat>
+    </div>
+    <apex:outputPanel id="pagerInfo">
+      <div class="slds-p-around_small" style="background:#fff;">
+        <span class="slds-text-heading_small"><strong>Total Accounts: {!accountCount}</strong></span>
+      </div>
     </apex:outputPanel>
-</div>
+    <apex:outputPanel id="resultsPanel">
+      <div class="slds-p-horizontal_small">
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-table_striped slds-max-medium-table_stacked-horizontal" style="width:100%;">
+          <thead>
+            <tr class="slds-line-height_reset">
+              <th scope="col" style="width:60px;">
+                <div class="slds-truncate" title="#"> </div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="Account Name">Account Name</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="Email Address">Email Address</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="Phone Number">Phone Number</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="Website">Website</div>
+              </th>
+              <th scope="col" style="width:80px;">
+                <div class="slds-truncate" title="Actions">Actions</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <apex:variable var="rowNum" value="{!currentPageStart}" />
+            <apex:repeat value="{!paginatedAccounts}" var="acc">
+              <apex:variable var="rowNum" value="{!rowNum + 1}" />
+              <tr class="slds-hint-parent">
+                <td data-label="#">
+                  <div class="slds-truncate">{!rowNum}</div>
+                </td>
+                <td data-label="Account Name">
+                  <div class="slds-truncate">
+                    <apex:outputLink value="/{!acc.Id}" target="_blank" styleClass="slds-truncate">{!acc.Name}</apex:outputLink>
+                  </div>
+                </td>
+                <td data-label="Email Address">
+                  <div class="slds-truncate">{!acc.Email_Address__c}</div>
+                </td>
+                <td data-label="Phone Number">
+                  <div class="slds-truncate">{!acc.Phone}</div>
+                </td>
+                <td data-label="Website">
+                  <div class="slds-truncate">
+                    <apex:outputLink value="{!acc.Website}" target="_blank" styleClass="slds-truncate">{!acc.Website}</apex:outputLink>
+                  </div>
+                </td>
+                <td data-label="Actions">
+                  <span style="cursor:pointer;" onclick="confirmDelete('{!acc.Id}', '{!JSENCODE(acc.Name)}');" title="Delete">Delete</span>
+                </td>
+              </tr>
+            </apex:repeat>
+          </tbody>
+        </table>
+      </div>
+      <div class="slds-p-around_small slds-grid slds-grid_align-end" style="background:#fff;border-top:1px solid #dddbda;">
+        <apex:form id="paginationForm">
+          <apex:commandButton value="Previous" 
+                              action="{!previousPage}" 
+                              styleClass="slds-button slds-button_neutral"
+                              disabled="{!NOT(hasPrevious)}"
+                              rerender="resultsPanel,pagerInfo" />
+          <apex:commandButton value="Next" 
+                              action="{!nextPage}" 
+                              styleClass="slds-button slds-button_neutral slds-m-left_x-small"
+                              disabled="{!NOT(hasNext)}"
+                              rerender="resultsPanel,pagerInfo" />
+        </apex:form>
+      </div>
+    </apex:outputPanel>
+    <script>
+      function confirmDelete(accountId, accountName) {
+        if(confirm('Are you sure you want to delete ' + accountName + '?')) {
+          Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.AccountsInformationController.deleteAccountRemote}',
+            accountId,
+            function(result, event) {
+              if (event.status) {
+                alert('Account deleted successfully');
+                clearSearchAction();
+              } else {
+                alert('Error deleting account: ' + event.message);
+              }
+            },
+            {escape: true}
+          );
+        }
+      }
+    </script>
+  </body>
+  </html>
 </apex:page>

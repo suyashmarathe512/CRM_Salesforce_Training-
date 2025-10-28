@@ -1,18 +1,33 @@
-<template>  
-    <div class="slds-box slds-theme_shade">
-     <lightning-input type="number" step="any" name="input2" label="Number 1" onchange={handleNumberOneChange} value={firstNumber} placeholder="Enter the Number..."></lightning-input>
-     <lightning-input type="number" step="any" name="input2" label="Number 2" onchange={handleNumberTwoChange} value={secondNumber} placeholder="Enter the Number..."></lightning-input>
-   </div>
-   <div class="slds-box slds-theme_shade">
-    <p>The first number is: <span class="slds-text-heading_small">{firstNumber}</span></p>
-    <p>The second number is: <span class="slds-text-heading_small">{secondNumber}</span></p>
-     <b>Output value is : </b>
-      <p>{resultValue}</p>
-   </div>
-    <div class="slds-box slds-theme_shade">
-     <lightning-button label="Addition" onclick={addition}></lightning-button>
-     <lightning-button label="Multiplication" onclick={multiplication}></lightning-button>
-     <lightning-button label="Subtraction" onclick={subtraction}></lightning-button>
-     <lightning-button label="Division" onclick={division}></lightning-button>
+<template>
+  <section class="calc-card" onkeydown={handleKeydown} tabindex="0" aria-label="Calculator">
+    <div class="display-wrap">
+      <input class="display" type="text" value={result} readonly aria-label="Result" />
     </div>
- </template>  
+
+    <div class="grid">
+      <button class="btn btn-util" title="Clear" onclick={clearInput}>C</button>
+      <button class="btn btn-util" title="Backspace" onclick={backspace}>⌫</button>
+      <button class="btn btn-util" value="%" onclick={handleClick}>%</button>
+      <button class="btn btn-op" value="/" onclick={handleClick}>÷</button>
+
+      <button class="btn" value="7" onclick={handleClick}>7</button>
+      <button class="btn" value="8" onclick={handleClick}>8</button>
+      <button class="btn" value="9" onclick={handleClick}>9</button>
+      <button class="btn btn-op" value="*" onclick={handleClick}>×</button>
+
+      <button class="btn" value="4" onclick={handleClick}>4</button>
+      <button class="btn" value="5" onclick={handleClick}>5</button>
+      <button class="btn" value="6" onclick={handleClick}>6</button>
+      <button class="btn btn-op" value="-" onclick={handleClick}>−</button>
+
+      <button class="btn" value="1" onclick={handleClick}>1</button>
+      <button class="btn" value="2" onclick={handleClick}>2</button>
+      <button class="btn" value="3" onclick={handleClick}>3</button>
+      <button class="btn btn-op" value="+" onclick={handleClick}>+</button>
+
+      <button class="btn span-2" value="0" onclick={handleClick}>0</button>
+      <button class="btn" value="." onclick={handleClick}>.</button>
+      <button class="btn btn-eq" onclick={calculateResult}>=</button>
+    </div>
+  </section>
+</template>

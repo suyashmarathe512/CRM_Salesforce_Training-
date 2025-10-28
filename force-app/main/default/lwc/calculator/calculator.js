@@ -1,33 +1,50 @@
 import { LightningElement, track } from 'lwc';
-export default class CalculatorInLwc extends LightningElement {
-    @track firstNumber;
-    @track secondNumber;
-    @track resultValue;
-    @track errorMessage = '';
-    handleNumberOneChange(event) {
-        this.firstNumber = Number(event.target.value) || 0;
+export default class Calculator extends LightningElement {
+  @track result = '';
+  handleClick(event) {
+    const value = event.target.value;
+    this.result = `${this.result}${value}`;
+  }
+  calculateResult() {
+    try {
+      const expr = this.result.replace(/\b\d+(\.\d+)?\b/g, (n) => String(+n));
+      const out = eval(expr);
+      this.result = Number.isFinite(out) ? String(out) : 'Error';
+    } catch (e) {
+      this.result = 'Error';
     }
-    handleNumberTwoChange(event) {
-        this.secondNumber = Number(event.target.value) || 0;
+  }
+  clearInput() {
+    this.result = '';
+  }
+  backspace() {
+    this.result = this.result.slice(0, -1);
+  }
+  handleKeydown(event) {
+    const k = event.key;
+    if (/\d/.test(k)) {
+      this.result = `${this.result}${k}`;
+      event.preventDefault();
+      return;
     }
-    addition() {
-        this.resultValue = this.firstNumber + this.secondNumber;
+    if (['+', '-', '*', '/', '%', '.'].includes(k)) {
+      this.result = `${this.result}${k}`;
+      event.preventDefault();
+      return;
     }
-    multiplication() { 
-        this.resultValue = this.firstNumber * this.secondNumber;
+    if (k === 'Enter' || k === '=') {
+      this.calculateResult();
+      event.preventDefault();
+      return;
     }
-    subtraction() {
-        this.resultValue = this.firstNumber - this.secondNumber;
+    if (k === 'Backspace') {
+      this.backspace();
+      event.preventDefault();
+      return;
     }
-    division() {
-        if (this.secondNumber == 0) {
-            this.resultValue = 'Cannot divide by zero'; 
-            return;
-        }
-        this.resultValue = this.firstNumber / this.secondNumber;
+    if (k === 'Escape') {
+      this.clearInput();
+      event.preventDefault();
     }
-    errorCallback(error, stack) {
-        console.error('Error:', error);
-        console.error('Stack trace:', stack);
-    }
+  }
 }

@@ -1,11 +1,23 @@
 <template>
-    <lightning-card title="Account Records" icon-name="standard:account">
-            <lightning-datatable
-                key-field="Id"
-                data={accounts}
-                columns={columns}
-                hide-checkbox-column="true"
-                show-row-number-column="true"
-            ></lightning-datatable>
-    </lightning-card>
+  <lightning-card>
+    <div slot="title" class="slds-grid slds-grid_vertical-align-center slds-p-horizontal_large">
+      <lightning-icon icon-name="standard:account" size="Large" class="slds-m-right_large"></lightning-icon>
+      <h2 class="slds-text-heading_small slds-truncate slds-m-right_large">Accounts</h2>
+    </div>
+    <div class="dt-scroll">
+      <lightning-datatable
+        key-field="Id"
+        data={data}
+        columns={columns}
+        hide-checkbox-column
+        show-row-number-column
+        enable-infinite-loading
+        load-more-offset="0"
+        onloadmore={handleLoadMore}
+        sorted-by={sortedBy}
+        sorted-direction={sortedDirection}
+        onsort={handleSort}>
+      </lightning-datatable>
+    </div>
+  </lightning-card>
 </template>

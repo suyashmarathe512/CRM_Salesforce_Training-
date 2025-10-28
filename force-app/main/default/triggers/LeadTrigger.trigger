@@ -1,5 +1,5 @@
 trigger LeadTrigger on Lead (after insert, after update, after delete) {
-    if (Trigger.isAfter) {
+    if (Trigger.isAfter && !System.isFuture()) {
         if (Trigger.isInsert) {
             LeadTriggerHandler.afterInsert(Trigger.new);
         } else if (Trigger.isUpdate) {

@@ -31,25 +31,34 @@ global class LeadTriggerHandler {
 * @Author:        CRM Developer
 * @methodName:     serializeLeadsToJson
 * @Param 1 :        leads: stores the list of leads
-* @Param 2 :        isUpdate: stores the boolean value for update
-* @Description:   This method serializes the list of leads to JSON format.
+* @Param 2 :        removeId: stores the boolean value to remove Id field
+* @Description:   This method serializes the list of leads to JSON format, filtering out problematic fields.
 ***************************************************************************************************/
-    private static String serializeLeadsToJson(List<Lead> leads, Boolean isUpdate) {
-        List<Wrapper> wrappers = new List<Wrapper>();
-        for (Lead lead : leads) {
-            Wrapper w = new Wrapper();
-            w.FirstName = lead.FirstName;
-            w.LastName = lead.LastName;
-            if (isUpdate) {
-                w.NewEmail = lead.Email;
-                w.NewPhone = lead.Phone;
-            } else {
-                w.Email = lead.Email;
-                w.Phone = lead.Phone;
-            }
-            wrappers.add(w);
+    private static String serializeLeadsToJson(List<Lead> leads, Boolean removeId) {
+        List<Map<String, Object>> leadMaps = new List<Map<String, Object>>();
+        Set<String> fieldsToRemove = new Set<String>{
+            'CreatedDate', 'LastModifiedDate', 'OwnerId', 'CreatedById', 'LastModifiedById', 'SystemModstamp',
+            'IsDeleted', 'IsConverted', 'ConvertedDate', 'ConvertedAccountId', 'ConvertedContactId', 'ConvertedOpportunityId',
+            'MasterRecordId', 'IsUnreadByOwner', 'LastActivityDate', 'LastViewedDate', 'LastReferencedDate',
+            'Jigsaw', 'JigsawContactId', 'CleanStatus', 'CompanyDunsNumber', 'DandbCompanyId', 'EmailBouncedReason',
+            'EmailBouncedDate', 'IndividualId', 'HasOptedOutOfEmail', 'HasOptedOutOfFax', 'DoNotCall', 'IsEmailBounced',
+            'PhotoUrl', 'CanSendEmail', 'SendEmailOptIn', 'attributes', 'LastModifiedByID', 'CreatedByID', 'IsPriorityRecord', 'LastTransferDate'
+        };
+        if (removeId) {
+            fieldsToRemove.add('Id');
         }
-        return JSON.serialize(wrappers);
+        for (Lead lead : leads) {
+            Map<String, Object> leadMap = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(lead));
+            for (String field : fieldsToRemove) {
+                leadMap.remove(field);
+            }
+            // Add the external unique field for update/delete
+            if (lead.CunningGoatID__c != null) {
+                leadMap.put('JSONProviderRemoteID__c', lead.CunningGoatID__c);
+            }
+            leadMaps.add(leadMap);
+        }
+        return JSON.serialize(leadMaps);
     }
 /***************************************************************************************************
 * @Author:        CRM Developer
@@ -58,7 +67,7 @@ global class LeadTriggerHandler {
 * @Description:   This method is called after the insert of leads and makes an HTTP callout to the LeadServices endpoint.
 ***************************************************************************************************/
     public static void afterInsert(List<Lead> newLeads) {
-        String jsonString = serializeLeadsToJson(newLeads, false);
+        String jsonString = serializeLeadsToJson(newLeads, true);
         makeHttpCallout(jsonString, 'POST');
     }
 /***************************************************************************************************
@@ -80,18 +89,5 @@ global class LeadTriggerHandler {
     public static void afterDelete(List<Lead> deletedLeads) {
         String jsonString = serializeLeadsToJson(deletedLeads, false);
         makeHttpCallout(jsonString, 'DELETE');
-    }
-/***************************************************************************************************
-* @Author:        CRM Developer
-* @className:     Wrapper
-* @Description:   This class wraps the input parameters for the Lead operations.
-***************************************************************************************************/
-    global class Wrapper {
-        public String FirstName;
-        public String LastName;
-        public String Email;
-        public String Phone;
-        public String NewEmail;
-        public String NewPhone;
     }
 }

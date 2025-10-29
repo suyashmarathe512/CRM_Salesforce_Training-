@@ -20,83 +20,49 @@
 
             <template if:false={isLoading}>
                 <lightning-layout multiple-rows="true">
+                    <template for:each={sections} for:item="section" for:index="index">
+                        <lightning-layout-item key={section.key} size="12" large-device-size="6" padding="around-small">
+                            <lightning-card title={section.displayTitle} icon-name={section.icon}>
+                                <template if:true={section.pagedRecords.length}>
+                                    <lightning-datatable
+                                        key-field="Id"
+                                        data={section.pagedRecords}
+                                        columns={section.columns}
+                                        onrowaction={handleRowAction}
+                                        onsave={handleSave}
+                                        draft-values={section.draftValues}
+                                        hide-checkbox-column
+                                    ></lightning-datatable>
 
-                    <lightning-layout-item size="12" large-device-size="6" padding="around-small">
-                        <lightning-card title={contactTitle} icon-name="standard:contact">
-                            <template if:true={pagedContacts.length}>
-                                <lightning-datatable
-                                    key-field="Id"
-                                    data={pagedContacts}
-                                    columns={contactColumns}
-                                    onrowaction={handleRowAction}
-                                    onsave={handleSave}
-                                    draft-values={contactDraftValues}
-                                    hide-checkbox-column
-                                ></lightning-datatable>
-                                
-                                <div class="slds-grid slds-grid_align-spread slds-p-top_small">
-                                    <lightning-button-group>
-                                        <lightning-button
-                                            label="Previous"
-                                            onclick={handleContactPrevious}
-                                            disabled={isContactFirstPage}
-                                        ></lightning-button>
-                                        <lightning-button
-                                            label="Next"
-                                            onclick={handleContactNext}
-                                            disabled={isContactLastPage}
-                                        ></lightning-button>
-                                    </lightning-button-group>
-                                    <span class="slds-align-middle slds-text-body_small">
-                                        Page {contactCurrentPage} of {totalContactPages}
-                                    </span>
-                                </div>
+                                    <div class="slds-grid slds-grid_align-spread slds-p-top_small">
+                                        <lightning-button-group>
+                                            <lightning-button
+                                                label="Previous"
+                                                onclick={handlePageChange}
+                                                data-section={section.key}
+                                                data-direction="previous"
+                                                disabled={section.isFirstPage}
+                                            ></lightning-button>
+                                            <lightning-button
+                                                label="Next"
+                                                onclick={handlePageChange}
+                                                data-section={section.key}
+                                                data-direction="next"
+                                                disabled={section.isLastPage}
+                                            ></lightning-button>
+                                        </lightning-button-group>
+                                        <span class="slds-align-middle slds-text-body_small">
+                                            Page {section.currentPage} of {section.totalPages}
+                                        </span>
+                                    </div>
 
-                            </template>
-                            <template if:false={pagedContacts.length}>
-                                <p class="slds-p-horizontal_small">No contacts found.</p>
-                            </template>
-                        </lightning-card>
-                    </lightning-layout-item>
-
-                    <lightning-layout-item size="12" large-device-size="6" padding="around-small">
-                        <lightning-card title={oppTitle} icon-name="standard:opportunity">
-                            <template if:true={pagedOpportunities.length}>
-                                <lightning-datatable
-                                    key-field="Id"
-                                    data={pagedOpportunities}
-                                    columns={oppColumns}
-                                    onrowaction={handleRowAction}
-                                    onsave={handleSave}
-                                    draft-values={oppDraftValues}
-                                    hide-checkbox-column
-                                ></lightning-datatable>
-                                
-                                <div class="slds-grid slds-grid_align-spread slds-p-top_small">
-                                    <lightning-button-group>
-                                        <lightning-button
-                                            label="Previous"
-                                            onclick={handleOppPrevious}
-                                            disabled={isOppFirstPage}
-                                        ></lightning-button>
-                                        <lightning-button
-                                            label="Next"
-                                            onclick={handleOppNext}
-                                            disabled={isOppLastPage}
-                                        ></lightning-button>
-                                    </lightning-button-group>
-                                    <span class="slds-align-middle slds-text-body_small">
-                                        Page {oppCurrentPage} of {totalOppPages}
-                                    </span>
-                                </div>
-
-                            </template>
-                            <template if:false={pagedOpportunities.length}>
-                                <p class="slds-p-horizontal_small">No opportunities found.</p>
-                            </template>
-                        </lightning-card>
-                    </lightning-layout-item>
-
+                                </template>
+                                <template if:false={section.pagedRecords.length}>
+                                    <p class="slds-p-horizontal_small">No {section.key} found.</p>
+                                </template>
+                            </lightning-card>
+                        </lightning-layout-item>
+                    </template>
                 </lightning-layout>
             </template>
         </div>

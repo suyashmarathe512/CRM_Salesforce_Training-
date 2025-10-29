@@ -11,15 +11,17 @@ const COLUMNS = [
 export default class AccountList extends LightningElement {
   columns = COLUMNS;
   @track data = [];
+  @track offsetSize = 0;
   loadedCount = 0;
   allLoaded = false;
   sortedBy = 'Name';
   sortedDirection = 'asc';
+  pageSize = 20;
   _scrollContainer;
   _isLoading = false;
   @wire(getAccounts, {
-    limitSize: 20,
-    offsetSize: 0,
+    limitSize: '$pageSize',
+    offsetSize: '$offsetSize',
     sortBy: '$sortedBy',
     sortDirection: '$sortedDirection'
   })

@@ -1,0 +1,41 @@
+<template>
+    <lightning-card title="Simple Text Inputs" icon-name="utility:edit">
+        <div class="slds-p-around_medium">
+
+            <!-- 1. Text to Translate -->
+            <lightning-textarea
+                label="Text"
+                value={sourceText}
+                onchange={handleTextChange}
+                placeholder="Type your text here..."
+            ></lightning-textarea>
+
+            <!-- 2. Source Language -->
+             <lightning-textarea
+                label="Source Language"
+                value={sourceLang}
+                placeholder="Select Source Language"
+                onchange={handleSourceLangChange}
+                class="slds-m-top_medium"
+            ></lightning-textarea>
+
+            <!-- 3. Target Language -->
+            <lightning-textarea
+                label="Target Language"
+                value={targetLang}
+                placeholder="Select Target Language"
+                onchange={handleTargetLangChange}
+                class="slds-m-top_medium"
+            ></lightning-textarea>
+            <!-- A simple button that doesn't do anything yet -->
+            <lightning-button
+                label="Translate (Placeholder)"
+                variant="brand"
+                onclick={handleTranslateClick}
+                class="slds-m-top_medium"
+            ></lightning-button>
+
+        </div>
+    </lightning-card>
+</template>
+

@@ -1,20 +1,14 @@
 import { LightningElement, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-
 export default class TimeTools extends LightningElement {
-    // --- Shared Properties ---
     @track formattedStopwatchTime = '00:00:00';
     @track formattedTimerTime = '00:00:00';
-    
-    // --- Stopwatch Properties ---
-    @track stopwatchTime = 0; // in milliseconds
+    @track stopwatchTime = 0;
     @track stopwatchRunning = false;
     @track laps = [];
     stopwatchInterval;
     stopwatchStartTime;
-
-    // --- Timer Properties ---
-    @track timerTime = 0; // in seconds
+    @track timerTime = 0; 
     @track timerRunning = false;
     @track isTimerFinished = false;
     @track timerInputs = { hours: '0', minutes: '0', seconds: '0' };
@@ -26,12 +20,6 @@ export default class TimeTools extends LightningElement {
         clearInterval(this.stopwatchInterval);
         clearInterval(this.timerInterval);
     }
-
-    // =================================================================
-    // STOPWATCH LOGIC
-    // =================================================================
-
-    // --- Getters for Stopwatch ---
     get stopwatchStartLabel() {
         return this.stopwatchRunning ? 'Pause' : 'Start';
     }
@@ -47,8 +35,6 @@ export default class TimeTools extends LightningElement {
     get stopwatchDisplayClass() {
         return 'time-display';
     }
-
-    // --- Stopwatch Handlers ---
     handleStopwatchStartPause() {
         this.stopwatchRunning = !this.stopwatchRunning;
 
@@ -78,12 +64,6 @@ export default class TimeTools extends LightningElement {
             time: this.formattedStopwatchTime 
         });
     }
-
-    // =================================================================
-    // TIMER LOGIC
-    // =================================================================
-
-    // --- Getters for Timer ---
     get timerStartLabel() {
         return this.timerRunning ? 'Pause' : 'Start';
     }
@@ -103,8 +83,6 @@ export default class TimeTools extends LightningElement {
     get timerDisplayClass() {
         return 'time-display';
     }
-
-    // --- Timer Handlers ---
     handleTimerInputChange(event) {
         const { id } = event.target.dataset;
         let value = parseInt(event.target.value, 10);
@@ -120,7 +98,6 @@ export default class TimeTools extends LightningElement {
         this.timerInitialTime = this.timerTime;
         this.formattedTimerTime = this.formatTimerTime(this.timerTime);
     }
-
     handleTimerStartPause() {
         this.isTimerFinished = false;
         this.timerRunning = !this.timerRunning;
@@ -161,10 +138,6 @@ export default class TimeTools extends LightningElement {
         this.formattedTimerTime = '00:00:00';
     }
 
-    // =================================================================
-    // UTILITY FUNCTIONS
-    // =================================================================
-
     formatStopwatchTime(ms) {
         const totalSeconds = Math.floor(ms / 1000);
         const seconds = String(totalSeconds % 60).padStart(2, '0');
@@ -173,7 +146,6 @@ export default class TimeTools extends LightningElement {
         const hours = String(Math.floor(totalMinutes / 60)).padStart(2, '0');
         return `${hours}:${minutes}:${seconds}`;
     }
-
     formatTimerTime(s) {
         const totalSeconds = Number(s);
         const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');

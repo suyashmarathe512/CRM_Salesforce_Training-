@@ -1,34 +1,57 @@
-.time-display {
-    font-size: 3.5rem;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    text-align: center;
-    padding: var(--lwc-spacingLarge) var(--lwc-spacingMedium);
-    background: linear-gradient(135deg);
-    border: 2px solid ;
-    border-radius: var(--lwc-borderRadiusMedium);
-    margin: var(--lwc-spacingSmall) var(--lwc-spacingMedium) var(--lwc-spacingLarge);
-    transition: background-color 0.3s ease;
-    color: #2d3436;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-.timer-inputs {
-    padding: 0 var(--lwc-spacingMedium);
-}
-.lap-list {
-    max-height: 200px;
-    overflow-y: auto;
-    border: 1px solid var(--lwc-colorBorder);
-    border-radius: var(--lwc-borderRadiusMedium);
-    margin: 0 var(--lwc-spacingMedium) var(--lwc-spacingMedium);
+lightning-card {
+    border: 2px solid #817f7f;
+    border-radius: 5px;
 }
 
-.lap-item {
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 1.1rem;
-    padding: var(--lwc-spacingXSmall) var(--lwc-spacingSmall);
-    border-bottom: 1px solid var(--lwc-colorBorder);
+lightning-card::part(header) {
+    background-color: #808080 !important;
+    color: #333;
 }
 
-.lap-item:last-child {
-    border-bottom: none;
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.display {
+    font-size: 4rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    border: 2px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.time {
+    font-family: monospace;
+}
+
+.mode {
+    font-size: 1rem;
+    color: #666;
+}
+
+.timer-input {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.timer-input lightning-input {
+    width: 80px;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+lightning-button {
+    min-width: 120px;
 }

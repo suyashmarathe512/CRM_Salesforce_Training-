@@ -13,21 +13,19 @@ export default class AccountList extends LightningElement {
   @track data = [];
   loadedCount = 0;
   allLoaded = false;
-  pageSize = 20;
-  offsetSize = 0;
   sortedBy = 'Name';
   sortedDirection = 'asc';
-  _loadMoreTable;
-  _loadTimeout;
+  _scrollContainer;
+  _isLoading = false;
   @wire(getAccounts, {
-    limitSize: '$pageSize',
-    offsetSize: '$offsetSize',
+    limitSize: 20,
+    offsetSize: 0,
     sortBy: '$sortedBy',
     sortDirection: '$sortedDirection'
   })
   wired({ data, error }) {
     if (error) {
-      this._clearLoadMoreSpinner();
+      this._isLoading = false;
       return;
     }
     if (!data) return;
@@ -36,28 +34,8 @@ export default class AccountList extends LightningElement {
     this.loadedCount = this.data.length;
     const total = data.totalCount || 0;
     this.allLoaded = this.data.length >= total;
-
-    this._clearLoadMoreSpinner();
+    this._isLoading = false;
   }
-  handleLoadMore(event) {
-    if (this.allLoaded) return;
-
-    this._loadMoreTable = event.target;
-    this._loadMoreTable.isLoading = true;
-
-    const prevOffset = this.offsetSize;
-    this.offsetSize = prevOffset + this.pageSize;
-
-    clearTimeout(this._loadTimeout);
-    this._loadTimeout = setTimeout(() => {
-      if (this._loadMoreTable) {
-        this._loadMoreTable.isLoading = false;
-        this._loadMoreTable = null;
-      }
-      this.offsetSize = prevOffset;
-    }, 10000);
-  }
-
   handleSort(event) {
     const { fieldName, sortDirection } = event.detail;
     this.sortedBy = fieldName === 'recordUrl' ? 'Name' : fieldName;
@@ -67,15 +45,26 @@ export default class AccountList extends LightningElement {
     this.loadedCount = 0;
     this.allLoaded = false;
   }
-
-  _clearLoadMoreSpinner() {
-    if (this._loadTimeout) {
-      clearTimeout(this._loadTimeout);
-      this._loadTimeout = null;
-    }
-    if (this._loadMoreTable) {
-      this._loadMoreTable.isLoading = false;
-      this._loadMoreTable = null;
+  renderedCallback() {
+    if (!this._scrollContainer) {
+      this._scrollContainer = this.template.querySelector('.dt-scroll');
+      if (this._scrollContainer) {
+        this._scrollContainer.addEventListener('scroll', this.handleScroll.bind(this));
+      }
     }
   }
+  handleScroll(event) {
+    if (this.allLoaded || this._isLoading) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = event.target;
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      this.loadMoreData();
+    }
+  }
+
+  loadMoreData() {
+    this._isLoading = true;
+    this.offsetSize += this.pageSize;
+  }
+
 }

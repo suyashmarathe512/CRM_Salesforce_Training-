@@ -1,0 +1,9 @@
+.dt-scroll {
+    overflow: auto;
+    max-height: 400px;
+}
+
+.loading-indicator {
+    text-align: center;
+    padding: 10px;
+}

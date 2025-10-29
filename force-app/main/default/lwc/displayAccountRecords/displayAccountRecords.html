@@ -11,13 +11,13 @@
         columns={columns}
         hide-checkbox-column
         show-row-number-column
-        enable-infinite-loading
-        load-more-offset="0"
-        onloadmore={handleLoadMore}
         sorted-by={sortedBy}
         sorted-direction={sortedDirection}
         onsort={handleSort}>
       </lightning-datatable>
+      <div if:true={_isLoading} class="loading-indicator">
+        <lightning-spinner alternative-text="Loading more records" size="small"></lightning-spinner>
+      </div>
     </div>
   </lightning-card>
 </template>

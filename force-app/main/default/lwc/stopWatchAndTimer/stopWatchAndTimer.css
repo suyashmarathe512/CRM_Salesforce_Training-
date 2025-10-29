@@ -1,0 +1,36 @@
+.time-display {
+    font-size: 3.5rem;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    text-align: center;
+    padding: var(--lwc-spacingLarge) var(--lwc-spacingMedium);
+    background: linear-gradient(135deg);
+    border: 2px solid ;
+    border-radius: var(--lwc-borderRadiusMedium);
+    margin: var(--lwc-spacingSmall) var(--lwc-spacingMedium) var(--lwc-spacingLarge);
+    transition: background-color 0.3s ease;
+    color: #2d3436;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.timer-inputs {
+    padding: 0 var(--lwc-spacingMedium);
+}
+
+/* Lap List */
+.lap-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--lwc-colorBorder);
+    border-radius: var(--lwc-borderRadiusMedium);
+    margin: 0 var(--lwc-spacingMedium) var(--lwc-spacingMedium);
+}
+
+.lap-item {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 1.1rem;
+    padding: var(--lwc-spacingXSmall) var(--lwc-spacingSmall);
+    border-bottom: 1px solid var(--lwc-colorBorder);
+}
+
+.lap-item:last-child {
+    border-bottom: none;
+}

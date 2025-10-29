@@ -1,18 +1,100 @@
 <template>
-    <lightning-card class="slds-card_boundary" title="Stopwatch and Timer">
-        <div class="slds-grid slds-grid_vertical-align-center slds-p-around_medium">
-            <div class="slds-col slds-size_1-of-1 display">
-                <span class="time">{elapsedTime}</span>
-                <span class="mode" lwc:if={mode}> ({mode})</span>
-            </div>
-            <div class="slds-col slds-size_1-of-1 timer-input">
-                <lightning-input label="Timer Duration (seconds)" type="number" value={timerInputValue} onchange={handleTimerInputChange} class="slds-input"></lightning-input>
-            </div>
-            <div class="slds-col slds-size_1-of-1 buttons">
-                <lightning-button label={startStopwatchLabel} onclick={startStopwatch} disabled={isStopwatchDisabled} class="slds-button slds-button_brand"></lightning-button>
-                <lightning-button label={startTimerLabel} onclick={startTimer} disabled={isTimerDisabled} class="slds-button slds-button_brand"></lightning-button>
-                <lightning-button label="Reset" onclick={reset} class="slds-button slds-button_neutral"></lightning-button>
-            </div>
-        </div>
+    <lightning-card title="Stopwatch & Timer" icon-name="utility:clock">
+        <lightning-tabset variant="scoped">
+
+            <lightning-tab label="Stopwatch">
+                <div class="time-display">
+                    {formattedStopwatchTime}
+                </div>
+                <lightning-button-group class="slds-align_absolute-center slds-m-bottom_medium">
+                    <lightning-button
+                        label={stopwatchStartLabel}
+                        icon-name={stopwatchStartIcon}
+                        onclick={handleStopwatchStartPause}
+                        variant="brand">
+                    </lightning-button>
+                    <lightning-button
+                        label="Lap"
+                        icon-name="utility:add"
+                        onclick={handleStopwatchLap}
+                        disabled={isLapButtonDisabled}>
+                    </lightning-button>
+                    <lightning-button
+                        label="Reset"
+                        icon-name="utility:refresh"
+                        onclick={handleStopwatchReset}>
+                    </lightning-button>
+                </lightning-button-group>
+
+                <template if:true={laps.length}>
+                    <div class="lap-list" role="log" aria-live="polite">
+                        <template for:each={laps} for:item="lap">
+                            <div key={lap.id} class="lap-item slds-grid">
+                                <span class="slds-col slds-size_1-of-3">Lap {lap.id}</span>
+                                <span class="slds-col slds-size_2-of-3 slds-text-align_right">{lap.time}</span>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </lightning-tab>
+
+            <lightning-tab label="Timer">
+                <template if:false={timerStarted}>
+                    <div class="timer-inputs slds-grid slds-gutters slds-m-bottom_medium">
+                        <lightning-input
+                            class="slds-col"
+                            type="number"
+                            label="Hours"
+                            data-id="hours"
+                            min="0"
+                            value={timerInputs.hours}
+                            onchange={handleTimerInputChange}>
+                        </lightning-input>
+                        <lightning-input
+                            class="slds-col"
+                            type="number"
+                            label="Minutes"
+                            data-id="minutes"
+                            min="0"
+                            max="59"
+                            value={timerInputs.minutes}
+                            onchange={handleTimerInputChange}>
+                        </lightning-input>
+                        <lightning-input
+                            class="slds-col"
+                            type="number"
+                            label="Seconds"
+                            data-id="seconds"
+                            min="0"
+                            max="59"
+                            value={timerInputs.seconds}
+                            onchange={handleTimerInputChange}>
+                        </lightning-input>
+                    </div>
+                </template>
+
+                <template if:true={timerStarted}>
+                    <div class="time-display">
+                        {formattedTimerTime}
+                    </div>
+                </template>
+
+                <lightning-button-group class="slds-align_absolute-center">
+                    <lightning-button
+                        label={timerStartLabel}
+                        icon-name={timerStartIcon}
+                        onclick={handleTimerStartPause}
+                        variant="brand"
+                        disabled={isTimerStartDisabled}>
+                    </lightning-button>
+                    <lightning-button
+                        label="Reset"
+                        icon-name="utility:refresh"
+                        onclick={handleTimerReset}>
+                    </lightning-button>
+                </lightning-button-group>
+            </lightning-tab>
+
+        </lightning-tabset>
     </lightning-card>
 </template>

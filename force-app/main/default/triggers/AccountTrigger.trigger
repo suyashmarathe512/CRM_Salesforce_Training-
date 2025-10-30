@@ -1,9 +1,12 @@
+/***************************************************************************************************
+ * @Author:        CRM Developer
+ * @className:     AccountTrigger
+ * @Description:   Trigger to handle Account before insert and before update events.
+ * ***************************************************************************************************/
 trigger AccountTrigger on Account (before insert, before update) {
-
-    // This trigger will run before a record is created or updated
     if (Trigger.isBefore) {
-        AccountTriggerHandler.populateCapitalFromSetting(Trigger.new);
-        //AccountTriggerHandler.populateCapitalFromMetadata(Trigger.new);
+        //AccountTriggerHandler.populateCapitalFromSetting(Trigger.new);
+        AccountTriggerHandler.populateCapitalFromMDT(Trigger.new);
     }
 
 }

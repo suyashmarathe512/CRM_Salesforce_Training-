@@ -1,8 +1,30 @@
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @className:     AccountContactFileController
+* @Description:   This class handles the creation of Account and Contact records,
+*                 along with uploading a file to the Contact record.
+***************************************************************************************************/
 public with sharing class AccountContactFileController {
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @methodName:     saveRecords
+* @param:         accName - Name of the Account
+*                 accWebsite - Website of the Account
+*                 conFName - First Name of the Contact
+*                 conLName - Last Name of the Contact
+*                 conEmail - Email of the Contact
+*                 conPhone - Phone of the Contact
+*                 country - Country of the Contact
+*                 city - City of the Contact
+*                 base64Data - Base64 encoded data of the file
+*                 fileName - Name of the file
+* @Description:   This class handles the creation of Account and Contact records,
+*                 along with uploading a file to the Contact record.
+***************************************************************************************************/
     @AuraEnabled
     public static Id saveRecords(String accName, String accWebsite, String conFName, String conLName,
                                  String conEmail, String conPhone, String country, String city,
-                                 String base64Data, String fileName) {
+                                 String base64Data, String fileName){
         try {
             Account acc = new Account();
             acc.Name = accName;
@@ -30,6 +52,11 @@ public with sharing class AccountContactFileController {
             throw new AuraHandledException(e.getMessage());
         }
     }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @methodName:     getCountries
+* @Description:   This method returns a list of countries for the dropdown.
+***************************************************************************************************/
     @AuraEnabled(cacheable=true)
     public static List<Map<String, String>> getCountries() {
         List<Map<String, String>> options = new List<Map<String, String>>();
@@ -38,6 +65,12 @@ public with sharing class AccountContactFileController {
         options.add(new Map<String, String>{'label' => 'India', 'value' => 'India'});
         return options;
     }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @methodName:     getCities
+* @param:         country - Country of the Contact
+* @Description:   This method returns a list of cities based on the selected country.
+***************************************************************************************************/
     @AuraEnabled(cacheable=true)
     public static List<Map<String, String>> getCities(String country) {
         List<Map<String, String>> options = new List<Map<String, String>>();

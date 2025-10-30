@@ -1,0 +1,96 @@
+<template>
+    <lightning-card class="grey-background" icon-name="standard:opportunity">
+        <div slot="title">Opportunity Details LDS</div>
+        <div class="slds-p-horizontal_small">
+            <lightning-accordion allow-multiple-sections-open active-section-name="BasicInfo">
+                <lightning-accordion-section name="BasicInfo" label="Basic Information">
+                    <div class="content-wrapper">
+                        <lightning-record-view-form
+                            record-id={recordId}
+                            object-api-name={objectApiName}>
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-horizontal_medium">
+                                    <lightning-output-field field-name="Name"></lightning-output-field>
+                                    <lightning-output-field field-name="AccountId"></lightning-output-field>
+                                    <lightning-output-field field-name="Description"></lightning-output-field>
+                                    <lightning-output-field field-name="CreatedDate"></lightning-output-field>
+                                    <lightning-output-field field-name="CreatedById"></lightning-output-field>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-horizontal_medium">
+                                    <lightning-output-field field-name="Type"></lightning-output-field>
+                                    <lightning-output-field field-name="LeadSource"></lightning-output-field>
+                                    <lightning-output-field field-name="LastModifiedDate"></lightning-output-field>
+                                    <lightning-output-field field-name="LastModifiedById"></lightning-output-field>
+                                </div>
+                            </div>
+                        </lightning-record-view-form>
+                    </div>
+                </lightning-accordion-section>
+                
+                <lightning-accordion-section name="Financial" label="Financial Details">
+                    <div class="content-wrapper">
+                        <lightning-record-view-form
+                            record-id={recordId}
+                            object-api-name={objectApiName}>
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-horizontal_medium">
+                                    <lightning-output-field field-name="Amount"></lightning-output-field>
+                                    <lightning-output-field field-name="ExpectedRevenue"></lightning-output-field>
+                                    <lightning-output-field field-name="CloseDate"></lightning-output-field>
+                                    <lightning-output-field field-name="Probability"></lightning-output-field>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-horizontal_medium">
+                                    <lightning-output-field field-name="StageName"></lightning-output-field>
+                                    <lightning-output-field field-name="ForecastCategory"></lightning-output-field>
+                                    <lightning-output-field field-name="ForecastCategoryName"></lightning-output-field>
+                                    <lightning-output-field field-name="TotalOpportunityQuantity"></lightning-output-field>
+                                </div>
+                            </div>
+                        </lightning-record-view-form>
+                    </div>
+                </lightning-accordion-section>
+                
+                <lightning-accordion-section name="Status" label="Status and Next Steps">
+                    <div class="content-wrapper">
+                        <lightning-record-view-form
+                            record-id={recordId}
+                            object-api-name={objectApiName}>
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-horizontal_medium">
+                                    <lightning-output-field field-name="IsWon"></lightning-output-field>
+                                    <lightning-output-field field-name="IsClosed"></lightning-output-field>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-horizontal_medium">
+                                    <lightning-output-field field-name="NextStep"></lightning-output-field>
+                                    <lightning-output-field field-name="HasOpportunityLineItem"></lightning-output-field>
+                                </div>
+                            </div>
+                        </lightning-record-view-form>
+                    </div>
+                </lightning-accordion-section>
+                
+                <lightning-accordion-section name="Related" label="Related Records">
+                    <div class="content-wrapper">
+                        <lightning-record-view-form
+                            record-id={recordId}
+                            object-api-name={objectApiName}>
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-horizontal_medium">
+                                    <lightning-output-field field-name="OwnerId"></lightning-output-field>
+                                    <lightning-output-field field-name="CampaignId"></lightning-output-field>
+                                    <lightning-output-field field-name="SyncedQuoteId"></lightning-output-field>
+                                    <lightning-output-field field-name="ContractId"></lightning-output-field>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-horizontal_medium">
+                                    <lightning-output-field field-name="Pricebook2Id"></lightning-output-field>
+                                    <lightning-output-field field-name="Private"></lightning-output-field>
+                                </div>
+                            </div>
+                        </lightning-record-view-form>
+                    </div>
+                </lightning-accordion-section>
+                
+            </lightning-accordion>
+        </div>
+    </lightning-card>
+</template>

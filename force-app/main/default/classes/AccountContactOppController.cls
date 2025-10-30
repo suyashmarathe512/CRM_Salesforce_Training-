@@ -1,4 +1,16 @@
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @className:     AccountContactOppController
+* @Description:   This class provides methods to fetch Accounts, related Contacts and Opportunities,
+*                 along with their field definitions and user permissions. It also allows deletion of records.
+***************************************************************************************************/
 public without sharing class AccountContactOppController {
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @className:     AccountDataWrapper
+* @Description:   This class serves as a wrapper to hold Contacts, Opportunities, their field definitions,
+*                 and user permissions for use in Lightning components.
+***************************************************************************************************/
     public class AccountDataWrapper {
         @AuraEnabled
         public List<Contact> contacts { get; set; }
@@ -13,6 +25,12 @@ public without sharing class AccountContactOppController {
         @AuraEnabled
         public List<ColumnDef> opportunityColumns { get; set; }
     }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @className:     ColumnDef
+* @Description:   This class defines the structure for column definitions used in Lightning data tables,
+*                 including label, field name, type, and editability.
+***************************************************************************************************/
     public class ColumnDef {
         @AuraEnabled
         public String label { get; set; }
@@ -22,6 +40,16 @@ public without sharing class AccountContactOppController {
         public String type { get; set; }
         @AuraEnabled
         public Boolean editable { get; set; }
+/***************************************************************************************************
+* @Author:        CRM Developer
+* @methodName:     ColumnDef
+* @param1:       String label
+* @param2:      / String fieldName
+* @param3:       String type
+* @param4:       Boolean editable
+* @Description:   This constructor initializes a ColumnDef instance with the provided label, field name,
+*                 type, and editability.
+***************************************************************************************************/
         public ColumnDef(String label, String fieldName, String type, Boolean editable) {
             this.label = label;
             this.fieldName = fieldName;
@@ -29,6 +57,11 @@ public without sharing class AccountContactOppController {
             this.editable = editable;
         }
     }
+/***************************************************************************************************
+ * @Author:        CRM Developer
+* @methodName:    getAccounts
+* @Description:   This method retrieves a list of Accounts with their Id and Name.
+***************************************************************************************************/
     @AuraEnabled(cacheable=true)
     public static List<Account> getAccounts() {
         try {
@@ -42,6 +75,15 @@ public without sharing class AccountContactOppController {
             throw new AuraHandledException(e.getMessage());
         }
     }
+/****************************************************************************************************
+ * @Author:        CRM Developer
+* @methodName:    getColumnsFromFieldSet
+* @param1:       String objectName
+* @param2:       String fieldSetName
+* @param3:       Boolean canEdit
+* @param4:       List<String> fieldPaths
+* @Description:   This method retrieves column definitions from a specified field set for a given object.
+****************************************************************************************************/
     private static List<ColumnDef> getColumnsFromFieldSet(String objectName, String fieldSetName, Boolean canEdit, List<String> fieldPaths) {
         List<ColumnDef> columns = new List<ColumnDef>();
         try {
@@ -58,6 +100,12 @@ public without sharing class AccountContactOppController {
         }
         return columns;
     }
+/****************************************************************************************************
+ * @Author:        CRM Developer
+* @methodName:    getRelatedData
+* @param1:       String accountId
+* @Description:   This method retrieves related Contacts and Opportunities for a given Account.
+****************************************************************************************************/
     @AuraEnabled(cacheable=true)
     public static AccountDataWrapper getRelatedData(String accountId) {
         AccountDataWrapper wrapper = new AccountDataWrapper();
@@ -80,6 +128,17 @@ public without sharing class AccountContactOppController {
 
         return wrapper;
     }
+/****************************************************************************************************
+ * @Author:        CRM Developer
+* @methodName:    getObjectData
+* @param1:       String objectName
+* @param2:       String fieldSetName
+* @param3:       List<String> defaultFields
+* @param4:       List<ColumnDef> defaultColumns
+* @param5:       String orderBy
+* @param6:       String accountId
+* @Description:   This method retrieves records, field definitions, and user permissions for a specified object.
+****************************************************************************************************/
     private static Map<String, Object> getObjectData(String objectName, String fieldSetName, List<String> defaultFields, List<ColumnDef> defaultColumns, String orderBy, String accountId) {
         Map<String, Object> result = new Map<String, Object>();
         Map<String, Boolean> permissions = new Map<String, Boolean>{
@@ -102,6 +161,12 @@ public without sharing class AccountContactOppController {
         result.put('columns', columns);
         return result;
     }
+/****************************************************************************************************
+ * @Author:        CRM Developer  
+ * @methodName:    deleteSObjectRecord
+ * @param1:       String recordId
+ * @Description:   This method deletes a record by its Id, handling exceptions for permission issues.
+****************************************************************************************************/
     @AuraEnabled
     public static void deleteSObjectRecord(String recordId) {
         try {

@@ -1,0 +1,20 @@
+<apex:page controller="TranslationController" language="{!selectedLanguage}">
+    <apex:form>
+        <apex:pageBlock title="Custom Label Translator">
+            <apex:pageBlockSection title="Select Language" columns="1">
+                <apex:selectList label="Language"
+                                 value="{!selectedLanguage}"
+                                 size="1">
+                    <apex:selectOptions value="{!languageOptions}"/>
+                    <apex:actionSupport event="onchange" action="{!changeLanguage}" reRender="translatedSection"/>
+                </apex:selectList>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Translated Text" id = "translatedSection">
+                <h2>
+                    {!$Label.GreetingMessage}
+                </h2>
+            </apex:pageBlockSection>
+
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

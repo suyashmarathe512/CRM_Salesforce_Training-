@@ -1,18 +1,18 @@
 <template>
-    <lightning-card>
+    <lightning-card class="slds-theme_shade">
         <lightning-icon icon-name="utility:clock" slot="title"></lightning-icon>
         <span slot="title">   Stopwatch and Timer</span>
-        <div class="container">
-            <div class="display">
-                <span class="time">{elapsedTime}</span>
-                <span class="mode" lwc:if={mode}> ({mode})</span>
+        <div class="container slds-p-around_medium slds-d-flex slds-flex-column slds-align-items-center">
+            <div class="display slds-card">
+                <span class="time slds-text-heading_large">{elapsedTime}</span>
+                <span class="mode slds-text-body_regular slds-text-color_weak" lwc:if={mode}> ({mode})</span>
             </div>
-            <div class="timer-input">
+            <div class="timer-input slds-m-bottom_medium slds-d-flex slds-justify-content_center">
                 <lightning-input label="Hours" type="number" value={hours} onchange={handleHoursChange}></lightning-input>
                 <lightning-input label="Minutes" type="number" value={minutes} onchange={handleMinutesChange}></lightning-input>
                 <lightning-input label="Seconds" type="number" value={seconds} onchange={handleSecondsChange}></lightning-input>
             </div>
-            <div class="buttons">
+            <div class="buttons slds-d-flex slds-flex-wrap slds-justify-content_center">
                 <lightning-button label={startStopwatchLabel} icon-name={stopwatchIcon} onclick={startStopwatch} disabled={isStopwatchDisabled}></lightning-button>
                 <lightning-button label={startTimerLabel} icon-name={timerIcon} onclick={startTimer} disabled={isTimerDisabled}></lightning-button>
                 <lightning-button label="Reset" icon-name="utility:refresh" onclick={reset}></lightning-button>

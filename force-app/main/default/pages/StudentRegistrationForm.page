@@ -10,8 +10,9 @@
                     <apex:actionSupport event="onchange" reRender="formBox"/>              
                 </apex:selectList>
             </apex:pageBlockSection>
-            <apex:pageBlockSection title="Student Details" columns="2">    
-                <apex:inputField value="{!student.Name}"/>
+            <apex:pageBlockSection title="Student Details" columns="2">
+                <apex:inputField value="{!student.First_Name__c}"/>
+                <apex:inputField value="{!student.Last_Name__c}"/>
                 <apex:inputField value="{!student.Roll_number__c}"/>
                 <apex:inputField value="{!student.Gender__c}"/>
                 <apex:inputField value="{!student.Courses__c}"/>
@@ -20,7 +21,6 @@
                 <apex:inputField value="{!student.Country__c}"/>
                 <apex:inputField value="{!student.State__c}"/>
                 <apex:inputField value="{!student.City__c}"/>
-                
             </apex:pageBlockSection>
             <apex:pageBlockButtons location="bottom">
                 <apex:commandButton action="{!saveStudent}" 

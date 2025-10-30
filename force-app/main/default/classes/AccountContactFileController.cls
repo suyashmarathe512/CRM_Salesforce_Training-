@@ -1,19 +1,13 @@
 public with sharing class AccountContactFileController {
-
-    // Main method to save all records
     @AuraEnabled
-    public static Id saveRecords(String accName, String accWebsite, String conFName, String conLName, 
-                                 String conEmail, String conPhone, String country, String city, 
+    public static Id saveRecords(String accName, String accWebsite, String conFName, String conLName,
+                                 String conEmail, String conPhone, String country, String city,
                                  String base64Data, String fileName) {
-        
         try {
-            // 1. Create Account
             Account acc = new Account();
             acc.Name = accName;
             acc.Website = accWebsite;
             insert acc;
-
-            // 2. Create Contact related to the Account
             Contact con = new Contact();
             con.AccountId = acc.Id;
             con.FirstName = conFName;
@@ -23,27 +17,19 @@ public with sharing class AccountContactFileController {
             con.MailingCountry = country;
             con.MailingCity = city;
             insert con;
-
-            // 3. Upload File (ContentVersion) and link to the new Contact
             if (base64Data != null && fileName != null) {
                 ContentVersion cv = new ContentVersion();
                 cv.Title = fileName;
                 cv.PathOnClient = fileName;
                 cv.VersionData = EncodingUtil.base64Decode(base64Data);
-                cv.FirstPublishLocationId = con.Id; // Link file to the Contact
+                cv.FirstPublishLocationId = con.Id;
                 insert cv;
             }
-
-            // Return the new Contact ID for navigation
             return con.Id;
-
         } catch (Exception e) {
-            // Pass the error back to the LWC
             throw new AuraHandledException(e.getMessage());
         }
     }
-
-    // Method to get the list of countries
     @AuraEnabled(cacheable=true)
     public static List<Map<String, String>> getCountries() {
         List<Map<String, String>> options = new List<Map<String, String>>();
@@ -52,12 +38,9 @@ public with sharing class AccountContactFileController {
         options.add(new Map<String, String>{'label' => 'India', 'value' => 'India'});
         return options;
     }
-
-    // Method to get cities based on the selected country
     @AuraEnabled(cacheable=true)
     public static List<Map<String, String>> getCities(String country) {
         List<Map<String, String>> options = new List<Map<String, String>>();
-        
         if (country == 'USA') {
             options.add(new Map<String, String>{'label' => 'New York', 'value' => 'New York'});
             options.add(new Map<String, String>{'label' => 'Chicago', 'value' => 'Chicago'});
@@ -71,7 +54,6 @@ public with sharing class AccountContactFileController {
             options.add(new Map<String, String>{'label' => 'New Delhi', 'value' => 'New Delhi'});
             options.add(new Map<String, String>{'label' => 'Bangalore', 'value' => 'Bangalore'});
         }
-        
         return options;
     }
 }

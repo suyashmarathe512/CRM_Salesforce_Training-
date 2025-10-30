@@ -2,12 +2,9 @@
     <template if:true={isLoading}>
         <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
     </template>
-
     <lightning-card title="Create Account, Contact, and File" icon-name="standard:account">
-        
         <div class="slds-p-around_medium">
             <lightning-layout multiple-rows="true">
-
                 <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
                     <lightning-input 
                         label="Account Name" 
@@ -16,8 +13,7 @@
                         onchange={handleInputChange} 
                         required>
                     </lightning-input>
-                </lightning-layout-item>
-                
+                </lightning-layout-item>                
                 <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
                     <lightning-input 
                         label="Account WebSite" 
@@ -27,7 +23,6 @@
                         onchange={handleInputChange}>
                     </lightning-input>
                 </lightning-layout-item>
-
                 <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
                     <lightning-input 
                         label="Contact First Name" 
@@ -36,7 +31,6 @@
                         onchange={handleInputChange}>
                     </lightning-input>
                 </lightning-layout-item>
-
                 <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
                     <lightning-input 
                         label="Contact Last Name" 
@@ -46,7 +40,6 @@
                         required>
                     </lightning-input>
                 </lightning-layout-item>
-
                 <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
                     <lightning-input 
                         label="Contact Email" 
@@ -56,7 +49,6 @@
                         onchange={handleInputChange}>
                     </lightning-input>
                 </lightning-layout-item>
-
                 <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
                     <lightning-input 
                         label="Contact phone Number" 
@@ -66,7 +58,6 @@
                         onchange={handleInputChange}>
                     </lightning-input>
                 </lightning-layout-item>
-
                 <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
                     <lightning-combobox
                         name="country"
@@ -78,7 +69,6 @@
                         required>
                     </lightning-combobox>
                 </lightning-layout-item>
-
                 <lightning-layout-item size="12" medium-device-size="6" class="slds-p-around_x-small">
                     <lightning-combobox
                         name="city"
@@ -91,32 +81,34 @@
                         required>
                     </lightning-combobox>
                 </lightning-layout-item>
-
                 <lightning-layout-item size="12" class="slds-p-around_x-small">
                     <lightning-input 
                         type="file" 
                         label="Upload File"
                         onchange={handleFileChange}>
                     </lightning-input>
-                </lightning-layout-item>
-
+                    <template if:true={fileName}>
+                        <lightning-pill
+                            label={fileName}
+                            onremove={handleRemoveFile}
+                            class="slds-m-top_x-small">
+                        </lightning-pill>
+                    </template>
+                    </lightning-layout-item>
             </lightning-layout>
         </div>
-
         <div class="slds-modal__footer">
             <lightning-button 
                 label="Cancel" 
                 variant="neutral" 
                 onclick={handleCancel}>
             </lightning-button>
-            
             <lightning-button 
                 label="Save & New" 
                 variant="brand" 
                 onclick={handleSaveAndNew} 
                 class="slds-m-left_x-small">
             </lightning-button>
-
             <lightning-button 
                 label="Save" 
                 variant="brand" 
@@ -124,6 +116,5 @@
                 class="slds-m-left_x-small">
             </lightning-button>
         </div>
-
     </lightning-card>
 </template>

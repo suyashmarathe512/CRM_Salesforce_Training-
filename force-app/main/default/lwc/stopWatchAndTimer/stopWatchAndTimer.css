@@ -1,29 +1,22 @@
-.container {
-    gap: 10px;
-}
-
 .display {
-    font-size: 4rem;
-    font-weight: bold;
-    margin-bottom: 30px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: beige;
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    
 }
-
 .time {
     font-family: monospace;
+    font-size: 3rem;
+    font-weight: bold;
 }
-
-.timer-input {
-    gap: 10px;
+.timer-input-item {
+    width: 150px;
 }
-
-.timer-input lightning-input {
-    width: 80px;
-}
-
-.buttons {
-    gap: 10px;
-}
-
 lightning-button {
-    min-width: 120px;
+    min-width: 100px;
 }

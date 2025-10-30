@@ -1,6 +1,5 @@
 import { LightningElement, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-
 export default class StopWatchAndTimer extends LightningElement {
     @track elapsedTime = '00:00:00';
     @track isRunning = false;
@@ -11,51 +10,42 @@ export default class StopWatchAndTimer extends LightningElement {
     @track minutes = 0;
     @track seconds = 0;
     intervalId = null;
-
     get startStopwatchLabel() {
         if (this.isRunning && this.mode === 'stopwatch') {
             return 'Stop Stopwatch';
         }
         return 'Start Stopwatch';
     }
-
     get startTimerLabel() {
         if (this.isRunning && this.mode === 'timer') {
             return 'Stop Timer';
         }
         return 'Start Timer';
     }
-
     get stopwatchIcon() {
         if (this.isRunning && this.mode === 'stopwatch') {
             return 'utility:pause';
         }
         return 'utility:play';
     }
-
     get timerIcon() {
         if (this.isRunning && this.mode === 'timer') {
             return 'utility:pause';
         }
         return 'utility:play';
     }
-
     get timerInputValue() {
         return this.timerDuration;
     }
-
     set timerInputValue(value) {
         this.timerDuration = parseInt(value) || 0;
     }
-
     get isStopwatchDisabled() {
         return this.isRunning && this.mode !== 'stopwatch';
     }
-
     get isTimerDisabled() {
         return this.isRunning && this.mode !== 'timer';
     }
-
     handleHoursChange(event) {
         this.hours = parseInt(event.target.value) || 0;
         this.updateTimerDuration();
@@ -74,7 +64,6 @@ export default class StopWatchAndTimer extends LightningElement {
     updateTimerDuration() {
         this.timerDuration = (this.hours * 3600) + (this.minutes * 60) + this.seconds;
     }
-
     startStopwatch() {
         if (this.isRunning) {
             this.stopTimer();
@@ -86,7 +75,6 @@ export default class StopWatchAndTimer extends LightningElement {
             this.startInterval();
         }
     }
-
     startTimer() {
         if (this.timerDuration <= 0) {
             return;
@@ -101,7 +89,6 @@ export default class StopWatchAndTimer extends LightningElement {
             this.startInterval();
         }
     }
-
     stopTimer() {
         this.isRunning = false;
         if (this.intervalId) {
@@ -109,14 +96,12 @@ export default class StopWatchAndTimer extends LightningElement {
             this.intervalId = null;
         }
     }
-
     reset() {
         this.stopTimer();
         this.elapsedTime = '00:00:00';
         this.mode = null;
         this.remainingTime = 0;
     }
-
     startInterval() {
         this.intervalId = setInterval(() => {
             if (this.mode === 'stopwatch') {
@@ -138,7 +123,6 @@ export default class StopWatchAndTimer extends LightningElement {
             }
         }, 1000);
     }
-
     formatTime(totalSeconds) {
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);

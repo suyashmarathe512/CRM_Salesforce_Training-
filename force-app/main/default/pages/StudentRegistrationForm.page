@@ -1,32 +1,143 @@
 <apex:page controller="StudentRegistrationController" language="{!selectedLanguage}">
-    <apex:pageMessages id="messageArea"/>
-    <apex:form>
-        <apex:pageBlock title="{!$Label.StudentFormTitle}" id="formBox">
-            <apex:pageBlockSection title="Language" columns="1">  
-                <apex:selectList label="{!$Label.LanguageLabel}" 
-                                 value="{!selectedLanguage}" 
-                                 size="1">                 
-                    <apex:selectOptions value="{!languageOptions}"/>                
-                    <apex:actionSupport event="onchange" reRender="formBox"/>              
-                </apex:selectList>
-            </apex:pageBlockSection>
-            <apex:pageBlockSection title="Student Details" columns="2">
-                <apex:inputField value="{!student.First_Name__c}"/>
-                <apex:inputField value="{!student.Last_Name__c}"/>
-                <apex:inputField value="{!student.Roll_number__c}"/>
-                <apex:inputField value="{!student.Gender__c}"/>
-                <apex:inputField value="{!student.Courses__c}"/>
-                <apex:inputField value="{!student.H_S_C__c}"/>
-                <apex:inputField value="{!student.S_S_C__c}"/>
-                <apex:inputField value="{!student.Country__c}"/>
-                <apex:inputField value="{!student.State__c}"/>
-                <apex:inputField value="{!student.City__c}"/>
-            </apex:pageBlockSection>
-            <apex:pageBlockButtons location="bottom">
-                <apex:commandButton action="{!saveStudent}" 
-                                    value="{!$Label.SubmitButtonLabel}" 
-                                    rerender="messageArea"/>                                    
-            </apex:pageBlockButtons>           
-        </apex:pageBlock>
-    </apex:form>
+    <apex:slds />
+    <style>
+        .slds-scope .slds-form-element__control input[type="text"],
+        .slds-scope .slds-form-element__control select {
+            width: 100%;
+        }
+        .slds-scope .slds-select_container {
+            width: 100%;
+        }
+    </style>
+    <div class="slds-scope">
+        <div class="slds-p-around_medium">
+            <apex:pageMessages id="messageArea"/>
+        </div>
+        
+        <apex:form>
+            <div class="slds-card slds-m-around_medium" id="formBox">
+                <div class="slds-card__header slds-grid slds-theme_shade">
+                    <header class="slds-media slds-media_center slds-has-flexi-truncate" style="background">
+                        <div class="slds-media__body">
+                            <h2 class="slds-card__header-title" >
+                                <span class="slds-text-heading_medium">{!$Label.StudentFormTitle}</span>
+                            </h2>
+                        </div>
+                    </header>
+                </div>
+                <div class="slds-card__body slds-card__body_inner">
+                    <div class="slds-form-element slds-m-bottom_medium" style="max-width: 300px;">
+                        <label class="slds-form-element__label" for="languageSelect">{!$Label.LanguageLabel}</label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-select_container">
+                                <apex:selectList value="{!selectedLanguage}" size="1" styleClass="sfdc-select" id="languageSelect">
+                                    <apex:selectOptions value="{!languageOptions}"/>
+                                    <apex:actionSupport event="onchange"/>
+                                </apex:selectList>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="slds-text-heading_medium slds-m-top_large slds-m-bottom_small">Student Details</h3>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_medium">
+                            <div class="slds-form-element">
+                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.First_Name__c.label}" for="{!$Component.fName}" styleClass="slds-form-element__label"/>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField value="{!student.First_Name__c}" id="fName"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
+                            <div class="slds-form-element">
+                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.Last_Name__c.label}" for="{!$Component.lName}" styleClass="slds-form-element__label"/>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField value="{!student.Last_Name__c}" id="lName"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
+                            <div class="slds-form-element">
+                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.Roll_number__c.label}" for="{!$Component.rollNum}" styleClass="slds-form-element__label"/>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField value="{!student.Roll_number__c}" id="rollNum"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
+                            <div class="slds-form-element">
+                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.Gender__c.label}" for="{!$Component.gender}" styleClass="slds-form-element__label"/>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField value="{!student.Gender__c}" id="gender"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
+                            <div class="slds-form-element">
+                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.Courses__c.label}" for="{!$Component.courses}" styleClass="sfdc-select"/>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField value="{!student.Courses__c}" id="courses"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
+                            <div class="slds-form-element">
+                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.H_S_C__c.label}" for="{!$Component.hsc}" styleClass="slds-form-element__label"/>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField value="{!student.H_S_C__c}" id="hsc"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
+                            <div class="slds-form-element">
+                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.S_S_C__c.label}" for="{!$Component.ssc}" styleClass="slds-form-element__label"/>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField value="{!student.S_S_C__c}" id="ssc"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
+                            <div class="slds-form-element">
+                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.Country__c.label}" for="{!$Component.country}" styleClass="sfdc-select"/>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField value="{!student.Country__c}" id="country"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
+                            <div class="slds-form-element">
+                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.State__c.label}" for="{!$Component.state}" styleClass="sfdc-select"/>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField value="{!student.State__c}" id="state"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
+                            <div class="slds-form-element">
+                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.City__c.label}" for="{!$Component.city}" styleClass="sfdc-select"/>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField value="{!student.City__c}" id="city"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-card__footer slds-text-align_center slds-p-around_medium">
+                    <apex:commandButton action="{!saveStudent}" 
+                                      value="{!$Label.SubmitButtonLabel}" 
+                                      rerender="messageArea"
+                                      styleClass="slds-button slds-button_brand"/>
+                </footer>
+            </div>
+            
+        </apex:form>
+    </div>
 </apex:page>
+

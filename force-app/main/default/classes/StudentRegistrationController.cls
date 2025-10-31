@@ -6,16 +6,19 @@
 public class StudentRegistrationController {
     public Student__c student { get; set; }
     public String selectedLanguage { get; set; }
+
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @methodName:     StudentRegistrationController
 * @Description:   This is the constructor for the StudentRegistrationController class, initializing 
-                        the student object and default language.
+*                 the student object and default language. Also checks URL parameters for language override.
 ***************************************************************************************************/
     public StudentRegistrationController() {
-        this.student = new Student__c(); 
-        this.selectedLanguage = 'en'; 
+        this.student = new Student__c();
+        String langParam = ApexPages.currentPage().getParameters().get('lang');
+        this.selectedLanguage = String.isNotBlank(langParam) ? langParam : 'en';
     }
+
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @methodName:     getLanguageOptions
@@ -28,10 +31,12 @@ public class StudentRegistrationController {
         options.add(new SelectOption('es', 'Spanish'));
         return options;
     }
+
 /***************************************************************************************************
 * @Author:        CRM Developer
 * @methodName:     saveStudent
 * @Description:   This method saves the student record to the database and provides feedback messages.
+*                 Validates required fields and constructs the full name field from first and last names.
 ***************************************************************************************************/
     public PageReference saveStudent() {
         try {

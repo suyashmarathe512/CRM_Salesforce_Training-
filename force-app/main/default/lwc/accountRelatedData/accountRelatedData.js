@@ -13,8 +13,8 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
     @track accountOptions = [];
     selectedAccountId = '';
     @track sections = [
-        { key: 'contacts', title: 'Contacts', icon: 'standard:contact', allRecords: [], columns: [], permissions: {}, draftValues: [], currentPage: 1, pagedRecords: [], totalPages: 1, isFirstPage: true, isLastPage: true, displayTitle: 'Contacts (0)' },
-        { key: 'opportunities', title: 'Opportunities', icon: 'standard:opportunity', allRecords: [], columns: [], permissions: {}, draftValues: [], currentPage: 1, pagedRecords: [], totalPages: 1, isFirstPage: true, isLastPage: true, displayTitle: 'Opportunities (0)' }
+        { key: 'contacts', title: 'Contacts', icon: 'standard:contact', allRecords: [], columns: [], permissions: {}, draftValues: [], currentPage: 1, pagedRecords: [], totalPages: 1, isFirstPage: true, isLastPage: true, displayTitle: 'Contacts (0)', updateKey: 0 },
+        { key: 'opportunities', title: 'Opportunities', icon: 'standard:opportunity', allRecords: [], columns: [], permissions: {}, draftValues: [], currentPage: 1, pagedRecords: [], totalPages: 1, isFirstPage: true, isLastPage: true, displayTitle: 'Opportunities (0)', updateKey: 0 }
     ];
     isLoading = false;
     wiredDataResult;
@@ -48,10 +48,8 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
         if (data) {
             this.sections[0].allRecords = data.contacts;
             this.sections[0].permissions = data.contactPermissions;
-            this.sections[0].currentPage = 1;
             this.sections[1].allRecords = data.opportunities;
             this.sections[1].permissions = data.oppPermissions;
-            this.sections[1].currentPage = 1;
             this.setupColumns(data);
             this.updateSectionComputedProperties();
             this.isLoading = false;
@@ -63,11 +61,14 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
     handleAccountChange(event) {
         this.isLoading = true;
         this.selectedAccountId = event.detail.value;
+        this.sections.forEach(section => {
+            section.currentPage = 1;
+        });
+        this.updateSectionComputedProperties();
     }
     handleRowAction(event) {
         const actionName = event.detail.action.name;
         const row = event.detail.row;
-
         switch (actionName) {
             case 'edit':
                 this.handleEdit(row.Id);
@@ -86,11 +87,13 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
         try {
             await Promise.all(promises);
             this.showToast('Success', 'Records updated successfully.', 'success');
-            this.sections.forEach(section => section.draftValues = []);
+            this.sections.forEach(section => {
+                section.draftValues = [];
+                section.updateKey++;
+            });
             await refreshApex(this.wiredDataResult);
-
         } catch (error) {
-            this.showToast('Error', 'Could not update records.', 'error');
+            this.showToast('Error', error.body?.message || 'Could not update records.', 'error');
         } finally {
             this.isLoading = false;
         }
@@ -98,7 +101,7 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
     handleEdit(recordId) {
         this[NavigationMixin.Navigate]({
             type: 'standard__recordPage',
-            attributes: {
+            attributes: { 
                 recordId: recordId,
                 actionName: 'edit'
             }
@@ -146,7 +149,9 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
             section.totalPages = Math.max(Math.ceil(section.allRecords.length / this.recordsPerPage), 1);
             section.isFirstPage = section.currentPage === 1;
             section.isLastPage = section.currentPage === section.totalPages;
-            section.displayTitle = `${section.title} (${section.allRecords.length})`;
+            const totalCount = section.allRecords.length;
+            const displayCount = totalCount > 6 ? '6+' : totalCount;
+            section.displayTitle = `${section.title} (${displayCount})`;
         });
     }
     setupColumns(data) {
@@ -159,19 +164,38 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
                 actions.push(ACTION_DELETE);
             }
             const columnKey = section.key === 'contacts' ? 'contactColumns' : 'opportunityColumns';
+            let columns = [...data[columnKey]];
+            columns.forEach((col, index) => {
+                if (col.type === 'date-local') {
+                    columns[index] = { ...col, type: 'date', typeAttributes: { year: 'numeric', month: '2-digit', day: '2-digit' } };
+                }
+            });
+            const stageNameIndex = columns.findIndex(col => col.fieldName === 'StageName');
+            if (stageNameIndex !== -1 && section.permissions.canEdit) {
+                columns[stageNameIndex] = { ...columns[stageNameIndex], type: 'picklist', editable: true, typeAttributes: { options: [
+                    { label: 'Prospecting', value: 'Prospecting' },
+                    { label: 'Qualification', value: 'Qualification' },
+                    { label: 'Needs Analysis', value: 'Needs Analysis' },
+                    { label: 'Value Proposition', value: 'Value Proposition' },
+                    { label: 'Id. Decision Makers', value: 'Id. Decision Makers' },
+                    { label: 'Perception Analysis', value: 'Perception Analysis' },
+                    { label: 'Proposal/Price Quote', value: 'Proposal/Price Quote' },
+                    { label: 'Negotiation/Review', value: 'Negotiation/Review' },
+                    { label: 'Closed Won', value: 'Closed Won' },
+                    { label: 'Closed Lost', value: 'Closed Lost' }
+                ] } };
+            }
             if (actions.length > 0) {
-                section.columns = [...data[columnKey], {
+                section.columns = [...columns, {
                     type: 'action',
                     typeAttributes: { rowActions: actions }
                 }];
             } else {
-                section.columns = data[columnKey];
+                section.columns = columns;
             }
         });
     }
-
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
     }
 }
-

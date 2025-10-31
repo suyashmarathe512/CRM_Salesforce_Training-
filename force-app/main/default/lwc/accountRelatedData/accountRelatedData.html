@@ -1,70 +1,97 @@
 <template>
-    <lightning-card title="Account Contact & Opportunity Viewer" icon-name="standard:account">
-        <div class="slds-p-around_medium">
-            
-            <lightning-combobox
-                name="account"
-                label="Select Account"
-                value={selectedAccountId}
-                placeholder="-- Select Account --"
-                options={accountOptions}
-                onchange={handleAccountChange}
-                class="slds-m-bottom_medium"
-            ></lightning-combobox>
-
-            <template if:true={isLoading}>
-                <div class="slds-align_absolute-center slds-m-vertical_large">
-                    <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
-                </div>
-            </template>
-
-            <template if:false={isLoading}>
-                <lightning-layout multiple-rows="true">
-                    <template for:each={sections} for:item="section" for:index="index">
-                        <lightning-layout-item key={section.key} size="12" large-device-size="6" padding="around-small">
-                            <lightning-card title={section.displayTitle} icon-name={section.icon}>
-                                <template if:true={section.pagedRecords.length}>
-                                    <lightning-datatable
-                                        key-field="Id"
-                                        data={section.pagedRecords}
-                                        columns={section.columns}
-                                        onrowaction={handleRowAction}
-                                        onsave={handleSave}
-                                        draft-values={section.draftValues}
-                                        hide-checkbox-column
-                                    ></lightning-datatable>
-
-                                    <div class="slds-grid slds-grid_align-spread slds-p-top_small">
-                                        <lightning-button-group>
-                                            <lightning-button
-                                                label="Previous"
-                                                onclick={handlePageChange}
-                                                data-section={section.key}
-                                                data-direction="previous"
-                                                disabled={section.isFirstPage}
-                                            ></lightning-button>
-                                            <lightning-button
-                                                label="Next"
-                                                onclick={handlePageChange}
-                                                data-section={section.key}
-                                                data-direction="next"
-                                                disabled={section.isLastPage}
-                                            ></lightning-button>
-                                        </lightning-button-group>
-                                        <span class="slds-align-middle slds-text-body_small">
-                                            Page {section.currentPage} of {section.totalPages}
-                                        </span>
+    <div class="component-wrapper-v5">
+        <article class="slds-card">
+            <div class="slds-card__header slds-grid" style="background-color: #f3f3f3; border-bottom: 1px solid #dddbda; padding: 0.75rem 1rem;">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <span class="slds-text-heading_small">Account Contact & Opportunity Viewer</span>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <lightning-combobox
+                    name="account"
+                    label="Select Account"
+                    value={selectedAccountId}
+                    placeholder="-- Select Account --"
+                    options={accountOptions}
+                    onchange={handleAccountChange}
+                    class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3 slds-m-bottom_medium"
+                ></lightning-combobox>
+                <template if:true={isLoading}>
+                    <div class="slds-align_absolute-center slds-m-vertical_large">
+                        <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+                    </div>
+                </template>
+                <template if:false={isLoading}>
+                    <lightning-layout multiple-rows="true">
+                        <template for:each={sections} for:item="section" for:index="index">
+                            <lightning-layout-item key={section.key} size="12" large-device-size="6" padding="around-small">
+                                <article class="slds-card slds-grow" style="height: 100%;">
+                                    <div class="slds-card__header slds-grid" style="background-color: #f3f3f3; border-bottom: 1px solid #dddbda; padding: 0.75rem 1rem;">
+                                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                            <div class="slds-media__figure">
+                                                <lightning-icon icon-name={section.icon} size="small"></lightning-icon>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <h2 class="slds-card__header-title">
+                                                    <span class="slds-text-heading_small">{section.displayTitle}</span>
+                                                </h2>
+                                            </div>
+                                        </header>
                                     </div>
-
-                                </template>
-                                <template if:false={section.pagedRecords.length}>
-                                    <p class="slds-p-horizontal_small">No {section.key} found.</p>
-                                </template>
-                            </lightning-card>
-                        </lightning-layout-item>
-                    </template>
-                </lightning-layout>
-            </template>
-        </div>
-    </lightning-card>
+                                    <div class="slds-card__body" style="padding: 0;">
+                                        <template if:true={section.pagedRecords.length}>
+                                            <lightning-datatable
+                                                key-field="Id"
+                                                data={section.pagedRecords}
+                                                columns={section.columns}
+                                                onrowaction={handleRowAction}
+                                                onsave={handleSave}
+                                                draft-values={section.draftValues}
+                                                hide-checkbox-column
+                                                data-section={section.key}
+                                                key={section.updateKey}
+                                            ></lightning-datatable>
+                                        </template>
+                                        <template if:false={section.pagedRecords.length}>
+                                            <p class="slds-p-around_small">No {section.key} found.</p>
+                                        </template>
+                                    </div>
+                                    <div class="slds-card__footer" style="background-color: #f3f3f3; border-top: 1px solid #dddbda; padding: 0.75rem 1rem;">
+                                        <div class="slds-grid">
+                                            <lightning-button-group>
+                                                <lightning-button
+                                                    label="Previous"
+                                                    onclick={handlePageChange}
+                                                    data-section={section.key}
+                                                    data-direction="previous"
+                                                    disabled={section.isFirstPage}
+                                                ></lightning-button>
+                                                <lightning-button
+                                                    label="Next"
+                                                    onclick={handlePageChange}
+                                                    data-section={section.key}
+                                                    data-direction="next"
+                                                    disabled={section.isLastPage}
+                                                ></lightning-button>
+                                            </lightning-button-group>
+                                        </div>
+                                        <span class="slds-align-middle slds-text-body_small slds-col_bump-left">
+                                                Page {section.currentPage} of {section.totalPages}
+                                            </span>
+                                    </div>
+                                </article>
+                            </lightning-layout-item>
+                        </template>
+                    </lightning-layout>
+                </template>
+            </div>
+        </article>
+    </div>
 </template>

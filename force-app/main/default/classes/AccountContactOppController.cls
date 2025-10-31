@@ -156,7 +156,12 @@ public without sharing class AccountContactOppController {
             }
         }
         if (!fields.contains('Id')) fields.add(0, 'Id');
-        String query = 'SELECT ' + String.join(fields, ',') + ' FROM ' + objectName + ' WHERE AccountId = :accountId ORDER BY ' + orderBy;
+        String query = 'SELECT ' 
+                            + String.join(fields, ',') 
+                        +' FROM ' 
+                                + objectName 
+                        + ' WHERE AccountId = :accountId ORDER BY ' 
+                            + orderBy;
         result.put('records', Database.query(query));
         result.put('columns', columns);
         return result;

@@ -59,7 +59,7 @@ export default class AccountList extends LightningElement {
     if (this.allLoaded || this._isLoading) return;
 
     const { scrollTop, scrollHeight, clientHeight } = event.target;
-    if (scrollTop + clientHeight >= scrollHeight - 10) {
+    if (scrollTop + clientHeight >= scrollHeight - 5) {
       this.loadMoreData();
     }
   }

@@ -1,0 +1,23 @@
+<template>
+  <lightning-card>
+    <div slot="title" class="slds-grid slds-grid_vertical-align-center slds-p-horizontal_large">
+      <lightning-icon icon-name="standard:account" size="Large" class="slds-m-right_large"></lightning-icon>
+      <h2 class="slds-text-heading_small slds-truncate slds-m-right_large">Accounts</h2>
+    </div>
+    <div class="dt-scroll">
+      <lightning-datatable
+        key-field="Id"
+        data={data}
+        columns={columns}
+        hide-checkbox-column
+        show-row-number-column
+        sorted-by={sortedBy}
+        sorted-direction={sortedDirection}
+        onsort={handleSort}>
+      </lightning-datatable>
+      <div if:true={_isLoading} class="loading-indicator">
+        <lightning-spinner alternative-text="Loading more records" size="small"></lightning-spinner>
+      </div>
+    </div>
+  </lightning-card>
+</template>

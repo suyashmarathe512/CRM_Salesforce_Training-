@@ -1,19 +1,31 @@
 <apex:page controller="StudentRegistrationController" language="{!selectedLanguage}">
     <apex:slds />
     <style>
+        .slds-scope .slds-card {
+            border: 1px solid #ccc;
+            background-color: #eef6f9;
+        }
         .slds-scope .slds-form-element__control input[type="text"],
         .slds-scope .slds-form-element__control select {
-            width: 100%;
-            height: 2rem;
-        }
-        .slds-scope .slds-select_container {
-            width: 100%;
+            width: 85%;
+            height:2rem;
+            background-color: #f3f2f2;
+            border-radius: 0.5rem;
+
         }
         .slds-scope .slds-form-element__label {
             font-size: 1.125rem;
+            font-family: 'Georgia, serif';
         }
         .slds-scope .slds-form-element {
             margin-bottom: 1rem;
+        }
+        .slds-scope .slds-select_container {
+            width: 85%;
+        }
+        .slds-scope .slds-button_brand {
+            padding: 0.75rem 1.5rem;
+            font-size: 1.125rem;
         }
     </style>
     <div class="slds-scope">
@@ -24,7 +36,7 @@
         <apex:form>
             <div class="slds-card slds-m-around_medium" id="formBox">
                 <div class="slds-card__header slds-grid slds-theme_shade">
-                    <header class="slds-media slds-media_center slds-has-flexi-truncate" style="background">
+                    <header class="slds-media slds-media_center slds-has-flexi-truncate" style="background :#b4d8fc; padding:10px; border-radius:0.5rem;">
                         <div class="slds-media__body">
                             <h2 class="slds-card__header-title" >
                                 <span class="slds-text-heading_medium">{!$Label.StudentFormTitle}</span>
@@ -33,17 +45,16 @@
                     </header>
                 </div>
                 <div class="slds-card__body slds-card__body_inner">
-                    <div class="slds-form-element slds-m-bottom_medium" style="max-width: 300px;">
+                    <div class="slds-form-element slds-m-bottom_medium" style="max-width: 500px; margin-top:10px; margin-bottom:10px; background:#dbe1ec; padding:10px; border-radius:0.5rem;">
                         <label class="slds-form-element__label" for="languageSelect">{!$Label.LanguageLabel}</label>
                         <div class="slds-form-element__control">
-                            <div class="slds-select_container">
                                 <apex:selectList value="{!selectedLanguage}" size="1" styleClass="sfdc-select" id="languageSelect">
                                     <apex:selectOptions value="{!languageOptions}"/>
+                                    <apex:actionSupport event="onchange"/>
                                 </apex:selectList>
-                            </div>
                         </div>
                     </div>
-                    <h3 class="slds-text-heading_medium slds-m-top_large slds-m-bottom_small">Student Details</h3>
+                    <h4 class="slds-text-heading_medium slds-m-top_large slds-m-bottom_small" style="font-weight: bold;">Student Details</h4>
                     <div class="slds-grid slds-wrap slds-gutters">
                         <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_medium">
                             <div class="slds-form-element">
@@ -53,7 +64,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
                             <div class="slds-form-element">
                                 <apex:outputLabel value="{!$ObjectType.Student__c.fields.Last_Name__c.label}" for="{!$Component.lName}" styleClass="slds-form-element__label"/>
@@ -135,15 +146,13 @@
                         </div>
                     </div>
                 </div>
-                <footer class="slds-card__footer slds-text-align_center slds-p-around_medium">
+                <footer class="slds-card__footer slds-text-align_center slds-p-around_large">
                     <apex:commandButton action="{!saveStudent}" 
                                       value="{!$Label.SubmitButtonLabel}" 
                                       rerender="messageArea"
                                       styleClass="slds-button slds-button_brand"/>
                 </footer>
             </div>
-            
         </apex:form>
     </div>
 </apex:page>
-

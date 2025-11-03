@@ -4,9 +4,16 @@
         .slds-scope .slds-form-element__control input[type="text"],
         .slds-scope .slds-form-element__control select {
             width: 100%;
+            height: 2rem;
         }
         .slds-scope .slds-select_container {
             width: 100%;
+        }
+        .slds-scope .slds-form-element__label {
+            font-size: 1.125rem;
+        }
+        .slds-scope .slds-form-element {
+            margin-bottom: 1rem;
         }
     </style>
     <div class="slds-scope">
@@ -32,7 +39,6 @@
                             <div class="slds-select_container">
                                 <apex:selectList value="{!selectedLanguage}" size="1" styleClass="sfdc-select" id="languageSelect">
                                     <apex:selectOptions value="{!languageOptions}"/>
-                                    <apex:actionSupport event="onchange"/>
                                 </apex:selectList>
                             </div>
                         </div>

@@ -101,7 +101,6 @@ export default class AccountRelatedData extends NavigationMixin(LightningElement
         }
     }
     handleAccountChange(event) {
-        this.isLoading = true;
         this.selectedAccountId = event.detail.value;
         this.sections.forEach(section => {
             section.currentPage = 1;

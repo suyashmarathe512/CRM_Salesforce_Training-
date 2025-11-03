@@ -1,0 +1,36 @@
+<template>
+    <lightning-card class="country-picker-card">
+        <div class="slds-card__header slds-grid country-picker-header">
+            <div class="slds-media__body">
+                <h2 class="slds-card__header-title country-picker-header-title">
+                    <lightning-icon icon-name="utility:world" class="country-picker-header-icon" size="small"></lightning-icon>
+                    <span>Country-City Dependent Picklist</span>
+                </h2>
+            </div>
+        </div>
+        <div class="country-picker-container">
+            <div class="country-picker-combobox">
+                <lightning-combobox
+                    name="country"
+                    label="Country"
+                    placeholder="Select a Country"
+                    value={selectedCountry}
+                    onchange={handleCountryChange}
+                    options={countryOptions}>
+                </lightning-combobox>
+            </div>
+            <div class="country-picker-separator"></div>
+            <div class="country-picker-combobox">
+                <lightning-combobox
+                    name="city"
+                    label="City"
+                    placeholder="Select a City"
+                    value={selectedCity}
+                    onchange={handleCityChange}
+                    options={cityOptions}
+                    disabled={isCityDisabled}>
+                </lightning-combobox>
+            </div>
+        </div>
+    </lightning-card>
+</template>

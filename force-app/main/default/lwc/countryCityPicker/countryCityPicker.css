@@ -1,0 +1,69 @@
+
+
+.country-picker-card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.country-picker-header {
+    background: linear-gradient(135deg, #76b7f0 0%, #69abe5 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-bottom: none;
+}
+
+.country-picker-header-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.country-picker-header-icon {
+    margin-right: 0.5rem;
+    color: #ffffff;
+}
+
+.country-picker-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.country-picker-combobox {
+    margin-bottom: 1.5rem;
+}
+
+.country-picker-combobox lightning-combobox {
+    --slds-c-combobox-border-color: #d4d4d4;
+    --slds-c-combobox-border-radius: 8px;
+    --slds-c-combobox-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.country-picker-combobox lightning-combobox:hover {
+    --slds-c-combobox-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.country-picker-combobox lightning-combobox::part(input) {
+    font-weight: 500;
+}
+
+.country-picker-separator {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #0070d2 50%, transparent 100%);
+    margin: 1rem 0;
+}
+
+@media (max-width: 768px) {
+    .country-picker-container {
+        padding: 1.5rem;
+    }
+    .country-picker-header {
+        padding: 0.75rem 1rem;
+    }
+}

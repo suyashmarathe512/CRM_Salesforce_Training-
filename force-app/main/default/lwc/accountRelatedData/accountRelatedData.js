@@ -3,24 +3,36 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
 import { updateRecord } from 'lightning/uiRecordApi';
 import { NavigationMixin } from 'lightning/navigation';
+import { getObjectInfo } from 'lightning/uiObjectInfoApi';
+import { getPicklistValues } from 'lightning/uiObjectInfoApi';
+import OPPORTUNITY_OBJECT from '@salesforce/schema/Opportunity';
+import STAGE_FIELD from '@salesforce/schema/Opportunity.StageName';
 import getAccounts from '@salesforce/apex/AccountContactOppController.getAccounts';
 import getRelatedData from '@salesforce/apex/AccountContactOppController.getRelatedData';
 import deleteSObjectRecord from '@salesforce/apex/AccountContactOppController.deleteSObjectRecord';
 const RECORDS_PER_PAGE = 6;
 const ACTION_EDIT = { label: 'Edit', name: 'edit' };
 const ACTION_DELETE = { label: 'Delete', name: 'delete' };
-export default class AccountContactOppViewer extends NavigationMixin(LightningElement) {
+
+export default class AccountRelatedData extends NavigationMixin(LightningElement) {
     @track accountOptions = [];
     selectedAccountId = '';
     @track sections = [
-        { key: 'contacts', title: 'Contacts', icon: 'standard:contact', allRecords: [], columns: [], permissions: {}, draftValues: [], currentPage: 1, pagedRecords: [], totalPages: 1, isFirstPage: true, isLastPage: true, displayTitle: 'Contacts (0)', updateKey: 0 },
-        { key: 'opportunities', title: 'Opportunities', icon: 'standard:opportunity', allRecords: [], columns: [], permissions: {}, draftValues: [], currentPage: 1, pagedRecords: [], totalPages: 1, isFirstPage: true, isLastPage: true, displayTitle: 'Opportunities (0)', updateKey: 0 }
+        { key: 'Contacts', title: 'Contacts', icon: 'standard:contact', allRecords: [], columns: [], permissions: {}, draftValues: [], currentPage: 1, pagedRecords: [], totalPages: 1, isFirstPage: true, isLastPage: true, displayTitle: 'Contacts (0)', updateKey: 0 },
+        { key: 'Opportunities', title: 'Opportunities', icon: 'standard:opportunity', allRecords: [], columns: [], permissions: {}, draftValues: [], currentPage: 1, pagedRecords: [], totalPages: 1, isFirstPage: true, isLastPage: true, displayTitle: 'Opportunities (0)', updateKey: 0 }
     ];
     isLoading = false;
     wiredDataResult;
     recordsPerPage = RECORDS_PER_PAGE;
+    @track stagePicklistValues = [];
+    recordTypeId;
+    isStageModalOpen = false;
+    selectedStageValue = '';
     connectedCallback() {
         document.addEventListener('visibilitychange', this.handleVisibilityChange);
+    }
+    disconnectedCallback() {
+        document.removeEventListener('visibilitychange', this.handleVisibilityChange);
     }
     handleVisibilityChange = () => {
         if (document.visibilityState === 'visible' && this.wiredDataResult) {
@@ -30,6 +42,30 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
             });
         }
     }
+    @wire(getObjectInfo, {objectApiName: OPPORTUNITY_OBJECT})
+    wiredOppInfo(result) {
+        if (result.data) {
+            this.recordTypeId = result.data.defaultRecordTypeId;
+            console.log('Opportunity Record Type ID:', this.recordTypeId);
+            console.log('Opportunity Object Info:', result.data);
+        } else if (result.error) {
+            console.error('Error getting Opportunity Info:', result.error);
+        }
+    }
+    @wire(getPicklistValues, { recordTypeId: '$recordTypeId', fieldApiName: STAGE_FIELD })
+    wiredStagePlicklist(result) {
+        if (result.data) {
+            this.stagePicklistValues = result.data.values.map(entry => ({
+                label: entry.label,
+                value: entry.value
+            }));
+            this.refreshColumnsWithPicklist();
+            console.log('Stage Picklist Values:', this.stagePicklistValues);
+        } else if (result.error) {
+            console.error('Error loading picklist:', result.error);
+        }
+    }
+
     @wire(getAccounts)
     wiredAccounts({ error, data }) {
         if (data) {
@@ -41,6 +77,7 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
             this.showToast('Error', 'Could not load accounts.', 'error');
         }
     }
+
     @wire(getRelatedData, { accountId: '$selectedAccountId' })
     wiredData(result) {
         this.wiredDataResult = result;
@@ -56,6 +93,11 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
         } else if (error) {
             this.showToast('Error', 'Could not load related data.', 'error');
             this.isLoading = false;
+        }
+    }
+    refreshColumnsWithPicklist() {
+        if (this.wiredDataResult && this.wiredDataResult.data) {
+            this.setupColumns(this.wiredDataResult.data);
         }
     }
     handleAccountChange(event) {
@@ -110,14 +152,13 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
     async handleDelete(row) {
         const recordId = row.Id;
         const isContact = recordId.startsWith('003');
-        const section = this.sections.find(s => s.key === (isContact ? 'contacts' : 'opportunities'));
+        const section = this.sections.find(s => s.key === (isContact ? 'Contacts' : 'Opportunities'));
         const perms = section.permissions;
 
         if (!perms.canDelete) {
             this.showToast('Permission Denied', 'You do not have permission to delete.', 'error');
             return;
         }
-
         this.isLoading = true;
         try {
             await deleteSObjectRecord({ recordId: recordId });
@@ -163,27 +204,35 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
             if (section.permissions.canDelete) {
                 actions.push(ACTION_DELETE);
             }
-            const columnKey = section.key === 'contacts' ? 'contactColumns' : 'opportunityColumns';
+            const columnKey = section.key === 'Contacts' ? 'contactColumns' : 'opportunityColumns';
             let columns = [...data[columnKey]];
             columns.forEach((col, index) => {
                 if (col.type === 'date-local') {
-                    columns[index] = { ...col, type: 'date', typeAttributes: { year: 'numeric', month: '2-digit', day: '2-digit' } };
+                    columns[index] = { 
+                        ...col, 
+                        type: 'date', 
+                        typeAttributes: { 
+                            year: 'numeric', 
+                            month: '2-digit', 
+                            day: '2-digit' 
+                        } 
+                    };
                 }
             });
             const stageNameIndex = columns.findIndex(col => col.fieldName === 'StageName');
-            if (stageNameIndex !== -1 && section.permissions.canEdit) {
-                columns[stageNameIndex] = { ...columns[stageNameIndex], type: 'picklist', editable: true, typeAttributes: { options: [
-                    { label: 'Prospecting', value: 'Prospecting' },
-                    { label: 'Qualification', value: 'Qualification' },
-                    { label: 'Needs Analysis', value: 'Needs Analysis' },
-                    { label: 'Value Proposition', value: 'Value Proposition' },
-                    { label: 'Id. Decision Makers', value: 'Id. Decision Makers' },
-                    { label: 'Perception Analysis', value: 'Perception Analysis' },
-                    { label: 'Proposal/Price Quote', value: 'Proposal/Price Quote' },
-                    { label: 'Negotiation/Review', value: 'Negotiation/Review' },
-                    { label: 'Closed Won', value: 'Closed Won' },
-                    { label: 'Closed Lost', value: 'Closed Lost' }
-                ] } };
+            if (stageNameIndex !== -1 && section.key === 'Opportunities') {
+                columns[stageNameIndex] = {
+                    label: 'Stage',
+                    fieldName: 'StageName',
+                    type: 'picklistType',
+                    editable: section.permissions.canEdit,
+                    typeAttributes: {
+                        options: this.stagePicklistValues,
+                        value: { fieldName: 'StageName' },
+                        fieldName: 'StageName',
+                        context: { fieldName: 'Id' }
+                    }
+                };
             }
             if (actions.length > 0) {
                 section.columns = [...columns, {
@@ -195,6 +244,13 @@ export default class AccountContactOppViewer extends NavigationMixin(LightningEl
             }
         });
     }
+    get contactsSection() {
+        return this.sections[0];
+    }
+    get opportunitiesSection() {
+        return this.sections[1];
+    }
+
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
     }

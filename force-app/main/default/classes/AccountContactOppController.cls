@@ -138,8 +138,6 @@ public without sharing class AccountContactOppController {
     @AuraEnabled(cacheable=true)
     public static AccountDataWrapper getRelatedData(String accountId) {
         AccountDataWrapper wrapper = new AccountDataWrapper();
-        
-        // Contacts: default fields and columns if field set empty
         Map<String, Object> contactData = getObjectData(
             'Contact',
             'Contact_Field_Set',
@@ -155,8 +153,6 @@ public without sharing class AccountContactOppController {
         wrapper.contacts = (List<Contact>) contactData.get('records');
         wrapper.contactPermissions = (Map<String, Boolean>) contactData.get('permissions');
         wrapper.contactColumns = (List<ColumnDef>) contactData.get('columns');
-        
-        // Opportunities
         Map<String, Object> oppData = getObjectData(
             'Opportunity',
             'Opportunity_Field_Set',

@@ -147,17 +147,13 @@ export default class AccountRelatedData extends NavigationMixin(LightningElement
                 actionName: 'edit'
             }
         });
+        refreshApex(this.wiredDataResult);
     }
     async handleDelete(row) {
         const recordId = row.Id;
         const isContact = recordId.startsWith('003');
         const section = this.sections.find(s => s.key === (isContact ? 'Contacts' : 'Opportunities'));
         const perms = section.permissions;
-
-        if (!perms.canDelete) {
-            this.showToast('Permission Denied', 'You do not have permission to delete.', 'error');
-            return;
-        }
         this.isLoading = true;
         try {
             await deleteSObjectRecord({ recordId: recordId });

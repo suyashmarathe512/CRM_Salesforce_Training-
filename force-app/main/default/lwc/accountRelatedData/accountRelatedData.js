@@ -3,33 +3,53 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
 import { updateRecord } from 'lightning/uiRecordApi';
 import { NavigationMixin } from 'lightning/navigation';
-import { getObjectInfo } from 'lightning/uiObjectInfoApi';
-import { getPicklistValues } from 'lightning/uiObjectInfoApi';
-import OPPORTUNITY_OBJECT from '@salesforce/schema/Opportunity';
-import STAGE_FIELD from '@salesforce/schema/Opportunity.StageName';
 import getAccounts from '@salesforce/apex/AccountContactOppController.getAccounts';
 import getRelatedData from '@salesforce/apex/AccountContactOppController.getRelatedData';
 import deleteSObjectRecord from '@salesforce/apex/AccountContactOppController.deleteSObjectRecord';
 const RECORDS_PER_PAGE = 6;
 const ACTION_EDIT = { label: 'Edit', name: 'edit' };
 const ACTION_DELETE = { label: 'Delete', name: 'delete' };
-
 export default class AccountRelatedData extends NavigationMixin(LightningElement) {
     @track accountOptions = [];
     selectedAccountId = '';
-    @track sections = [
-        { key: 'Contacts', title: 'Contacts', icon: 'standard:contact', allRecords: [], columns: [], permissions: {}, draftValues: [], currentPage: 1, pagedRecords: [], totalPages: 1, isFirstPage: true, isLastPage: true, displayTitle: 'Contacts (0)', updateKey: 0 },
-        { key: 'Opportunities', title: 'Opportunities', icon: 'standard:opportunity', allRecords: [], columns: [], permissions: {}, draftValues: [], currentPage: 1, pagedRecords: [], totalPages: 1, isFirstPage: true, isLastPage: true, displayTitle: 'Opportunities (0)', updateKey: 0 }
-    ];
+    @track contactsAllRecords = [];
+    @track contactsColumns = [];
+    @track contactsPermissions = {};
+    @track contactsDraftValues = [];
+    @track contactsCurrentPage = 1;
+    @track contactsPagedRecords = [];
+    @track contactsTotalPages = 1;
+    @track contactsIsFirstPage = true;
+    @track contactsIsLastPage = true;
+    @track contactsDisplayTitle = 'Contacts (0)';
+    @track opportunitiesAllRecords = [];
+    @track opportunitiesColumns = [];
+    @track opportunitiesPermissions = {};
+    @track opportunitiesDraftValues = [];
+    @track opportunitiesCurrentPage = 1;
+    @track opportunitiesPagedRecords = [];
+    @track opportunitiesTotalPages = 1;
+    @track opportunitiesIsFirstPage = true;
+    @track opportunitiesIsLastPage = true;
+    @track opportunitiesDisplayTitle = 'Opportunities (0)';
     isLoading = false;
     wiredDataResult;
     recordsPerPage = RECORDS_PER_PAGE;
-    @track stagePicklistValues = [];
-    recordTypeId;
-    isStageModalOpen = false;
-    selectedStageValue = '';
+get stageOptions() {
+    return [
+        { label: 'Prospecting', value: 'Prospecting' },
+        { label: 'Qualification', value: 'Qualification' },
+        { label: 'Needs Analysis', value: 'Needs Analysis' },
+        { label: 'Value Proposition', value: 'Value Proposition' },
+        { label: 'Proposal/Price Quote', value: 'Proposal/Price Quote' },
+        { label: 'Negotiation', value: 'Negotiation' },
+        { label: 'Closed Won', value: 'Closed Won' },
+        { label: 'Closed Lost', value: 'Closed Lost' }
+    ];
+}
     connectedCallback() {
         document.addEventListener('visibilitychange', this.handleVisibilityChange);
+
     }
     disconnectedCallback() {
         document.removeEventListener('visibilitychange', this.handleVisibilityChange);
@@ -42,30 +62,6 @@ export default class AccountRelatedData extends NavigationMixin(LightningElement
             });
         }
     }
-    @wire(getObjectInfo, {objectApiName: OPPORTUNITY_OBJECT})
-    wiredOppInfo(result) {
-        if (result.data) {
-            this.recordTypeId = result.data.defaultRecordTypeId;
-            console.log('Opportunity Record Type ID:', this.recordTypeId);
-            console.log('Opportunity Object Info:', result.data);
-        } else if (result.error) {
-            console.error('Error getting Opportunity Info:', result.error);
-        }
-    }
-    @wire(getPicklistValues, { recordTypeId: '$recordTypeId', fieldApiName: STAGE_FIELD })
-    wiredStagePlicklist(result) {
-        if (result.data) {
-            this.stagePicklistValues = result.data.values.map(entry => ({
-                label: entry.label,
-                value: entry.value
-            }));
-            this.refreshColumnsWithPicklist();
-            console.log('Stage Picklist Values:', this.stagePicklistValues);
-        } else if (result.error) {
-            console.error('Error loading picklist:', result.error);
-        }
-    }
-
     @wire(getAccounts)
     wiredAccounts({ error, data }) {
         if (data) {
@@ -77,37 +73,30 @@ export default class AccountRelatedData extends NavigationMixin(LightningElement
             this.showToast('Error', 'Could not load accounts.', 'error');
         }
     }
-
     @wire(getRelatedData, { accountId: '$selectedAccountId' })
     wiredData(result) {
         this.wiredDataResult = result;
         const { data, error } = result;
         if (data) {
-            this.sections[0].allRecords = data.contacts;
-            this.sections[0].permissions = data.contactPermissions;
-            this.sections[1].allRecords = data.opportunities;
-            this.sections[1].permissions = data.oppPermissions;
+            this.contactsAllRecords = data.contacts;
+            this.contactsPermissions = data.contactPermissions;
+            this.opportunitiesAllRecords = data.opportunities;
+            this.opportunitiesPermissions = data.oppPermissions;
             this.setupColumns(data);
-            this.updateSectionComputedProperties();
+            this.updateComputedProperties();
             this.isLoading = false;
         } else if (error) {
             this.showToast('Error', 'Could not load related data.', 'error');
             this.isLoading = false;
         }
     }
-    refreshColumnsWithPicklist() {
-        if (this.wiredDataResult && this.wiredDataResult.data) {
-            this.setupColumns(this.wiredDataResult.data);
-        }
-    }
     handleAccountChange(event) {
         this.selectedAccountId = event.detail.value;
-        this.sections.forEach(section => {
-            section.currentPage = 1;
-        });
-        this.updateSectionComputedProperties();
+        this.contactsCurrentPage = 1;
+        this.opportunitiesCurrentPage = 1;
+        this.updateComputedProperties();
     }
-    handleRowAction(event) {
+    handleContactsRowAction(event) {
         const actionName = event.detail.action.name;
         const row = event.detail.row;
         switch (actionName) {
@@ -115,26 +104,52 @@ export default class AccountRelatedData extends NavigationMixin(LightningElement
                 this.handleEdit(row.Id);
                 break;
             case 'delete':
-                this.handleDelete(row);
+                this.handleContactsDelete(row);
                 break;
             default:
         }
     }
-    async handleSave(event) {
+    handleOpportunitiesRowAction(event) {
+        const actionName = event.detail.action.name;
+        const row = event.detail.row;
+        switch (actionName) {
+            case 'edit':
+                this.handleEdit(row.Id);
+                break;
+            case 'delete':
+                this.handleOpportunitiesDelete(row);
+                break;
+            default:
+        }
+    }
+    async handleContactsSave(event) {
         this.isLoading = true;
         const draftValues = event.detail.draftValues;
         const recordInputs = draftValues.map(draft => ({ fields: draft }));
         const promises = recordInputs.map(recordInput => updateRecord(recordInput));
         try {
             await Promise.all(promises);
-            this.showToast('Success', 'Records updated successfully.', 'success');
-            this.sections.forEach(section => {
-                section.draftValues = [];
-                section.updateKey++;
-            });
+            this.showToast('Success', 'Contacts updated successfully.', 'success');
+            this.contactsDraftValues = [];
             await refreshApex(this.wiredDataResult);
         } catch (error) {
-            this.showToast('Error', error.body?.message || 'Could not update records.', 'error');
+            this.showToast('Error', error.body?.message || 'Could not update contacts.', 'error');
+        } finally {
+            this.isLoading = false;
+        }
+    }
+    async handleOpportunitiesSave(event) {
+        this.isLoading = true;
+        const draftValues = event.detail.draftValues;
+        const recordInputs = draftValues.map(draft => ({ fields: draft }));
+        const promises = recordInputs.map(recordInput => updateRecord(recordInput));
+        try {
+            await Promise.all(promises);
+            this.showToast('Success', 'Opportunities updated successfully.', 'success');
+            this.opportunitiesDraftValues = [];
+            await refreshApex(this.wiredDataResult);
+        } catch (error) {
+            this.showToast('Error', error.body?.message || 'Could not update opportunities.', 'error');
         } finally {
             this.isLoading = false;
         }
@@ -142,22 +157,18 @@ export default class AccountRelatedData extends NavigationMixin(LightningElement
     handleEdit(recordId) {
         this[NavigationMixin.Navigate]({
             type: 'standard__recordPage',
-            attributes: { 
+            attributes: {
                 recordId: recordId,
                 actionName: 'edit'
             }
         });
         refreshApex(this.wiredDataResult);
     }
-    async handleDelete(row) {
-        const recordId = row.Id;
-        const isContact = recordId.startsWith('003');
-        const section = this.sections.find(s => s.key === (isContact ? 'Contacts' : 'Opportunities'));
-        const perms = section.permissions;
+    async handleContactsDelete(row) {
         this.isLoading = true;
         try {
-            await deleteSObjectRecord({ recordId: recordId });
-            this.showToast('Success', 'Record deleted successfully.', 'success');
+            await deleteSObjectRecord({ recordId: row.Id });
+            this.showToast('Success', 'Contact deleted successfully.', 'success');
             await refreshApex(this.wiredDataResult);
         } catch (error) {
             this.showToast('Error Deleting', error.body.message, 'error');
@@ -165,87 +176,139 @@ export default class AccountRelatedData extends NavigationMixin(LightningElement
             this.isLoading = false;
         }
     }
-    handlePageChange(event) {
-        const sectionKey = event.target.dataset.section;
-        const direction = event.target.dataset.direction;
-        const section = this.sections.find(s => s.key === sectionKey);
-        const totalPages = Math.max(Math.ceil(section.allRecords.length / this.recordsPerPage), 1);
-        if (direction === 'previous' && section.currentPage > 1) {
-            section.currentPage--;
-        } else if (direction === 'next' && section.currentPage < totalPages) {
-            section.currentPage++;
+    async handleOpportunitiesDelete(row) {
+        this.isLoading = true;
+        try {
+            await deleteSObjectRecord({ recordId: row.Id });
+            this.showToast('Success', 'Opportunity deleted successfully.', 'success');
+            await refreshApex(this.wiredDataResult);
+        } catch (error) {
+            this.showToast('Error Deleting', error.body.message, 'error');
+        } finally {
+            this.isLoading = false;
         }
-        this.updateSectionComputedProperties();
     }
-    updateSectionComputedProperties() {
-        this.sections.forEach(section => {
-            const start = (section.currentPage - 1) * this.recordsPerPage;
-            const end = section.currentPage * this.recordsPerPage;
-            section.pagedRecords = section.allRecords.slice(start, end);
-            section.totalPages = Math.max(Math.ceil(section.allRecords.length / this.recordsPerPage), 1);
-            section.isFirstPage = section.currentPage === 1;
-            section.isLastPage = section.currentPage === section.totalPages;
-            const totalCount = section.allRecords.length;
-            const displayCount = totalCount > 6 ? '6+' : totalCount;
-            section.displayTitle = `${section.title} (${displayCount})`;
-        });
+    handleContactsPageChange(event) {
+        const direction = event.target.dataset.direction;
+        const totalPages = this.contactsTotalPages;
+        if (direction === 'previous' && this.contactsCurrentPage > 1) {
+            this.contactsCurrentPage--;
+        } else if (direction === 'next' && this.contactsCurrentPage < totalPages) {
+            this.contactsCurrentPage++;
+        }
+        this.updateContactsComputedProperties();
+    }
+    handleOpportunitiesPageChange(event) {
+        const direction = event.target.dataset.direction;
+        const totalPages = this.opportunitiesTotalPages;
+        if (direction === 'previous' && this.opportunitiesCurrentPage > 1) {
+            this.opportunitiesCurrentPage--;
+        } else if (direction === 'next' && this.opportunitiesCurrentPage < totalPages) {
+            this.opportunitiesCurrentPage++;
+        }
+        this.updateOpportunitiesComputedProperties();
+    }
+    updateComputedProperties() {
+        this.updateContactsComputedProperties();
+        this.updateOpportunitiesComputedProperties();
+    }
+    updateContactsComputedProperties() {
+        const start = (this.contactsCurrentPage - 1) * this.recordsPerPage;
+        const end = this.contactsCurrentPage * this.recordsPerPage;
+        this.contactsPagedRecords = this.contactsAllRecords.slice(start, end);
+        this.contactsTotalPages = Math.max(Math.ceil(this.contactsAllRecords.length / this.recordsPerPage), 1);
+        this.contactsIsFirstPage = this.contactsCurrentPage === 1;
+        this.contactsIsLastPage = this.contactsCurrentPage === this.contactsTotalPages;
+        const totalCount = this.contactsAllRecords.length;
+        const displayCount = totalCount > 6 ? '6+' : totalCount;
+        this.contactsDisplayTitle = `Contacts (${displayCount})`;
+    }
+    updateOpportunitiesComputedProperties() {
+        const start = (this.opportunitiesCurrentPage - 1) * this.recordsPerPage;
+        const end = this.opportunitiesCurrentPage * this.recordsPerPage;
+        this.opportunitiesPagedRecords = this.opportunitiesAllRecords.slice(start, end);
+        this.opportunitiesTotalPages = Math.max(Math.ceil(this.opportunitiesAllRecords.length / this.recordsPerPage), 1);
+        this.opportunitiesIsFirstPage = this.opportunitiesCurrentPage === 1;
+        this.opportunitiesIsLastPage = this.opportunitiesCurrentPage === this.opportunitiesTotalPages;
+        const totalCount = this.opportunitiesAllRecords.length;
+        const displayCount = totalCount > 6 ? '6+' : totalCount;
+        this.opportunitiesDisplayTitle = `Opportunities (${displayCount})`;
     }
     setupColumns(data) {
-        this.sections.forEach(section => {
-            const actions = [];
-            if (section.permissions.canEdit) {
-                actions.push(ACTION_EDIT);
-            }
-            if (section.permissions.canDelete) {
-                actions.push(ACTION_DELETE);
-            }
-            const columnKey = section.key === 'Contacts' ? 'contactColumns' : 'opportunityColumns';
-            let columns = [...data[columnKey]];
-            columns.forEach((col, index) => {
-                if (col.type === 'date-local') {
-                    columns[index] = { 
-                        ...col, 
-                        type: 'date', 
-                        typeAttributes: { 
-                            year: 'numeric', 
-                            month: '2-digit', 
-                            day: '2-digit' 
-                        } 
-                    };
+    const contactsActions = [];
+    if (this.contactsPermissions.canEdit) {
+        contactsActions.push(ACTION_EDIT);
+    }
+    if (this.contactsPermissions.canDelete) {
+        contactsActions.push(ACTION_DELETE);
+    }
+    let contactsColumns = [...data.contactColumns];
+    contactsColumns.forEach((col, index) => {
+        if (col.type === 'date-local') {
+            contactsColumns[index] = {
+                ...col,
+                type: 'date',
+                typeAttributes: {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
                 }
-            });
-            const stageNameIndex = columns.findIndex(col => col.fieldName === 'StageName');
-            if (stageNameIndex !== -1 && section.key === 'Opportunities') {
-                columns[stageNameIndex] = {
-                    label: 'Stage',
-                    fieldName: 'StageName',
-                    type: 'picklist',
-                    editable: section.permissions.canEdit,
-                    typeAttributes: {
-                        options: this.stagePicklistValues,
-                        value: { fieldName: 'StageName' },
-                        fieldName: 'StageName',
-                        context: { fieldName: 'Id' }
-                    }
-                };
+            };
+        }
+    });
+    if (contactsActions.length > 0) {
+        this.contactsColumns = [...contactsColumns, {
+            type: 'action',
+            typeAttributes: { rowActions: contactsActions }
+        }];
+    } else {
+        this.contactsColumns = contactsColumns;
+    }
+    const opportunitiesActions = [];
+    if (this.opportunitiesPermissions.canEdit) {
+        opportunitiesActions.push(ACTION_EDIT);
+    }
+    if (this.opportunitiesPermissions.canDelete) {
+        opportunitiesActions.push(ACTION_DELETE);
+    }
+    
+    let opportunitiesColumns = [...data.opportunityColumns];
+    opportunitiesColumns.forEach((col, index) => {
+        if (col.type === 'date-local') {
+            opportunitiesColumns[index] = {
+                ...col,
+                type: 'date',
+                typeAttributes: {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                }
+            };
+        }
+    });
+    const stageNameIndex = opportunitiesColumns.findIndex(col => col.fieldName === 'StageName');
+    if (stageNameIndex !== -1) {
+        opportunitiesColumns[stageNameIndex] = {
+            label: 'Stage',
+            fieldName: 'StageName',
+            type: 'combobox',
+            editable: this.opportunitiesPermissions.canEdit,
+            typeAttributes: {
+                options: this.stageOptions
             }
-            if (actions.length > 0) {
-                section.columns = [...columns, {
-                    type: 'action',
-                    typeAttributes: { rowActions: actions }
-                }];
-            } else {
-                section.columns = columns;
-            }
-        });
+        };
     }
-    get contactsSection() {
-        return this.sections[0];
-    }
-    get opportunitiesSection() {
-        return this.sections[1];
-    }
+    console.log('Stage options: ', this.stageOptions);
 
+    if (opportunitiesActions.length > 0) {
+        this.opportunitiesColumns = [...opportunitiesColumns, {
+            type: 'action',
+            typeAttributes: { rowActions: opportunitiesActions }
+        }];
+    } else {
+        this.opportunitiesColumns = opportunitiesColumns;
+    }
+}
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
     }

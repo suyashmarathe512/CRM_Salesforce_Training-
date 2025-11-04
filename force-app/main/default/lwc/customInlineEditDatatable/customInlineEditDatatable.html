@@ -1,0 +1,13 @@
+<template>
+    <div style="padding: 10px;">
+        <lightning-datatable
+            key-field={keyField}
+            data={data}
+            columns={columns}
+            draft-values={draftValues}
+            onsave={handleSave}
+            onrowaction={handleRowAction}
+            hide-checkbox-column={hideCheckboxColumn}>
+        </lightning-datatable>
+    </div>
+</template>

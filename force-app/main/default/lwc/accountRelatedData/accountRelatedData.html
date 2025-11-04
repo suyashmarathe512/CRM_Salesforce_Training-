@@ -30,43 +30,70 @@
                 </template>
                 <template if:false={isLoading}>
                     <lightning-layout multiple-rows="true">
-                        <template for:each={sections} for:item="section">
-                            <lightning-layout-item key={section.key} size="12" large-device-size="6" padding="around-small">
-                                <article class="slds-card slds-grow" style="height: 100%;">
-                                    <div class="slds-card__header slds-grid" style="background-color: #f3f3f3; border-bottom: 1px solid #dddbda; padding: 0.75rem 1rem;">
-                                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
-                                            <div class="slds-media__figure">
-                                                <lightning-icon icon-name={section.icon} size="small"></lightning-icon>
-                                            </div>
-                                            <div class="slds-media__body">
-                                                <h2 class="slds-card__header-title">
-                                                    <span class="slds-text-heading_small">{section.displayTitle}</span>
-                                                </h2>
-                                            </div>
-                                        </header>
-                                    </div>
-                                    <div class="slds-card__body" style="padding: 0;">
-                                        <template if:true={section.pagedRecords.length}>
-                                            <c-custom-datatable
-                                                key-field="Id"
-                                                data={section.pagedRecords}
-                                                columns={section.columns}
-                                                onrowaction={handleRowAction}
-                                                onsave={handleSave}
-                                                draft-values={section.draftValues}
-                                                hide-checkbox-column
-                                                show-row-numbers
-                                                data-section={section.key}
-                                                key={section.updateKey}
-                                            ></c-custom-datatable>
-                                        </template>
-                                        <template if:false={section.pagedRecords.length}>
-                                            <p class="slds-p-around_small">No {section.key} found.</p>
-                                        </template>
-                                    </div>
-                                </article>
-                            </lightning-layout-item>
-                        </template>
+                        <lightning-layout-item size="12" large-device-size="6" padding="around-small">
+                            <article class="slds-card slds-grow" style="height: 100%;">
+                                <div class="slds-card__header slds-grid" style="background-color: #f3f3f3; border-bottom: 1px solid #dddbda; padding: 0.75rem 1rem;">
+                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                        <div class="slds-media__figure">
+                                            <lightning-icon icon-name="standard:contact" size="small"></lightning-icon>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <h2 class="slds-card__header-title">
+                                                <span class="slds-text-heading_small">{contactsDisplayTitle}</span>
+                                            </h2>
+                                        </div>
+                                    </header>
+                                </div>
+                                <div class="slds-card__body" style="padding: 0;">
+                                    <template if:true={contactsPagedRecords.length}>
+                                        <c-custom-inline-edit-datatable
+                                            key-field="Id"
+                                            data={contactsPagedRecords}
+                                            columns={contactsColumns}
+                                            draft-values={contactsDraftValues}
+                                            onsave={handleContactsSave}
+                                            onrowaction={handleContactsRowAction}
+                                            hide-checkbox-column>
+                                        </c-custom-inline-edit-datatable>
+                                    </template>
+                                    <template if:false={contactsPagedRecords.length}>
+                                        <p class="slds-p-around_small">No Contacts found.</p>
+                                    </template>
+                                </div>
+                            </article>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" large-device-size="6" padding="around-small">
+                            <article class="slds-card slds-grow" style="height: 100%;">
+                                <div class="slds-card__header slds-grid" style="background-color: #f3f3f3; border-bottom: 1px solid #dddbda; padding: 0.75rem 1rem;">
+                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                        <div class="slds-media__figure">
+                                            <lightning-icon icon-name="standard:opportunity" size="small"></lightning-icon>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <h2 class="slds-card__header-title">
+                                                <span class="slds-text-heading_small">{opportunitiesDisplayTitle}</span>
+                                            </h2>
+                                        </div>
+                                    </header>
+                                </div>
+                                <div class="slds-card__body" style="padding: 0;">
+                                    <template if:true={opportunitiesPagedRecords.length}>
+                                        <c-custom-inline-edit-datatable
+                                            key-field="Id"
+                                            data={opportunitiesPagedRecords}
+                                            columns={opportunitiesColumns}
+                                            draft-values={opportunitiesDraftValues}
+                                            onsave={handleOpportunitiesSave}
+                                            onrowaction={handleOpportunitiesRowAction}
+                                            hide-checkbox-column>
+                                        </c-custom-inline-edit-datatable>
+                                    </template>
+                                    <template if:false={opportunitiesPagedRecords.length}>
+                                        <p class="slds-p-around_small">No Opportunities found.</p>
+                                    </template>
+                                </div>
+                            </article>
+                        </lightning-layout-item>
                     </lightning-layout>
                 </template>
             </div>
@@ -75,43 +102,39 @@
                     <div style="display: flex; width: 100%; gap: 0.5rem;">
                         <div style="width: 50%; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;">
                             <span class="slds-text-body_small" style="white-space: nowrap;">
-                                {contactsSection.title} Page {contactsSection.currentPage} of {contactsSection.totalPages}
+                                Contacts Page {contactsCurrentPage} of {contactsTotalPages}
                             </span>
                             <lightning-button-group>
                                 <lightning-button
                                     label="Previous"
-                                    onclick={handlePageChange}
-                                    data-section="Contacts"
+                                    onclick={handleContactsPageChange}
                                     data-direction="previous"
-                                    disabled={contactsSection.isFirstPage}
+                                    disabled={contactsIsFirstPage}
                                 ></lightning-button>
                                 <lightning-button
                                     label="Next"
-                                    onclick={handlePageChange}
-                                    data-section="Contacts"
+                                    onclick={handleContactsPageChange}
                                     data-direction="next"
-                                    disabled={contactsSection.isLastPage}
+                                    disabled={contactsIsLastPage}
                                 ></lightning-button>
                             </lightning-button-group>
                         </div>
                         <div style="width: 50%; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;">
                             <span class="slds-text-body_small" style="white-space: nowrap;">
-                                {opportunitiesSection.title} Page {opportunitiesSection.currentPage} of {opportunitiesSection.totalPages}
+                                Opportunities Page {opportunitiesCurrentPage} of {opportunitiesTotalPages}
                             </span>
                             <lightning-button-group>
                                 <lightning-button
                                     label="Previous"
-                                    onclick={handlePageChange}
-                                    data-section="Opportunities"
+                                    onclick={handleOpportunitiesPageChange}
                                     data-direction="previous"
-                                    disabled={opportunitiesSection.isFirstPage}
+                                    disabled={opportunitiesIsFirstPage}
                                 ></lightning-button>
                                 <lightning-button
                                     label="Next"
-                                    onclick={handlePageChange}
-                                    data-section="Opportunities"
+                                    onclick={handleOpportunitiesPageChange}
                                     data-direction="next"
-                                    disabled={opportunitiesSection.isLastPage}
+                                    disabled={opportunitiesIsLastPage}
                                 ></lightning-button>
                             </lightning-button-group>
                         </div>

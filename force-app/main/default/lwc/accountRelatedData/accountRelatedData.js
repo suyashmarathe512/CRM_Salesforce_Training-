@@ -3,6 +3,9 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
 import { updateRecord } from 'lightning/uiRecordApi';
 import { NavigationMixin } from 'lightning/navigation';
+import { getPicklistValues, getObjectInfo } from 'lightning/uiObjectInfoApi';
+import OPPORTUNITY_OBJECT from '@salesforce/schema/Opportunity';
+import OPPORTUNITY_STAGE_NAME from '@salesforce/schema/Opportunity.StageName';
 import getAccounts from '@salesforce/apex/AccountContactOppController.getAccounts';
 import getRelatedData from '@salesforce/apex/AccountContactOppController.getRelatedData';
 import deleteSObjectRecord from '@salesforce/apex/AccountContactOppController.deleteSObjectRecord';
@@ -32,21 +35,11 @@ export default class AccountRelatedData extends NavigationMixin(LightningElement
     @track opportunitiesIsFirstPage = true;
     @track opportunitiesIsLastPage = true;
     @track opportunitiesDisplayTitle = 'Opportunities (0)';
+    @track stageOptions = [];
+    defaultRecordTypeId;
     isLoading = false;
     wiredDataResult;
     recordsPerPage = RECORDS_PER_PAGE;
-get stageOptions() {
-    return [
-        { label: 'Prospecting', value: 'Prospecting' },
-        { label: 'Qualification', value: 'Qualification' },
-        { label: 'Needs Analysis', value: 'Needs Analysis' },
-        { label: 'Value Proposition', value: 'Value Proposition' },
-        { label: 'Proposal/Price Quote', value: 'Proposal/Price Quote' },
-        { label: 'Negotiation', value: 'Negotiation' },
-        { label: 'Closed Won', value: 'Closed Won' },
-        { label: 'Closed Lost', value: 'Closed Lost' }
-    ];
-}
     connectedCallback() {
         document.addEventListener('visibilitychange', this.handleVisibilityChange);
 
@@ -88,6 +81,27 @@ get stageOptions() {
         } else if (error) {
             this.showToast('Error', 'Could not load related data.', 'error');
             this.isLoading = false;
+        }
+    }
+
+    @wire(getObjectInfo, { objectApiName: OPPORTUNITY_OBJECT })
+    wiredObjectInfo({ error, data }) {
+        if (data) {
+            this.defaultRecordTypeId = data.defaultRecordTypeId;
+        } else if (error) {
+            console.error('Error loading object info:', error);
+        }
+    }
+
+    @wire(getPicklistValues, { recordTypeId: '$defaultRecordTypeId', fieldApiName: OPPORTUNITY_STAGE_NAME })
+    wiredStageOptions({ error, data }) {
+        if (data) {
+            this.stageOptions = data.values.map(option => ({
+                label: option.label,
+                value: option.value
+            }));
+        } else if (error) {
+            console.error('Error loading stage options:', error);
         }
     }
     handleAccountChange(event) {

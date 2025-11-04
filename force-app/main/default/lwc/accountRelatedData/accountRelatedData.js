@@ -219,7 +219,7 @@ export default class AccountRelatedData extends NavigationMixin(LightningElement
                 columns[stageNameIndex] = {
                     label: 'Stage',
                     fieldName: 'StageName',
-                    type: 'picklistType',
+                    type: 'picklist',
                     editable: section.permissions.canEdit,
                     typeAttributes: {
                         options: this.stagePicklistValues,

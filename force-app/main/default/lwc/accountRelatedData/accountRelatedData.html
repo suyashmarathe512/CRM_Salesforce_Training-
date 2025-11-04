@@ -1,19 +1,19 @@
 <template>
     <div class="component-wrapper-v5">
-        <article class="slds-card">
-            <div class="slds-card__header slds-grid" style="background-color: #f3f3f3; border-bottom: 1px solid #dddbda; padding: 0.75rem 1rem;">
+        <article class="slds-card" style="display: flex; flex-direction: column; min-height: 85vh;">
+            <div class="slds-card__header slds-grid" style="background-color: #f3f3f3; border-bottom: 1px solid #dddbda; padding: 0.75rem 1rem; height: 60px; flex-shrink: 0;">
                 <header class="slds-media slds-media_center slds-has-flexi-truncate">
                     <div class="slds-media__figure">
-                        <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
+                        <lightning-icon icon-name="standard:account" size="medium"></lightning-icon>
                     </div>
                     <div class="slds-media__body">
                         <h2 class="slds-card__header-title">
-                            <span class="slds-text-heading_small">Account Contact & Opportunity Viewer</span>
+                            <span class="slds-text-heading_medium">Account Contact & Opportunity Viewer</span>
                         </h2>
                     </div>
                 </header>
             </div>
-            <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-card__body slds-card__body_inner" style="flex-grow: 1; padding: 20px;">
                 <lightning-combobox
                     name="account"
                     label="Select Account"
@@ -55,6 +55,7 @@
                                                 onsave={handleSave}
                                                 draft-values={section.draftValues}
                                                 hide-checkbox-column
+                                                show-row-numbers
                                                 data-section={section.key}
                                                 key={section.updateKey}
                                             ></c-custom-datatable>
@@ -70,9 +71,12 @@
                 </template>
             </div>
             <template if:false={isLoading}>
-                <div class="slds-card__footer" style="background-color: #f3f3f3; border-top: 1px solid #dddbda; padding: 0.75rem 1rem; overflow: visible;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 0.5rem;">
-                        <div style="width: 25%; flex-shrink: 0; display: flex; align-items: center;">
+                <div class="slds-card__footer" style="background-color: #f3f3f3; border-top: 1px solid #dddbda; padding: 0.75rem 1rem; overflow: hidden; min-height: 60px; max-height: 60px; flex-shrink: 0;">
+                    <div style="display: flex; width: 100%; gap: 0.5rem;">
+                        <div style="width: 50%; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;">
+                            <span class="slds-text-body_small" style="white-space: nowrap;">
+                                {contactsSection.title} Page {contactsSection.currentPage} of {contactsSection.totalPages}
+                            </span>
                             <lightning-button-group>
                                 <lightning-button
                                     label="Previous"
@@ -90,12 +94,10 @@
                                 ></lightning-button>
                             </lightning-button-group>
                         </div>
-                        <div style="width: 25%; flex-shrink: 0; display: flex; justify-content: center; align-items: center;">
-                            <span class="slds-text-body_small" style="white-space: nowrap; text-align: center;">
-                                {contactsSection.title} Page {contactsSection.currentPage} of {contactsSection.totalPages}
+                        <div style="width: 50%; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;">
+                            <span class="slds-text-body_small" style="white-space: nowrap;">
+                                {opportunitiesSection.title} Page {opportunitiesSection.currentPage} of {opportunitiesSection.totalPages}
                             </span>
-                        </div>
-                        <div style="width: 1%; flex-shrink: 0; display: flex; justify-content: center; align-items: center;">
                             <lightning-button-group>
                                 <lightning-button
                                     label="Previous"
@@ -112,11 +114,6 @@
                                     disabled={opportunitiesSection.isLastPage}
                                 ></lightning-button>
                             </lightning-button-group>
-                        </div>
-                        <div style="width: 25%; flex-shrink: 0; display: flex; justify-content: flex-end; align-items: center;">
-                            <span class="slds-text-body_small" style="white-space: nowrap; text-align: right;">
-                                {opportunitiesSection.title} Page {opportunitiesSection.currentPage} of {opportunitiesSection.totalPages}
-                            </span>
                         </div>
                     </div>
                 </div>

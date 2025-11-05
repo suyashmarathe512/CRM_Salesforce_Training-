@@ -1,158 +1,254 @@
 <apex:page controller="StudentRegistrationController" language="{!selectedLanguage}">
     <apex:slds />
     <style>
-        .slds-scope .slds-card {
-            border: 1px solid #ccc;
-            background-color: #eef6f9;
+        :root {
+            --sf-blue-600: #1589EE;
+            --sf-blue-700: #0b67c7;
+            --card-bg: #f6f9ff;
+            --card-border: #cfe6ff;
+            --input-bg: #ffffff;
+            --muted-text: #5b6b78;
         }
-        .slds-scope .slds-form-element__control input[type="text"],
-        .slds-scope .slds-form-element__control select {
-            width: 85%;
-            height:2rem;
-            background-color: #f3f2f2;
-            border-radius: 0.5rem;
+        .slds-scope body {
+            font-family: "Salesforce Sans", Arial, Helvetica, sans-serif;
+        }
+        .slds-card {
+            border: 1px solid var(--card-border);
+            background-color: var(--card-bg);
+            box-shadow: 0 2px 6px rgba(5, 80, 140, 0.05);
+            border-radius: 6px;
+        }
+        .brand-header {
+            background: linear-gradient(90deg, var(--sf-blue-600), var(--sf-blue-700));
+            color: #fff;
+            padding: 16px;
+            border-radius: 6px 6px 0 0;
+        }
+        .brand-title { font-size: 2.5rem !important; font-weight: 550 !important; margin: 0; }
 
+        .form-card {
+            padding: 1.25rem;
         }
-        .slds-scope .slds-form-element__label {
-            font-size: 1.125rem;
-            font-family: 'Georgia, serif';
+        .slds-form-element__control input[type="text"],
+        .slds-form-element__control select,
+        .slds-form-element__control .uiInputText {
+            width: 100%;
+            min-height: 2.2rem;
+            background-color: var(--input-bg);
+            border-radius: 0.375rem;
+            padding: 6px 10px;
+            box-sizing: border-box;
         }
-        .slds-scope .slds-form-element {
-            margin-bottom: 1rem;
+        .page-container {
+            max-width: 1100px;
+            margin: 1.5rem auto;
         }
-        .slds-scope .slds-select_container {
-            width: 85%;
+        .form-footer { padding: 1rem 1.25rem 1.5rem; text-align: center; position:relative; }
+
+        .custom-toast-wrapper { position: fixed; top: 1rem; right: 15rem; z-index: 9999; }
+        .error-area {
+            margin-top: 0.75rem;
+            text-align: center;
         }
-        .slds-scope .slds-button_brand {
-            padding: 0.75rem 1.5rem;
-            font-size: 1.125rem;
-        }
+        .error-text { color: #c23934; font-weight: 600; }
     </style>
     <div class="slds-scope">
-        <div class="slds-p-around_medium">
-            <apex:pageMessages id="messageArea"/>
-        </div>
-        
-        <apex:form>
-            <div class="slds-card slds-m-around_medium" id="formBox">
-                <div class="slds-card__header slds-grid slds-theme_shade">
-                    <header class="slds-media slds-media_center slds-has-flexi-truncate" style="background :#b4d8fc; padding:10px; border-radius:0.5rem;">
-                        <div class="slds-media__body">
-                            <h2 class="slds-card__header-title" >
-                                <span class="slds-text-heading_medium">{!$Label.StudentFormTitle}</span>
-                            </h2>
-                        </div>
-                    </header>
-                </div>
-                <div class="slds-card__body slds-card__body_inner">
-                    <div class="slds-form-element slds-m-bottom_medium" style="max-width: 500px; margin-top:10px; margin-bottom:10px; background:#dbe1ec; padding:10px; border-radius:0.5rem;">
-                        <label class="slds-form-element__label" for="languageSelect">{!$Label.LanguageLabel}</label>
-                        <div class="slds-form-element__control">
-                                <apex:selectList value="{!selectedLanguage}" size="1" styleClass="sfdc-select" id="languageSelect">
-                                    <apex:selectOptions value="{!languageOptions}"/>
-                                    <apex:actionSupport event="onchange"/>
-                                </apex:selectList>
-                        </div>
-                    </div>
-                    <h4 class="slds-text-heading_medium slds-m-top_large slds-m-bottom_small" style="font-weight: bold;">Student Details</h4>
-                    <div class="slds-grid slds-wrap slds-gutters">
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_medium">
-                            <div class="slds-form-element">
-                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.First_Name__c.label}" for="{!$Component.fName}" styleClass="slds-form-element__label"/>
-                                <div class="slds-form-element__control">
-                                    <apex:inputField value="{!student.First_Name__c}" id="fName"/>
-                                </div>
-                            </div>
-                        </div>
+        <div class="page-container" role="main">
+            <apex:pageMessages id="messageArea" />
 
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <div class="slds-form-element">
-                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.Last_Name__c.label}" for="{!$Component.lName}" styleClass="slds-form-element__label"/>
+            <apex:form id="mainForm">
+                <div class="slds-card">
+                    <div class="brand-header">
+                        <div>
+                            <h1 class="brand-title">{!$Label.StudentFormTitle}</h1>
+                        </div>
+                    </div>
+                    <div class="form-card slds-card__body slds-card__body_inner">
+                        <div class="slds-grid slds-wrap slds-m-bottom_medium">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                <label class="slds-form-element__label" for="languageSelect">{!$Label.LanguageLabel}</label>
                                 <div class="slds-form-element__control">
-                                    <apex:inputField value="{!student.Last_Name__c}" id="lName"/>
+                                    <apex:selectList value="{!selectedLanguage}" size="1" id="languageSelect" styleClass="slds-select">
+                                        <apex:selectOptions value="{!languageOptions}"/>
+                                        <apex:actionSupport event="onchange"/>
+                                    </apex:selectList>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <div class="slds-form-element">
-                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.Roll_number__c.label}" for="{!$Component.rollNum}" styleClass="slds-form-element__label"/>
-                                <div class="slds-form-element__control">
-                                    <apex:inputField value="{!student.Roll_number__c}" id="rollNum"/>
+                        <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="fName">{!$ObjectType.Student__c.fields.First_Name__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.First_Name__c}" id="fName"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element ">
+                                    <label class="slds-form-element__label" for="lName">{!$ObjectType.Student__c.fields.Last_Name__c.label} <span style="color: red;">*</span></label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.Last_Name__c}" id="lName" html-placeholder="Required" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="rollNum">{!$ObjectType.Student__c.fields.Roll_number__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.Roll_number__c}" id="rollNum"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="gender">{!$ObjectType.Student__c.fields.Gender__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.Gender__c}" id="gender"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <div class="slds-form-element">
-                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.Gender__c.label}" for="{!$Component.gender}" styleClass="slds-form-element__label"/>
-                                <div class="slds-form-element__control">
-                                    <apex:inputField value="{!student.Gender__c}" id="gender"/>
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="courses">{!$ObjectType.Student__c.fields.Courses__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.Courses__c}" id="courses"/>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <div class="slds-form-element">
-                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.Courses__c.label}" for="{!$Component.courses}" styleClass="sfdc-select"/>
-                                <div class="slds-form-element__control">
-                                    <apex:inputField value="{!student.Courses__c}" id="courses"/>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="hsc">{!$ObjectType.Student__c.fields.H_S_C__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.H_S_C__c}" id="hsc" html-placeholder="e.g 99.99%." />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <div class="slds-form-element">
-                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.H_S_C__c.label}" for="{!$Component.hsc}" styleClass="slds-form-element__label"/>
-                                <div class="slds-form-element__control">
-                                    <apex:inputField value="{!student.H_S_C__c}" id="hsc"/>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="ssc">{!$ObjectType.Student__c.fields.S_S_C__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.S_S_C__c}" id="ssc" html-placeholder="e.g 99.99%."/>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <div class="slds-form-element">
-                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.S_S_C__c.label}" for="{!$Component.ssc}" styleClass="slds-form-element__label"/>
-                                <div class="slds-form-element__control">
-                                    <apex:inputField value="{!student.S_S_C__c}" id="ssc"/>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="country">{!$ObjectType.Student__c.fields.Country__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.Country__c}" id="country"/>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <div class="slds-form-element">
-                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.Country__c.label}" for="{!$Component.country}" styleClass="sfdc-select"/>
-                                <div class="slds-form-element__control">
-                                    <apex:inputField value="{!student.Country__c}" id="country"/>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="state">{!$ObjectType.Student__c.fields.State__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.State__c}" id="state"/>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <div class="slds-form-element">
-                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.State__c.label}" for="{!$Component.state}" styleClass="sfdc-select"/>
-                                <div class="slds-form-element__control">
-                                    <apex:inputField value="{!student.State__c}" id="state"/>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_small">
-                            <div class="slds-form-element">
-                                <apex:outputLabel value="{!$ObjectType.Student__c.fields.City__c.label}" for="{!$Component.city}" styleClass="sfdc-select"/>
-                                <div class="slds-form-element__control">
-                                    <apex:inputField value="{!student.City__c}" id="city"/>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="city">{!$ObjectType.Student__c.fields.City__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.City__c}" id="city"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="form-footer slds-card__footer">
+                        <apex:commandButton id="saveBtn"
+                                          action="{!saveStudent}"
+                                          value="{!$Label.SubmitButtonLabel}"
+                                          styleClass="slds-button slds-button_brand"
+                                          rerender="mainForm,messageArea,errorArea"
+                                          oncomplete="handleAfterSave('{!JSENCODE(lastSavedId)}','{!JSENCODE(toastMessage)}');"
+                                          onclick="if(!clientValidate()){return false;} showSpinner();" />
+                        <apex:outputPanel id="errorArea" layout="block" styleClass="error-area">
+                            <apex:outputText value="{!errorMessage}" rendered="{!NOT(ISNULL(errorMessage))}" styleClass="error-text"/>
+                        </apex:outputPanel>
+                    </div>
                 </div>
-                <footer class="slds-card__footer slds-text-align_center slds-p-around_large">
-                    <apex:commandButton action="{!saveStudent}" 
-                                      value="{!$Label.SubmitButtonLabel}" 
-                                      rerender="messageArea"
-                                      styleClass="slds-button slds-button_brand"/>
-                </footer>
-            </div>
-        </apex:form>
+            </apex:form>
+        </div>
+        <div class="custom-toast-wrapper" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
     </div>
+
+    <script>
+        function clientValidate() {
+            var lNameInput = document.querySelector("input[name$='Last_Name__c']");
+            if (lNameInput === '') {
+                showToast('error', 'Last Name is required.');
+                lNameInput.focus();
+                return false;
+            }
+            return true;
+        }
+        function clearFormFields() {
+            var form = document.getElementById('mainForm'); 
+            if (!form) return;
+            var elements = form.querySelectorAll('input, select, textarea');
+            elements.forEach(function(el) {
+                var type = el.type ? el.type.toLowerCase() : '';
+                if (type === 'checkbox' || type === 'radio') {
+                    el.checked = false;
+                } else if (el.tagName.toLowerCase() === 'select') {
+                    el.selectedIndex = 0;
+                } else if (type === 'hidden') {
+                } else {
+                    el.value = '';
+                }
+            });
+        }
+        function showSpinner() {
+            if (!document.getElementById('savingSpinner')) {
+                var spinner = document.createElement('div');
+                spinner.id = 'savingSpinner';
+                spinner.style.position = 'fixed';
+                spinner.style.inset = '0';
+                spinner.style.background = 'rgba(255,255,255,0.6)';
+                spinner.style.display = 'flex';
+                spinner.style.alignItems = 'center';
+                spinner.style.justifyContent = 'center';
+                spinner.style.zIndex = '9998';
+                spinner.innerHTML = '<div class="slds-spinner slds-spinner_medium" role="status"><span class="slds-assistive-text">Saving</span><div class="slds-spinner__dot-a"></div><div class="slds-spinner__dot-b"></div></div>';
+                document.body.appendChild(spinner);
+            } else {
+                document.getElementById('savingSpinner').style.display = 'flex';
+            }
+        }
+        function hideSpinner() {
+            var s = document.getElementById('savingSpinner');
+            if (s) s.style.display = 'none';
+        }
+        function showToast(type, message) {
+            var container = document.getElementById('toastContainer');
+            if (!container) return;
+            var toast = document.createElement('div');
+            toast.setAttribute('role', 'status');
+            toast.setAttribute('aria-live', 'polite');
+            toast.className = 'slds-notify slds-notify_toast slds-theme_' + (type === 'success' ? 'success' : (type === 'warning'? 'warning' : 'error'));
+            toast.style.marginTop = '8px';
+            toast.style.minWidth = '220px';
+            toast.innerHTML = '<div class="slds-notify__content"><h2 class="slds-text-heading_small" style="margin:0;">' + message + '</h2></div>';
+            container.appendChild(toast);
+            setTimeout(function(){if(toast.parentNode === container) container.removeChild(toast); }, 4000);
+        }
+        function handleAfterSave(lastSavedId, toastMsg) {
+            hideSpinner();
+            if (!lastSavedId || lastSavedId === 'null' || lastSavedId === '') {
+                return;
+            }
+                var url = '/' + lastSavedId;
+                window.open(url, '_blank');
+                var message = toastMsg;
+                showToast('success', message);
+            
+        }
+    </script>
 </apex:page>

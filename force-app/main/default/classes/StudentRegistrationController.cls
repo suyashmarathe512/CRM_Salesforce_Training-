@@ -2,10 +2,14 @@
 * @Author:        CRM Developer
 * @className:     StudentRegistrationController
 * @Description:   This class handles student registration, including language selection and saving student records.
+*                 Exposes lastSavedId and toastMessage for the VF page to consume for post-save behavior.
 ***************************************************************************************************/
 public class StudentRegistrationController {
     public Student__c student { get; set; }
     public String selectedLanguage { get; set; }
+    public Id lastSavedId { get; set; }
+    public String toastMessage { get; set; }
+    public String errorMessage { get; set; }
 
 /***************************************************************************************************
 * @Author:        CRM Developer
@@ -17,6 +21,9 @@ public class StudentRegistrationController {
         this.student = new Student__c();
         String langParam = ApexPages.currentPage().getParameters().get('lang');
         this.selectedLanguage = String.isNotBlank(langParam) ? langParam : 'en';
+        this.lastSavedId = null;
+        this.toastMessage = '';
+        this.errorMessage = '';
     }
 
 /***************************************************************************************************
@@ -39,33 +46,25 @@ public class StudentRegistrationController {
 *                 Validates required fields and constructs the full name field from first and last names.
 ***************************************************************************************************/
     public PageReference saveStudent() {
-        try {
-            if (String.isBlank(student.Last_Name__c)) {
-                ApexPages.Message errorMsg = new ApexPages.Message(
-                    ApexPages.Severity.ERROR, 'Last Name is required.'
-                );
-                ApexPages.addMessage(errorMsg);
-                return null;
-            }
-            if (String.isNotBlank(student.First_Name__c) && String.isNotBlank(student.Last_Name__c)) {
-                student.Name = student.First_Name__c + ' ' + student.Last_Name__c;
-            } else if (String.isNotBlank(student.First_Name__c)) {
-                student.Name = student.First_Name__c;
-            } else if (String.isNotBlank(student.Last_Name__c)) {
-                student.Name = student.Last_Name__c;
-            }
-            insert student;
-            ApexPages.Message successMsg = new ApexPages.Message(
-                ApexPages.Severity.CONFIRM, Label.SuccessMessage
-            );
-            ApexPages.addMessage(successMsg);
-            this.student = new Student__c();
-        } catch (Exception e) {
-            ApexPages.Message errorMsg = new ApexPages.Message(
-                ApexPages.Severity.ERROR, 'Error: ' + e.getMessage()
-            );
-            ApexPages.addMessage(errorMsg);
+        this.lastSavedId = null;
+        this.toastMessage = '';
+        this.errorMessage = '';
+        if (String.isBlank(student.Last_Name__c)) {
+            this.errorMessage = Label.LastNameRequired;
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, this.errorMessage));
+            return null;
         }
+        if (String.isNotBlank(student.First_Name__c) && String.isNotBlank(student.Last_Name__c)) {
+            student.Name = student.First_Name__c + ' ' + student.Last_Name__c;
+        } else if (String.isNotBlank(student.First_Name__c)) {
+            student.Name = student.First_Name__c;
+        } else if (String.isNotBlank(student.Last_Name__c)) {
+            student.Name = student.Last_Name__c;
+        }
+        insert student;
+        this.lastSavedId = student.Id;
+        this.toastMessage = Label.SuccessMessage;
+        this.student = new Student__c();
         return null;
     }
 }

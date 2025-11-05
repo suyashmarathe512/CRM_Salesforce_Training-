@@ -1,11 +1,8 @@
 <template>
-    <lightning-combobox
-        name="combobox-editor"
+    <c-combobox-datatype
         data-inputable="true"
-        options={options}
+        options={columnDef.typeAttributes.options}
         value={editedValue}
-        variant="label-hidden"
-        placeholder="Select a value"
-        onchange={handleChange}>
-    </lightning-combobox>
+    >
+    </c-combobox-datatype>
 </template>

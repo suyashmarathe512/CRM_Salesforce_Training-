@@ -312,8 +312,6 @@ export default class AccountRelatedData extends NavigationMixin(LightningElement
             }
         };
     }
-    console.log('Stage options: ', this.stageOptions);
-
     if (opportunitiesActions.length > 0) {
         this.opportunitiesColumns = [...opportunitiesColumns, {
             type: 'action',

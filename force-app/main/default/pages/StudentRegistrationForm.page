@@ -1,0 +1,477 @@
+<apex:page controller="StudentRegistrationController" language="{!selectedLanguage}">
+    <apex:slds />
+    <style>
+        :root {
+            --sf-blue-600: #1589EE;
+            --sf-blue-700: #0b67c7;
+            --card-bg: #f6f9ff;
+            --card-border: #cfe6ff;
+            --input-bg: #ffffff;
+            --muted-text: #5b6b78;
+        }
+        .slds-scope body {
+            font-family: "Salesforce Sans", Arial, Helvetica, sans-serif;
+            overflow-y: auto;
+        }
+        .slds-card {
+            border: 1px solid var(--card-border);
+            background-color: var(--card-bg);
+            box-shadow: 0 2px 6px rgba(5, 80, 140, 0.05);
+            border-radius: 6px;
+        }
+        .brand-header {
+            background: linear-gradient(90deg, var(--sf-blue-600), var(--sf-blue-700));
+            color: #fff;
+            padding: 16px;
+            border-radius: 6px 6px 0 0;
+        }
+        .brand-title { font-size: 2.5rem !important; font-weight: 550 !important; margin: 0; }
+
+        .form-card {
+            padding: 1.25rem;
+        }
+        .slds-form-element__control input[type="text"],
+        .slds-form-element__control select,
+        .slds-form-element__control .uiInputText {
+            width: 100%;
+            min-height: 2.2rem;
+            background-color: var(--input-bg);
+            border-radius: 0.375rem;
+            padding: 6px 10px;
+            box-sizing: border-box;
+            border: 1px solid #d8dde6;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .slds-form-element__control input[type="text"]:focus,
+        .slds-form-element__control select:focus,
+        .slds-form-element__control .uiInputText:focus {
+            border-color: var(--sf-blue-600);
+            box-shadow: 0 0 0 2px rgba(21, 137, 238, 0.2);
+            outline: none;
+        }
+        .page-container {
+            max-width: 1100px;
+            margin: 1.5rem auto;
+        }
+        .form-footer { padding: 1rem 1.25rem 1.5rem; text-align: center; position:relative; }
+
+        .custom-toast-wrapper { position: fixed; top: 1rem; right: 15rem; z-index: 9999; }
+        .error-area {
+            margin-top: 0.75rem;
+            text-align: center;
+        }
+        .error-text { color: #c23934; font-weight: 600; }
+        .unified-select-display {
+            width:100%;
+            min-height:2.2rem;
+            background-color:#ffffff;
+            border-radius:0.375rem;
+            padding:6px 10px;
+            box-sizing:border-box;
+            border:1px solid #d8dde6;
+            box-shadow:0 1px 2px rgba(0,0,0,0.06);
+            transition:border-color 0.18s ease, box-shadow 0.18s ease;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            cursor:pointer;
+        }
+        .unified-select-display:focus { 
+            outline:none; border-color:#1589EE; 
+            box-shadow:0 0 0 4px rgba(21,137,238,0.08); }
+        .unified-select-display .label { flex:1; text-align:left; }
+        .unified-select-display .chev {
+            margin-left:10px; width:0; height:0; display:inline-block;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid #6b6b6b; }
+        .custom-dropdown-overlay {
+            position:absolute; 
+            background:#fff; 
+            border:1px solid #d8dde6; 
+            box-shadow:0 6px 18px rgba(10,20,40,0.12);
+            border-radius:6px; overflow:auto; z-index:200000; min-width:200px;
+           }
+        .custom-dropdown-option { padding:8px 12px; white-space:nowrap; }
+        .custom-dropdown-option:hover, .custom-dropdown-option.active { background:#f3f6fb; }
+        .native-hidden-select { 
+            position:absolute !important; 
+            left:-9999px !important; 
+            width:1px !important; 
+            height:1px !important; 
+            overflow:hidden !important; opacity:0 !important; pointer-events:none !important; }
+    </style>
+    <div class="slds-scope">
+        <div class="page-container" role="main">
+            <apex:form id="mainForm">
+                <div class="slds-card">
+                    <div class="brand-header">
+                        <div>
+                            <h1 class="brand-title">{!$Label.StudentFormTitle}</h1>
+                        </div>
+                    </div>
+                    <apex:pageMessages id="messageArea" />
+                    <div class="form-card slds-card__body slds-card__body_inner">
+                        <div class="slds-grid slds-wrap slds-m-bottom_medium">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                <label class="slds-form-element__label" for="languageSelect">{!$Label.LanguageLabel}</label>
+                                <div class="slds-form-element__control">
+                                    <apex:selectList value="{!selectedLanguage}" size="1" id="languageSelect" styleClass="slds-select">
+                                        <apex:selectOptions value="{!languageOptions}"/>
+                                        <apex:actionSupport event="onchange"/>
+                                    </apex:selectList>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_medium">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="fName">{!$ObjectType.Student__c.fields.First_Name__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.First_Name__c}" id="fName"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element ">
+                                    <label class="slds-form-element__label" for="lName">{!$ObjectType.Student__c.fields.Last_Name__c.label} <span style="color: red;">*</span></label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.Last_Name__c}" id="lName" html-placeholder="Required" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="rollNum">{!$ObjectType.Student__c.fields.Roll_number__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.Roll_number__c}" id="rollNum"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="gender">{!$ObjectType.Student__c.fields.Gender__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.Gender__c}" id="gender"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="courses">{!$ObjectType.Student__c.fields.Courses__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.Courses__c}" id="courses"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="hsc">{!$ObjectType.Student__c.fields.H_S_C__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.H_S_C__c}" id="hsc" html-placeholder="e.g 99.99%." />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="ssc">{!$ObjectType.Student__c.fields.S_S_C__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.S_S_C__c}" id="ssc" html-placeholder="e.g 99.99%."/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="country">{!$ObjectType.Student__c.fields.Country__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.Country__c}" id="country"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="state">{!$ObjectType.Student__c.fields.State__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.State__c}" id="state"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="city">{!$ObjectType.Student__c.fields.City__c.label}</label>
+                                    <div class="slds-form-element__control">
+                                        <apex:inputField value="{!student.City__c}" id="city"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-footer slds-card__footer">
+                        <apex:commandButton id="saveBtn"
+                                          action="{!saveStudent}"
+                                          value="{!$Label.SubmitButtonLabel}"
+                                          styleClass="slds-button slds-button_brand"
+                                          rerender="mainForm,messageArea,errorArea"
+                                          oncomplete="handleAfterSave('{!JSENCODE(lastSavedId)}','{!JSENCODE(toastMessage)}'); if(window.reinitCustomSelects){ setTimeout(window.reinitCustomSelects,120); }"
+                                          onclick="if(!clientValidate()){return false;} showSpinner();" />
+                    </div>
+                </div>
+            </apex:form>
+        </div>
+        <div class="custom-toast-wrapper" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+    </div>
+
+    <script>
+        function clientValidate() {
+            var lNameInput = document.querySelector("input[name$='Last_Name__c']");
+            if (lNameInput === '') {
+                showToast('error', 'Last Name is required.');
+                lNameInput.focus();
+                return false;
+            }
+            return true;
+        }
+        function clearFormFields() {
+            var form = document.getElementById('mainForm'); 
+            if (!form) return;
+            var elements = form.querySelectorAll('input, select, textarea');
+            elements.forEach(function(el) {
+                var type = el.type ? el.type.toLowerCase() : '';
+                if (type === 'checkbox' || type === 'radio') {
+                    el.checked = false;
+                } else if (el.tagName.toLowerCase() === 'select') {
+                    el.selectedIndex = 0;
+                } else if (type === 'hidden') {
+                } else {
+                    el.value = '';
+                }
+            });
+        }
+        function showSpinner() {
+            if (!document.getElementById('savingSpinner')) {
+                var spinner = document.createElement('div');
+                spinner.id = 'savingSpinner';
+                spinner.style.position = 'fixed';
+                spinner.style.inset = '0';
+                spinner.style.background = 'rgba(255,255,255,0.6)';
+                spinner.style.display = 'flex';
+                spinner.style.alignItems = 'center';
+                spinner.style.justifyContent = 'center';
+                spinner.style.zIndex = '9998';
+                spinner.innerHTML = '<div class="slds-spinner slds-spinner_medium" role="status"><span class="slds-assistive-text">Saving</span><div class="slds-spinner__dot-a"></div><div class="slds-spinner__dot-b"></div></div>';
+                document.body.appendChild(spinner);
+            } else {
+                document.getElementById('savingSpinner').style.display = 'flex';
+            }
+        }
+        function hideSpinner() {
+            var s = document.getElementById('savingSpinner');
+            if (s) s.style.display = 'none';
+        }
+        function showToast(type, message) {
+            var container = document.getElementById('toastContainer');
+            if (!container) return;
+            var toast = document.createElement('div');
+            toast.setAttribute('role', 'status');
+            toast.setAttribute('aria-live', 'polite');
+            toast.className = 'slds-notify slds-notify_toast slds-theme_' + (type === 'success' ? 'success' : (type === 'warning'? 'warning' : 'error'));
+            toast.style.marginTop = '8px';
+            toast.style.minWidth = '220px';
+            toast.innerHTML = '<div class="slds-notify__content"><h2 class="slds-text-heading_small" style="margin:0;">' + message + '</h2></div>';
+            container.appendChild(toast);
+            setTimeout(function(){if(toast.parentNode === container) container.removeChild(toast); }, 4000);
+        }
+        function handleAfterSave(lastSavedId, toastMsg) {
+            hideSpinner();
+            adjustDropdown(document.addEventListener('DOMContentLoaded', function() {
+            var picklists = document.querySelectorAll('select[id$="gender"], select[id$="courses"], select[id$="state"], select[id$="city"]');
+            picklists.forEach(function(select) {    
+                select.addEventListener('focus', function() {
+                    adjustDropdown(this);
+                });
+            });
+        }));
+            clearFormFields();
+            if (!lastSavedId || lastSavedId === 'null' || lastSavedId === '') {
+                return;
+            }
+                var url = '/' + lastSavedId;
+                window.open(url, '_blank');
+                var message = toastMsg;
+                showToast('success', message);
+
+        }
+        function adjustDropdown(selectElement) {
+            var rect = selectElement.getBoundingClientRect();
+            var viewportHeight = window.innerHeight;
+            var dropdownHeight = 200;
+            if (rect.bottom + dropdownHeight > viewportHeight) {
+                window.scrollBy(0, -rect.top);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            var picklists = document.querySelectorAll('select[id$="gender"], select[id$="courses"], select[id$="state"], select[id$="city"]');
+            picklists.forEach(function(select) {
+                select.addEventListener('focus', function() {
+                    adjustDropdown(this);
+                });
+            });
+        });
+    (function(){
+        var PICKLIST_IDS = ['languageSelect','gender','courses','country','state','city'];
+        function makeCustom(selectEl) {
+            if (!selectEl || selectEl.dataset.customized === '1') return;
+            selectEl.dataset.customized = '1';
+            if (selectEl.tagName.toLowerCase() !== 'select') return;
+            var display = document.createElement('div');
+            display.tabIndex = 0;
+            display.className = 'unified-select-display';
+            var label = document.createElement('span'); label.className = 'label';
+            var cur = selectEl.options[selectEl.selectedIndex];
+            label.textContent = cur ? cur.text : '--None--';
+            var chev = document.createElement('span'); chev.className = 'chev';
+            display.appendChild(label); display.appendChild(chev);
+            selectEl.parentNode.insertBefore(display, selectEl.nextSibling);
+            selectEl.classList.add('native-hidden-select');
+            var overlay = null;
+            var currentIndex = selectEl.selectedIndex || 0;
+            function buildOverlay() {
+                overlay = document.createElement('div');
+                overlay.className = 'custom-dropdown-overlay';
+                overlay.style.maxHeight = '';
+                overlay.style.overflow = 'auto';
+                for (var i=0;i<selectEl.options.length;i++){
+                    (function(i){
+                        var o = selectEl.options[i];
+                        var item = document.createElement('div');
+                        item.className = 'custom-dropdown-option';
+                        item.textContent = o.text;
+                        item.dataset.index = i;
+                        if (i === selectEl.selectedIndex) item.classList.add('active');
+                        item.addEventListener('click', function(event){
+                            selectEl.selectedIndex = parseInt(this.dataset.index,10);
+                            label.textContent = this.textContent;
+                            var evt = document.createEvent('HTMLEvents'); evt.initEvent('change', true, true);
+                            selectEl.dispatchEvent(evt);
+                            closeOverlay();
+                        });
+                        overlay.appendChild(item);
+                    })(i);
+                }
+                document.body.appendChild(overlay);
+            }
+            function openOverlay() {
+                if (!overlay) buildOverlay();
+                var rect = display.getBoundingClientRect();
+                var top = rect.bottom + window.scrollY + 6;
+                var left = rect.left + window.scrollX;
+                overlay.style.minWidth = rect.width + 'px';
+                overlay.style.left = left + 'px';
+                overlay.style.top = top + 'px';
+                var container = selectEl.closest && selectEl.closest('.slds-card');
+                if (!container) container = document.querySelector('.page-container') || document.body;
+                var containerRect = container.getBoundingClientRect();
+                var containerBottom = containerRect.bottom + window.scrollY;
+                var desiredMaxHeight = 320; 
+                var available = containerBottom - top - 8;
+                if (available < 80) {
+                    var shift = 80 - available;
+                    try { 
+                        window.scrollBy({ top: shift, left: 0, behavior: 'auto' }); 
+                    } catch(e) {
+                         window.scrollBy(0, shift); }
+                    rect = display.getBoundingClientRect();
+                    top = rect.bottom + window.scrollY + 6;
+                    available = containerBottom - top - 8;
+                }
+                var maxH = Math.max(60, Math.min(desiredMaxHeight, available));
+                overlay.style.maxHeight = (maxH > 0 ? maxH : 60) + 'px';
+                overlay.style.display = 'block';
+                document.addEventListener('click', docHandler);
+            }
+            function closeOverlay() {
+                if (overlay && overlay.parentNode) { overlay.parentNode.removeChild(overlay); overlay = null; }
+                document.removeEventListener('click', docHandler);
+            }
+            function docHandler(e) {
+                if (!display.contains(e.target) && (!overlay || !overlay.contains(e.target))) {
+                    closeOverlay();
+                }
+            }
+            function setActive(items,i){ 
+                if(!items||!items.length) return;
+                items.forEach(function(it){ 
+                    it.classList.remove('active'); }); 
+                items[i].classList.add('active'); 
+                items[i].scrollIntoView({ block:'nearest' }); }
+
+            function overlayKeyHandler(e){
+                if(!overlay) return;
+                var items = overlay.querySelectorAll('.custom-dropdown-option');
+                if(!items||!items.length) return;
+                if(e.key === 'ArrowDown'){
+                    e.preventDefault();
+                    currentIndex = Math.min(currentIndex + 1, items.length-1);
+                    setActive(items,currentIndex);
+                } else if(e.key === 'ArrowUp'){
+                    e.preventDefault();
+                    currentIndex = Math.max(currentIndex - 1, 0);
+                    setActive(items,currentIndex);
+                } else if(e.key === 'Enter'){
+                    e.preventDefault();
+                    var sel = items[currentIndex];
+                    if(sel){ sel.click(); }
+                } else if(e.key === 'Escape'){
+                    e.preventDefault();
+                    closeOverlay();
+                    display.focus();
+                }
+            }
+
+            display.addEventListener('click', function(e){
+                if(!overlay) openOverlay();
+                else closeOverlay(); });
+            display.addEventListener('keydown', function(e){
+                if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+                    e.preventDefault();
+                    if(!overlay) openOverlay();
+                } else if(e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if(!overlay) openOverlay();
+                } else if(e.key === 'Tab'){
+                    if(overlay) closeOverlay();
+                } else if(e.key === 'Escape'){
+                    if(overlay) closeOverlay();
+                }
+            });
+
+            selectEl.addEventListener('change', function(){
+                var o = selectEl.options[selectEl.selectedIndex];
+                label.textContent = o ? o.text : '--None--';
+            });
+        }
+        function init() {
+            PICKLIST_IDS.forEach(function(id){
+                var sel = document.getElementById(id);
+                if (!sel) {
+                    sel = document.querySelector("select[id$='" + id + "']");
+                }
+                if (sel) makeCustom(sel);
+            });
+            var main = document.getElementById('mainForm');
+            if (main && window.MutationObserver) {
+                var mo = new MutationObserver(function(){ PICKLIST_IDS.forEach(function(id){
+                    var s = document.getElementById(id) || document.querySelector("select[id$='" + id + "']");
+                    if (s) makeCustom(s);
+                }); });
+                mo.observe(main, { childList:true, subtree:true });
+            }
+        }
+        document.addEventListener('DOMContentLoaded', init);
+    })();
+    </script>
+</apex:page>

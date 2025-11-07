@@ -1,0 +1,22 @@
+.custom-combobox.slds-combobox {
+    width: 30px !important;
+    max-width: 30px !important;
+    font-size: 0.6rem;
+}
+
+.custom-combobox .slds-combobox__input {
+    height: 0.8rem;
+    font-size: 0.6rem;
+    padding: 0.1rem 0.2rem;
+}
+
+.custom-combobox .slds-dropdown {
+    font-size: 0.6rem;
+    width: 30px !important;
+    max-width: 30px !important;
+}
+
+.custom-combobox .slds-dropdown__item {
+    padding: 0.2rem 0.3rem;
+    font-size: 0.6rem;
+}

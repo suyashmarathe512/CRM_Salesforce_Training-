@@ -75,7 +75,6 @@
             display:flex;
             align-items:center;
             justify-content:space-between;
-            
             cursor:pointer;
         }
         .unified-select-display:focus { 
@@ -92,8 +91,8 @@
             background:#fff; 
             border:1px solid #d8dde6; 
             box-shadow:0 6px 18px rgba(10,20,40,0.12);
-            border-radius:6px; max-height:320px; overflow:auto; z-index:200000; min-width:200px;
-        }
+            border-radius:6px; overflow:auto; z-index:200000; min-width:200px;
+           }
         .custom-dropdown-option { padding:8px 12px; white-space:nowrap; }
         .custom-dropdown-option:hover, .custom-dropdown-option.active { background:#f3f6fb; }
         .native-hidden-select { 
@@ -105,8 +104,6 @@
     </style>
     <div class="slds-scope">
         <div class="page-container" role="main">
-            <apex:pageMessages id="messageArea" />
-
             <apex:form id="mainForm">
                 <div class="slds-card">
                     <div class="brand-header">
@@ -114,6 +111,7 @@
                             <h1 class="brand-title">{!$Label.StudentFormTitle}</h1>
                         </div>
                     </div>
+                    <apex:pageMessages id="messageArea" />
                     <div class="form-card slds-card__body slds-card__body_inner">
                         <div class="slds-grid slds-wrap slds-m-bottom_medium">
                             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
@@ -218,11 +216,8 @@
                                           value="{!$Label.SubmitButtonLabel}"
                                           styleClass="slds-button slds-button_brand"
                                           rerender="mainForm,messageArea,errorArea"
-                                          oncomplete="handleAfterSave('{!JSENCODE(lastSavedId)}','{!JSENCODE(toastMessage)}');"
+                                          oncomplete="handleAfterSave('{!JSENCODE(lastSavedId)}','{!JSENCODE(toastMessage)}'); if(window.reinitCustomSelects){ setTimeout(window.reinitCustomSelects,120); }"
                                           onclick="if(!clientValidate()){return false;} showSpinner();" />
-                        <apex:outputPanel id="errorArea" layout="block" styleClass="error-area">
-                            <apex:outputText value="{!errorMessage}" rendered="{!NOT(ISNULL(errorMessage))}" styleClass="error-text"/>
-                        </apex:outputPanel>
                     </div>
                 </div>
             </apex:form>
@@ -292,6 +287,15 @@
         }
         function handleAfterSave(lastSavedId, toastMsg) {
             hideSpinner();
+            adjustDropdown(document.addEventListener('DOMContentLoaded', function() {
+            var picklists = document.querySelectorAll('select[id$="gender"], select[id$="courses"], select[id$="state"], select[id$="city"]');
+            picklists.forEach(function(select) {    
+                select.addEventListener('focus', function() {
+                    adjustDropdown(this);
+                });
+            });
+        }));
+            clearFormFields();
             if (!lastSavedId || lastSavedId === 'null' || lastSavedId === '') {
                 return;
             }
@@ -334,9 +338,12 @@
             selectEl.parentNode.insertBefore(display, selectEl.nextSibling);
             selectEl.classList.add('native-hidden-select');
             var overlay = null;
+            var currentIndex = selectEl.selectedIndex || 0;
             function buildOverlay() {
                 overlay = document.createElement('div');
                 overlay.className = 'custom-dropdown-overlay';
+                overlay.style.maxHeight = '';
+                overlay.style.overflow = 'auto';
                 for (var i=0;i<selectEl.options.length;i++){
                     (function(i){
                         var o = selectEl.options[i];
@@ -345,7 +352,7 @@
                         item.textContent = o.text;
                         item.dataset.index = i;
                         if (i === selectEl.selectedIndex) item.classList.add('active');
-                        item.addEventListener('click', function(){
+                        item.addEventListener('click', function(event){
                             selectEl.selectedIndex = parseInt(this.dataset.index,10);
                             label.textContent = this.textContent;
                             var evt = document.createEvent('HTMLEvents'); evt.initEvent('change', true, true);
@@ -365,6 +372,24 @@
                 overlay.style.minWidth = rect.width + 'px';
                 overlay.style.left = left + 'px';
                 overlay.style.top = top + 'px';
+                var container = selectEl.closest && selectEl.closest('.slds-card');
+                if (!container) container = document.querySelector('.page-container') || document.body;
+                var containerRect = container.getBoundingClientRect();
+                var containerBottom = containerRect.bottom + window.scrollY;
+                var desiredMaxHeight = 320; 
+                var available = containerBottom - top - 8;
+                if (available < 80) {
+                    var shift = 80 - available;
+                    try { 
+                        window.scrollBy({ top: shift, left: 0, behavior: 'auto' }); 
+                    } catch(e) {
+                         window.scrollBy(0, shift); }
+                    rect = display.getBoundingClientRect();
+                    top = rect.bottom + window.scrollY + 6;
+                    available = containerBottom - top - 8;
+                }
+                var maxH = Math.max(60, Math.min(desiredMaxHeight, available));
+                overlay.style.maxHeight = (maxH > 0 ? maxH : 60) + 'px';
                 overlay.style.display = 'block';
                 document.addEventListener('click', docHandler);
             }
@@ -373,20 +398,57 @@
                 document.removeEventListener('click', docHandler);
             }
             function docHandler(e) {
-                if (display.contains(e.target)) return;
-                if (overlay && overlay.contains(e.target)) return;
-                closeOverlay();
+                if (!display.contains(e.target) && (!overlay || !overlay.contains(e.target))) {
+                    closeOverlay();
+                }
             }
             function setActive(items,i){ 
-                if(!items||!items.length) return; 
+                if(!items||!items.length) return;
                 items.forEach(function(it){ 
                     it.classList.remove('active'); }); 
                 items[i].classList.add('active'); 
                 items[i].scrollIntoView({ block:'nearest' }); }
-            display.addEventListener('click', function(e){ 
-                e.stopPropagation(); 
-                if(!overlay) openOverlay(); 
+
+            function overlayKeyHandler(e){
+                if(!overlay) return;
+                var items = overlay.querySelectorAll('.custom-dropdown-option');
+                if(!items||!items.length) return;
+                if(e.key === 'ArrowDown'){
+                    e.preventDefault();
+                    currentIndex = Math.min(currentIndex + 1, items.length-1);
+                    setActive(items,currentIndex);
+                } else if(e.key === 'ArrowUp'){
+                    e.preventDefault();
+                    currentIndex = Math.max(currentIndex - 1, 0);
+                    setActive(items,currentIndex);
+                } else if(e.key === 'Enter'){
+                    e.preventDefault();
+                    var sel = items[currentIndex];
+                    if(sel){ sel.click(); }
+                } else if(e.key === 'Escape'){
+                    e.preventDefault();
+                    closeOverlay();
+                    display.focus();
+                }
+            }
+
+            display.addEventListener('click', function(e){
+                if(!overlay) openOverlay();
                 else closeOverlay(); });
+            display.addEventListener('keydown', function(e){
+                if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+                    e.preventDefault();
+                    if(!overlay) openOverlay();
+                } else if(e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if(!overlay) openOverlay();
+                } else if(e.key === 'Tab'){
+                    if(overlay) closeOverlay();
+                } else if(e.key === 'Escape'){
+                    if(overlay) closeOverlay();
+                }
+            });
+
             selectEl.addEventListener('change', function(){
                 var o = selectEl.options[selectEl.selectedIndex];
                 label.textContent = o ? o.text : '--None--';
